@@ -6,14 +6,32 @@
  * 
  */
 
-// Includes
+/*******************************************************************************
+ * PRIVATE #INCLUDES                                                           *
+ ******************************************************************************/
 #include <xc.h>
 #include "BB_BOARD.h"
 
 #include <plib.h>
-#include <peripheral/osc.h>
-#include <peripheral/lock.h>
 #include "BB_Motor.h"
+
+/*******************************************************************************
+ * PRIVATE FUNCTIONS PROTOTYPES                                                *
+ ******************************************************************************/
+static void Motor1(int PWM, int direction);
+static void Motor2(int PWM, int direction);
+static void Motor3(int PWM, int direction);
+
+/*******************************************************************************
+ * PRIVATE VARIABLES                                                           *
+ ******************************************************************************/
+volatile static int motor1Speed;
+volatile static int motor2Speed;
+volatile static int motor3Speed;
+volatile static int motor1Direction;
+volatile static int motor2Direction;
+volatile static int motor3Direction;
+
 /*  MotorsInit(void)
  **
  ** Notes:
@@ -66,14 +84,15 @@ void MotorsInit(void)
     // This corresponds to (Port B, PMOD pins 1, 2, and 3 on Mx7)
     PORTSetPinsDigitalOut(IOPORT_E, BIT_0 | BIT_1 | BIT_2);
     
-    // Set all pins high initially.
+    // Set all pins high initially (or forward)
     PORTSetBits(IOPORT_E, BIT_0 | BIT_1 | BIT_2);
 }
 
-/*  Motor(int PWM, int direction, int motorNum)
+/*  SetMotorSpeed(int PWM, int motorNum)
  **
  **	Parameters:
- **		dutyCycle is the duty cycle for PWM within period range: 0 to 2000
+ **		PWM, range: -1000 to 1000
+ **     motorNum is either MOTOR_1, MOTOR_2, or MOTOR_3
  **
  **	Return Value:
  **		none
@@ -82,24 +101,106 @@ void MotorsInit(void)
  **		none
  **
  **	Description:
- **		Sets PWM pin 0C1 which is port D, pin 2 (JD-02) on Mx7 pro
+ **		
 /* ------------------------------------------------------------ */
-void Motor(int PWM, int direction, int motorNum) {
-    // Limit PWM value to less than the period. See period define in BB_Motor.h
-    PWM = PWM%PERIOD;
+void SetMotorSpeed(int PWM, int motorNum) 
+{
+    int direction;
+    
+    if (PWM < 0) {
+        direction = REVERSE;
+        PWM = -PWM;
+    } else {
+        direction = FORWARD;
+    }
+    
+    if (PWM > MAX_PWM) {
+        PWM = MAX_PWM;
+    }
     
     // Select Motor
-    if (motorNum == MOTOR_1) {
-        Motor1(PWM, direction);
+    switch (motorNum)
+    {
+        case MOTOR_1:
+            Motor1(PWM, direction);
+        break;
         
-    } else if (motorNum == MOTOR_2) {
-        Motor2(PWM, direction);
-    } 
-    else if (motorNum == MOTOR_3) {
-        Motor3(PWM, direction);
+        case MOTOR_2:
+            Motor2(PWM, direction);
+        break;
+        
+        case MOTOR_3:
+            Motor3(PWM, direction);
+        break;
+        
     }
 }
-/*  Motor(int PWM, int direction)
+
+/*  GetMotorSpeed(int motorNum)
+ **
+ **	Parameters:
+ **		
+ **
+ **	Return Value:
+ **		
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		
+/* ------------------------------------------------------------ */
+int GetMotorSpeed(int motorNum)
+{
+    switch (motorNum)
+    {
+        case MOTOR_1:
+            return motor1Speed;
+        break;
+        
+        case MOTOR_2:
+            return motor2Speed;
+        break;
+        
+        case MOTOR_3:
+            return motor3Speed;
+        break;
+    }
+}
+
+/*  GetMotorDirection(int motorNum)
+ **
+ **	Parameters:
+ **		
+ **
+ **	Return Value:
+ **		motorXDirection
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		
+/* ------------------------------------------------------------ */
+int GetMotorDirection(int motorNum)
+{
+    switch (motorNum)
+    {
+        case MOTOR_1:
+            return motor1Direction;
+        break;
+        
+        case MOTOR_2:
+            return motor2Direction;
+        break;
+        
+        case MOTOR_3:
+            return motor3Direction;
+        break;
+    }
+}
+
+/*  static void Motor1(int PWM, int direction)
  **
  **	Parameters:
  **		PWM and direction
@@ -114,12 +215,103 @@ void Motor(int PWM, int direction, int motorNum) {
  **		Write PWM to pic32 port D, pin 0 (JD-02 on Mx7)
  **     Set 
 /* ------------------------------------------------------------ */
-void Motor1(int PWM, int direction) {
+static void Motor1(int PWM, int direction)
+{
     OC1RS = PWM;                        // write PWM to output compare register
+    
+    motor1Speed = PWM;
+    motor1Direction = direction;
     
     if (direction == FORWARD) {
         PORTSetBits(IOPORT_E, BIT_0);
+        
     } else if (direction == REVERSE) {
-        PORTClearBits(IOPORT_E, BIT_0);
+        PORTClearBits(IOPORT_E, BIT_0); 
     }
+}
+
+/*  static void Motor2(int PWM, int direction)
+ **
+ **	Parameters:
+ **		PWM and direction
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Write PWM to pic32 port D, pin 1 (JD-07 on Mx7)
+ **     Set 
+/* ------------------------------------------------------------ */
+static void Motor2(int PWM, int direction)
+{
+    OC2RS = PWM;                        // write PWM to output compare register
+    
+    motor2Speed = PWM;
+    motor2Direction = direction;
+    
+    if (direction == FORWARD) {
+        PORTSetBits(IOPORT_E, BIT_1);
+        
+    } else if (direction == REVERSE) {
+        PORTClearBits(IOPORT_E, BIT_1); 
+    }
+}
+
+/*  static void Motor3(int PWM, int direction)
+ **
+ **	Parameters:
+ **		PWM and direction
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Write PWM to pic32 port D, pin 2 (JD-08 on Mx7)
+ **     Set 
+/* ------------------------------------------------------------ */
+static void Motor3(int PWM, int direction)
+{
+    OC3RS = PWM;                        // write PWM to output compare register
+    
+    motor3Speed = PWM;
+    motor3Direction = direction;
+    
+    if (direction == FORWARD) {
+        PORTSetBits(IOPORT_E, BIT_2);
+        
+    } else if (direction == REVERSE) {
+        PORTClearBits(IOPORT_E, BIT_2); 
+    }
+}
+
+/*  void MotorStop(int PWM, int direction)
+ **
+ **	Parameters:
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Stop all motors 
+/* ------------------------------------------------------------ */
+void MotorsStop(void) 
+{
+    OC1RS = 0;
+    OC2RS = 0;
+    OC3RS = 0;
+    motor1Speed = 0;
+    motor2Speed = 0;
+    motor3Speed = 0;
+    motor1Direction = FORWARD;
+    motor2Direction = FORWARD;
+    motor3Direction = FORWARD;
 }

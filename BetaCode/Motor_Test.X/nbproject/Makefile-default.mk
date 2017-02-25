@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../Talking_Test.X/BB_BOARD.c ../Talking_Test.X/BB_UART.c Motor_Test_Main.c BB_Motor.c
+SOURCEFILES_QUOTED_IF_SPACED=BB_BOARD.c BB_Motor.c BB_UART.c Motor_Test_Main.c BB_Encoder.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ${OBJECTDIR}/_ext/1722080020/BB_UART.o ${OBJECTDIR}/Motor_Test_Main.o ${OBJECTDIR}/BB_Motor.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d ${OBJECTDIR}/_ext/1722080020/BB_UART.o.d ${OBJECTDIR}/Motor_Test_Main.o.d ${OBJECTDIR}/BB_Motor.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/BB_BOARD.o ${OBJECTDIR}/BB_Motor.o ${OBJECTDIR}/BB_UART.o ${OBJECTDIR}/Motor_Test_Main.o ${OBJECTDIR}/BB_Encoder.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/BB_BOARD.o.d ${OBJECTDIR}/BB_Motor.o.d ${OBJECTDIR}/BB_UART.o.d ${OBJECTDIR}/Motor_Test_Main.o.d ${OBJECTDIR}/BB_Encoder.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ${OBJECTDIR}/_ext/1722080020/BB_UART.o ${OBJECTDIR}/Motor_Test_Main.o ${OBJECTDIR}/BB_Motor.o
+OBJECTFILES=${OBJECTDIR}/BB_BOARD.o ${OBJECTDIR}/BB_Motor.o ${OBJECTDIR}/BB_UART.o ${OBJECTDIR}/Motor_Test_Main.o ${OBJECTDIR}/BB_Encoder.o
 
 # Source Files
-SOURCEFILES=../Talking_Test.X/BB_BOARD.c ../Talking_Test.X/BB_UART.c Motor_Test_Main.c BB_Motor.c
+SOURCEFILES=BB_BOARD.c BB_Motor.c BB_UART.c Motor_Test_Main.c BB_Encoder.c
 
 
 CFLAGS=
@@ -100,23 +100,11 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/_ext/1722080020/BB_BOARD.o: ../Talking_Test.X/BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1722080020" 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ../Talking_Test.X/BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/_ext/1722080020/BB_UART.o: ../Talking_Test.X/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1722080020" 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_UART.o ../Talking_Test.X/BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/Motor_Test_Main.o: Motor_Test_Main.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/BB_BOARD.o: BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Motor_Test_Main.o.d 
-	@${RM} ${OBJECTDIR}/Motor_Test_Main.o 
-	@${FIXDEPS} "${OBJECTDIR}/Motor_Test_Main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Motor_Test_Main.o.d" -o ${OBJECTDIR}/Motor_Test_Main.o Motor_Test_Main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/BB_BOARD.o.d 
+	@${RM} ${OBJECTDIR}/BB_BOARD.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_BOARD.o.d" -o ${OBJECTDIR}/BB_BOARD.o BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/BB_Motor.o: BB_Motor.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -124,18 +112,42 @@ ${OBJECTDIR}/BB_Motor.o: BB_Motor.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/BB_Motor.o 
 	@${FIXDEPS} "${OBJECTDIR}/BB_Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_Motor.o.d" -o ${OBJECTDIR}/BB_Motor.o BB_Motor.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-else
-${OBJECTDIR}/_ext/1722080020/BB_BOARD.o: ../Talking_Test.X/BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1722080020" 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ../Talking_Test.X/BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+${OBJECTDIR}/BB_UART.o: BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_UART.o.d 
+	@${RM} ${OBJECTDIR}/BB_UART.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_UART.o.d" -o ${OBJECTDIR}/BB_UART.o BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/1722080020/BB_UART.o: ../Talking_Test.X/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1722080020" 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_UART.o ../Talking_Test.X/BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+${OBJECTDIR}/Motor_Test_Main.o: Motor_Test_Main.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/Motor_Test_Main.o.d 
+	@${RM} ${OBJECTDIR}/Motor_Test_Main.o 
+	@${FIXDEPS} "${OBJECTDIR}/Motor_Test_Main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Motor_Test_Main.o.d" -o ${OBJECTDIR}/Motor_Test_Main.o Motor_Test_Main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/BB_Encoder.o: BB_Encoder.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_Encoder.o.d 
+	@${RM} ${OBJECTDIR}/BB_Encoder.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_Encoder.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_Encoder.o.d" -o ${OBJECTDIR}/BB_Encoder.o BB_Encoder.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+else
+${OBJECTDIR}/BB_BOARD.o: BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_BOARD.o.d 
+	@${RM} ${OBJECTDIR}/BB_BOARD.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_BOARD.o.d" -o ${OBJECTDIR}/BB_BOARD.o BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/BB_Motor.o: BB_Motor.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_Motor.o.d 
+	@${RM} ${OBJECTDIR}/BB_Motor.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_Motor.o.d" -o ${OBJECTDIR}/BB_Motor.o BB_Motor.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/BB_UART.o: BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_UART.o.d 
+	@${RM} ${OBJECTDIR}/BB_UART.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_UART.o.d" -o ${OBJECTDIR}/BB_UART.o BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/Motor_Test_Main.o: Motor_Test_Main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -143,11 +155,11 @@ ${OBJECTDIR}/Motor_Test_Main.o: Motor_Test_Main.c  nbproject/Makefile-${CND_CONF
 	@${RM} ${OBJECTDIR}/Motor_Test_Main.o 
 	@${FIXDEPS} "${OBJECTDIR}/Motor_Test_Main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Motor_Test_Main.o.d" -o ${OBJECTDIR}/Motor_Test_Main.o Motor_Test_Main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/BB_Motor.o: BB_Motor.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/BB_Encoder.o: BB_Encoder.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/BB_Motor.o.d 
-	@${RM} ${OBJECTDIR}/BB_Motor.o 
-	@${FIXDEPS} "${OBJECTDIR}/BB_Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_Motor.o.d" -o ${OBJECTDIR}/BB_Motor.o BB_Motor.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/BB_Encoder.o.d 
+	@${RM} ${OBJECTDIR}/BB_Encoder.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_Encoder.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_Encoder.o.d" -o ${OBJECTDIR}/BB_Encoder.o BB_Encoder.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

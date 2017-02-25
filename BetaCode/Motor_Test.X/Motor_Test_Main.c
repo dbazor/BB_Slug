@@ -6,13 +6,12 @@
  */
 /************************************************************************/
 /*  File Description:                                                   */
-
 /************************************************************************/
-
 #include "BB_BOARD.h"
 #include <plib.h>
 #include <stdio.h>
-
+#include "BB_Motor.h"
+#include "BB_Encoder.h"
 
 /* ------------------------------------------------------------ */
 /*				Definitions										*/
@@ -27,15 +26,68 @@ void DelayInit();
 void DelayMs(int cms);
 
 /* ------------------------------------------------------------ */
-/*				Main											*/
+/*				Private Variables								*/
+/* ------------------------------------------------------------ */
+static volatile int icperiod = -1;  // measured period, in Timer3 counts
+static volatile int ichigh = -1;    // measured high
 
 /* ------------------------------------------------------------ */
+/*				Interrupt Sub-Routine                           */
+/* ------------------------------------------------------------ */
+void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2() {
 
+    int rise1, fall1, rise2, fall2;
+    rise1 = IC2BUF;         // time of first rising edge
+    fall1 = IC2BUF;         // time of first falling edge
+    rise2 = IC2BUF;         // time of second rising edge
+    fall2 = IC2BUF;         // time of second falling edge; not used below
+    if (fall1 < rise1) {    // handle Timer3 rollover between rise1 and fall1
+        fall1 = fall1 + TMR3_ROLLOVER+1;
+        rise2 = rise2 + TMR3_ROLLOVER+1;
+    } else if (rise2 < fall1) { // handle Timer3 rollover between fall1 and rise2
+
+        rise2 = rise2 + TMR3_ROLLOVER+1;
+    }
+
+    icperiod = rise2 - rise1;   // calculate period, time between rising edges
+    ichigh = fall1 - rise1;     // calculate high duration, between 1st rise and 1st fall
+    IFS0bits.IC2IF = 0;         // clear interrupt flag
+
+}
+
+/* ------------------------------------------------------------ */
+/*				Main											*/
+/* ------------------------------------------------------------ */
 int main() {
     BB_BOARD_Init();
     DelayInit();
     DeviceInit();
     
+    // Motor 1 Test
+    int d;
+//    for (d = -MAX_PWM; d <= MAX_PWM; d = d+(MAX_PWM/10)) {
+//        SetMotorSpeed(d, MOTOR_1);
+//        SetMotorSpeed(d, MOTOR_2);
+//        SetMotorSpeed(d, MOTOR_3);
+//        DelayMs(2000); // two seconds-ish
+//    }
+    SetMotorSpeed(0, MOTOR_1);
+    SetMotorSpeed(0, MOTOR_2);
+    SetMotorSpeed(500, MOTOR_3);
+    
+    #if 0
+    {
+        // Incrementally spin motor 1 forward
+        int d;
+        for (d = -MAX_PWM; d <= MAX_PWM; d = d+(MAX_PWM/4)) {
+            SetMotorSpeed(d, MOTOR_1);
+            SetMotorSpeed(d, MOTOR_2);
+            SetMotorSpeed(d, MOTOR_3);
+            DelayMs(500);
+        }
+    }
+    #endif
+
     // Test PMD read write
     #if 0
     {
@@ -88,13 +140,6 @@ int main() {
     }
     #endif
 
-    // Incrementally spin motor 1 forward
-    int d;
-    for (d = 0; d <= 2000; d = d+250) {
-        //Motor1(d);
-        DelayMs(500);
-    }
-    //Motor1(0);      // Stop motor 1
     
     // Sit and spin
     while(1) {

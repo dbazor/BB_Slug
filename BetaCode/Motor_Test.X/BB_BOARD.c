@@ -7,6 +7,7 @@
 
 #include <xc.h>
 #include "BB_BOARD.h"
+#include "BB_Encoder.h"
 
 #include <plib.h>
 #include <peripheral/osc.h>
@@ -90,11 +91,13 @@ void BB_BOARD_Init()
     DDPCONbits.JTAGEN = 0;
 
     //BB_UART_Init();
+    
+    MotorsInit();
+    
+    Encoder_Init();
 
     __builtin_enable_interrupts();
-
-    // Initialize PWM and direction pins for motors
-    MotorsInit();
+    
 }
 
 /**

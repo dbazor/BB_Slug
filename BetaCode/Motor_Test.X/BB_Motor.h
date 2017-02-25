@@ -1,7 +1,13 @@
 #ifndef BB_MOTOR_H
 #define	BB_MOTOR_H
 
-// Defines
+/*******************************************************************************
+ * PRIVATE #INCLUDES                                                            *
+ ******************************************************************************/
+
+/*******************************************************************************
+ * PRIVATE #DEFINES                                                            *
+ ******************************************************************************/
 #define FORWARD 1
 #define REVERSE 0
 
@@ -10,13 +16,13 @@
 #define MOTOR_3 3
 
 #define PERIOD 1000
+#define MAX_PWM PERIOD
 
 // Prototypes
 void MotorsInit(void);   // called in boardinit
-void Motor(int PWM, int direction, int motorNum);
-void Motor1(int PWM, int direction);
-void Motor2(int PWM, int direction);
-void Motor3(int PWM, int direction);
+void SetMotorSpeed(int PWM, int motorNum);
+int GetMotorSpeed(int motorNum);
+int GetMotorDirection(int motorNum);
 void MotorsStop(void);
 
 // 
