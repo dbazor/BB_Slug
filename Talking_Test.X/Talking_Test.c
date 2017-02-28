@@ -54,8 +54,11 @@ int main()
 
     /* Perform the main application loop.
      */
+
     while (1) {
-       
+        PutChar('x');
+        //printf(" this is a mutha fucking test \n");
+
         BB_ReadUART1(message, MAX_MESSAGE_LENGTH); // get message from computer
         BB_WriteUART1(message); // send message back
         BB_WriteUART1("\r\n");
@@ -74,6 +77,10 @@ int main()
         //drive LD4 high
         PORTWrite(IOPORT_G, BIT_15);
         DelayMs(100);
+
+
+
+
     }
 }
 

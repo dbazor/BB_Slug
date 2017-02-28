@@ -99,6 +99,7 @@ void BB_UART_Init(void)
     U1MODEbits.ON = 1;
     
     // Old UART init
+    /*
     UARTConfigure(UART1, 0x00);
     UARTSetDataRate(UART1, F_PB, 115200);
     UARTSetFifoMode(UART1, UART_INTERRUPT_ON_RX_NOT_EMPTY | UART_INTERRUPT_ON_RX_NOT_EMPTY);
@@ -108,8 +109,59 @@ void BB_UART_Init(void)
     UARTEnable(UART1, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_TX | UART_RX));
     INTEnable(INT_U1RX, INT_ENABLED);
     INTEnable(INT_U1TX, INT_ENABLED);
+     */
 }
+ 
 
+/**
+ * @Function UART_Init(void)
+ * @param none
+ * @return none
+ * @brief  Initializes the UART subsystem to 115200 and sets up the circular buffer
+ * @author yo boys pavlo and mike , 2011.11.10 */
+/*
+UART_Init(void) {
+    __builtin_disable_interrupts();
+    // microchip does not provide a _CP0_SET_CONFIG macro, so we directly use
+    // the compiler built-in command _mtc0
+    // to disable cache, use 0xa4210582
+    __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583);
+    // electrical characteristics data sheet
+    CHECONbits.PFMWS = 0x2;
+    //enable prefetch for cacheable and noncacheable memory
+    CHECONbits.PREFEN = 0x3;
+    // 0 data RAM access wait states
+    BMXCONbits.BMXWSDRM = 0x0;
+    // enable multi vector interrupts
+    INTCONbits.MVEC = 0x1;
+    // disable JTAG to get B10, B11, B12 and B13 back
+    DDPCONbits.JTAGEN = 0;
+    TRISFCLR = 0x0003; // Make F0 and F1 outputs (LED1 and LED2)
+
+
+
+
+    // turn on UART3 without an interrupt
+
+    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
+    U1BRG = ((SYS_FREQ /DESIRED_BAUD) / 16) - 1;
+    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
+
+
+    U1MODEbits.PDSEL = 0;
+    U1MODEbits.STSEL = 0;
+    // configure TX & RX pins as output & input pins
+    U1STAbits.UTXEN = 1;
+    U1STAbits.URXEN = 1;
+
+    // configure hardware flow control using RTS and CTS
+    U1MODEbits.UEN = 0;
+    // enable the uart
+    U1MODEbits.ON = 1;
+    __builtin_enable_interrupts();
+
+}
+*/
 /**
  * @Function PutChar(char ch)
  * @param ch - the char to be sent out the serial port
@@ -117,8 +169,7 @@ void BB_UART_Init(void)
  * @brief  adds char to the end of the circular buffer and forces the interrupt flag 
  * high if nothing is currently transmitting
  * @author Max Dunne, 2011.11.10 */
-void PutChar(char ch)
-{
+void PutChar(char ch) {
     if (getLength(transmitBuffer) != QUEUESIZE) {
         AddingToTransmit = TRUE;
         writeBack(transmitBuffer, ch);
@@ -140,8 +191,7 @@ void PutChar(char ch)
  * @return ch - char from the serial port
  * @brief  reads first character from buffer or returns 0 if no chars available
  * @author Max Dunne, 2011.11.10 */
-char GetChar(void)
-{
+char GetChar(void) {
     char ch;
     if (getLength(receiveBuffer) == 0) {
         ch = 0;
@@ -165,8 +215,7 @@ char GetChar(void)
  * @brief  overwrites weakly define extern to use circular buffer instead of Microchip 
  * functions
  * @author Max Dunne, 2011.11.10 */
-void _mon_putc(char c)
-{
+void _mon_putc(char c) {
     PutChar(c);
 }
 
@@ -177,8 +226,7 @@ void _mon_putc(char c)
  * @brief  overwrites weakly defined extern to use circular buffer instead of Microchip 
  * functions
  * @author Max Dunne, 2011.11.10 */
-void _mon_puts(const char* s)
-{
+void _mon_puts(const char* s) {
     int i;
     for (i = 0; i<sizeof (s); i++)
         PutChar(s[i]);
@@ -191,8 +239,7 @@ void _mon_puts(const char* s)
  * @brief  overwrites weakly defined extern to use circular buffer instead of Microchip 
  * functions
  * @author Max Dunne, 2011.11.10 */
-int _mon_getc(int CanBlock)
-{
+int _mon_getc(int CanBlock) {
     if (getLength(receiveBuffer) == 0)
         return -1;
     return GetChar();
@@ -204,8 +251,7 @@ int _mon_getc(int CanBlock)
  * @return TRUE or FALSE
  * @brief  returns the state of the receive buffer
  * @author Max Dunne, 2011.12.15 */
-char IsReceiveEmpty(void)
-{
+char IsReceiveEmpty(void) {
     if (getLength(receiveBuffer) == 0)
         return TRUE;
     return FALSE;
@@ -217,8 +263,7 @@ char IsReceiveEmpty(void)
  * @return TRUE or FALSE
  * @brief  returns the state of the receive buffer
  * @author Max Dunne, 2011.12.15 */
-char IsTransmitEmpty(void)
-{
+char IsTransmitEmpty(void) {
     if (getLength(transmitBuffer) == 0)
         return TRUE;
     return FALSE;
@@ -243,8 +288,7 @@ char IsTransmitEmpty(void)
  Author
  Max Dunne, 2011.11.10
  ****************************************************************************/
-void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
-{
+void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void) {
     if (INTGetFlag(INT_U1RX)) {
         INTClearFlag(INT_U1RX);
         if (!GettingFromReceive) {
@@ -272,8 +316,7 @@ void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
  * PRIVATE FUNCTIONS                                                          *
  ******************************************************************************/
 
-void newCircBuffer(CBRef cB)
-{
+void newCircBuffer(CBRef cB) {
 
     // initialize to zero
     int i;
@@ -291,8 +334,7 @@ void newCircBuffer(CBRef cB)
 
 // this function frees the Circular Buffer CB Ref
 
-void freeCircBuffer(CBRef* cB)
-{
+void freeCircBuffer(CBRef* cB) {
     // if it is already null, nothing to free
     if (cB == NULL || *cB == NULL) {
         return;
@@ -311,8 +353,7 @@ void freeCircBuffer(CBRef* cB)
 
 // returns the amount of unread bytes in the circular buffer
 
-unsigned int getLength(CBRef cB)
-{
+unsigned int getLength(CBRef cB) {
     // if the circular buffer is not null
     if (cB != NULL) {
         if (cB->head <= cB->tail) {
@@ -329,8 +370,7 @@ unsigned int getLength(CBRef cB)
 
 // returns the actual index of the head
 
-int readHead(CBRef cB)
-{
+int readHead(CBRef cB) {
     // if the circular buffer is not null
     if (cB != NULL) {
         return (cB->head);
@@ -342,8 +382,7 @@ int readHead(CBRef cB)
 
 // returns the actual index of the tail
 
-int readTail(CBRef cB)
-{
+int readTail(CBRef cB) {
     // if the circular buffer is not null
     if (cB != NULL) {
         return (cB->tail);
@@ -357,8 +396,7 @@ int readTail(CBRef cB)
 // does not mark the byte as read, so succesive calls to peak will
 // always return the same value
 
-unsigned char peak(CBRef cB)
-{
+unsigned char peak(CBRef cB) {
     // if the circular buffer is not null
     if (cB != NULL) {
         // if there are bytes in the buffer
@@ -374,8 +412,7 @@ unsigned char peak(CBRef cB)
 // ======================
 // returns the front of the circular buffer and marks the byte as read
 
-unsigned char readFront(CBRef cB)
-{
+unsigned char readFront(CBRef cB) {
     // if the circular buffer is not null
     if (cB != NULL) {
         char retVal;
@@ -393,8 +430,7 @@ unsigned char readFront(CBRef cB)
 // writes one byte at the end of the circular buffer,
 // increments overflow count if overflow occurs
 
-unsigned char writeBack(CBRef cB, unsigned char data)
-{
+unsigned char writeBack(CBRef cB, unsigned char data) {
     // if the circular buffer is not null
     if (cB != NULL) {
         if (getLength(cB) == (cB->size - 1)) {
@@ -414,8 +450,7 @@ unsigned char writeBack(CBRef cB, unsigned char data)
 
 // empties the circular buffer. It does not change the size. use with caution!!
 
-void makeEmpty(CBRef cB)
-{
+void makeEmpty(CBRef cB) {
     if (cB != NULL) {
         int i;
         for (i = 0; i < cB->size; ++i) {
@@ -429,8 +464,7 @@ void makeEmpty(CBRef cB)
 
 // returns the amount of times the CB has overflown;
 
-unsigned char getOverflow(CBRef cB)
-{
+unsigned char getOverflow(CBRef cB) {
     if (cB != NULL) {
         return cB->overflowCount;
     }
@@ -450,8 +484,7 @@ unsigned char getOverflow(CBRef cB)
 #define MAX_RAND (1<<10)
 #define INUNDATION_TEST
 
-int main(void)
-{
+int main(void) {
     BOARD_Init();
     unsigned int i;
     printf("\r\nUno Serial Test Harness\r\nAfter this Message the terminal should mirror any single character you type.\r\n");
@@ -473,7 +506,7 @@ int main(void)
     }
 #endif
     GetChar();
-//    unsigned char ch = 0;
+    //    unsigned char ch = 0;
     while (1) {
         if (IsTransmitEmpty() == TRUE)
             if (IsReceiveEmpty() == FALSE)

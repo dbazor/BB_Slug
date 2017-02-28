@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=talking_test.X
+PROJECTNAME=Talking_Test.X
 
 # Active Configuration
 DEFAULTCONF=default
