@@ -13,7 +13,7 @@
 #include "BB_BOARD.h"
 #include <plib.h>
 #include <stdio.h>
-
+#include "BB_UART.h"
 /* ------------------------------------------------------------ */
 /*				Configuration Bits				                */
 /* ------------------------------------------------------------ */
@@ -30,21 +30,19 @@ void DelayInit();
 void DelayMs(int cms);
 
 /* ------------------------------------------------------------ */
-/*				Definitions										*/
+/*				Definitions			*/
 /* ------------------------------------------------------------ */
 
 #define	cntMsDelay	10000		//timer 1 delay for 1ms
 #define MAX_MESSAGE_LENGTH 200
 
 /* ------------------------------------------------------------ */
-/*				Main											*/
+/*				Main				*/
 
 /* ------------------------------------------------------------ */
-
 int main()
 {
-    char message[MAX_MESSAGE_LENGTH] = "Testing! Testing! 1! 2! 3!";
-    
+
     BB_BOARD_Init();
 
     //Set LD1 through LD4 as digital output
@@ -52,36 +50,33 @@ int main()
     //initialize timer for delay
     DelayInit();
 
+    U1TXREG = 'T';
+    
     /* Perform the main application loop.
      */
-
     while (1) {
-        PutChar('x');
-        //printf(" this is a mutha fucking test \n");
 
-        BB_ReadUART1(message, MAX_MESSAGE_LENGTH); // get message from computer
-        BB_WriteUART1(message); // send message back
+        
+        //BB_ReadUART1(message, MAX_MESSAGE_LENGTH); // get message from computer
+        BB_WriteUART1(" This is a test money"); // send message back
         BB_WriteUART1("\r\n");
-        
+
         //PutChar('T');
-        
-        //drive LD1 high
-        PORTWrite(IOPORT_G, BIT_12);
-        DelayMs(100);
-        // drive LD2 high
-        PORTWrite(IOPORT_G, BIT_13);
-        DelayMs(100);
-        //drive LD3 high
-        PORTWrite(IOPORT_G, BIT_14);
-        DelayMs(100);
-        //drive LD4 high
-        PORTWrite(IOPORT_G, BIT_15);
-        DelayMs(100);
 
-
-
-
+        //        //drive LD1 high
+        //        PORTWrite(IOPORT_G, BIT_12);
+        //        DelayMs(100);
+        //        // drive LD2 high
+        //        PORTWrite(IOPORT_G, BIT_13);
+        //        DelayMs(100);
+        //        //drive LD3 high
+        //        PORTWrite(IOPORT_G, BIT_14);
+        //        DelayMs(100);
+        //        //drive LD4 high
+        //        PORTWrite(IOPORT_G, BIT_15);
+        //        DelayMs(100);
     }
+    
 }
 
 
@@ -125,6 +120,27 @@ void BB_WriteUART1(const char * string)
         ++string;
     }
 }
+
+/*
+ * BB_WriteUART1(const char * string) 
+ * 
+ * To be called in ISR, and shall NOT block
+ * 
+ * This one is not supposed to pole, like the previous one did
+ */
+//void BB_WriteUART1(const char * string)
+//{
+//    // if the char in the string is not null terminating
+//    // and if the TX buffer is not full
+//    // then TX register gets the char
+//    // increment the char pointer "string"
+//    if (*string != '\0') {
+//        if (!U1STAbits.UTXBF) {
+//            U1TXREG = *string;
+//            ++string;
+//        }
+//    }
+//}
 /* ------------------------------------------------------------ */
 
 /*  DeviceInit()

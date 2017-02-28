@@ -19,7 +19,7 @@ endif
 endif
 
 # Environment
-MKDIR=gnumkdir -p
+MKDIR=mkdir -p
 RM=rm -f 
 MV=mv 
 CP=cp 
@@ -38,6 +38,12 @@ DEBUGGABLE_SUFFIX=elf
 FINAL_IMAGE=dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 endif
 
+ifeq ($(COMPARE_BUILD), true)
+COMPARISON_BUILD=-mafrlcsj
+else
+COMPARISON_BUILD=
+endif
+
 # Object Directory
 OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 
@@ -45,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=Talking_Test.c ../Talking_Test.X/BB_BOARD.c ../Talking_Test.X/BB_UART.c
+SOURCEFILES_QUOTED_IF_SPACED=Talking_Test.c ../Talking_Test.X/BB_BOARD.c BB_QUEUE.c BB_UART.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/Talking_Test.o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ${OBJECTDIR}/_ext/1722080020/BB_UART.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/Talking_Test.o.d ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d ${OBJECTDIR}/_ext/1722080020/BB_UART.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/Talking_Test.o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ${OBJECTDIR}/BB_QUEUE.o ${OBJECTDIR}/BB_UART.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/Talking_Test.o.d ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d ${OBJECTDIR}/BB_QUEUE.o.d ${OBJECTDIR}/BB_UART.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/Talking_Test.o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ${OBJECTDIR}/_ext/1722080020/BB_UART.o
+OBJECTFILES=${OBJECTDIR}/Talking_Test.o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ${OBJECTDIR}/BB_QUEUE.o ${OBJECTDIR}/BB_UART.o
 
 # Source Files
-SOURCEFILES=Talking_Test.c ../Talking_Test.X/BB_BOARD.c ../Talking_Test.X/BB_UART.c
+SOURCEFILES=Talking_Test.c ../Talking_Test.X/BB_BOARD.c BB_QUEUE.c BB_UART.c
 
 
 CFLAGS=
@@ -95,41 +101,53 @@ endif
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 ${OBJECTDIR}/Talking_Test.o: Talking_Test.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
+	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/Talking_Test.o.d 
 	@${RM} ${OBJECTDIR}/Talking_Test.o 
-	@${FIXDEPS} "${OBJECTDIR}/Talking_Test.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Talking_Test.o.d" -o ${OBJECTDIR}/Talking_Test.o Talking_Test.c   -legacy-libc
+	@${FIXDEPS} "${OBJECTDIR}/Talking_Test.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Talking_Test.o.d" -o ${OBJECTDIR}/Talking_Test.o Talking_Test.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o: ../Talking_Test.X/BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/_ext/1722080020 
+	@${MKDIR} "${OBJECTDIR}/_ext/1722080020" 
 	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ../Talking_Test.X/BB_BOARD.c   -legacy-libc
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ../Talking_Test.X/BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/1722080020/BB_UART.o: ../Talking_Test.X/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/_ext/1722080020 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_UART.o ../Talking_Test.X/BB_UART.c   -legacy-libc
+${OBJECTDIR}/BB_QUEUE.o: BB_QUEUE.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_QUEUE.o.d 
+	@${RM} ${OBJECTDIR}/BB_QUEUE.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_QUEUE.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_QUEUE.o.d" -o ${OBJECTDIR}/BB_QUEUE.o BB_QUEUE.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/BB_UART.o: BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_UART.o.d 
+	@${RM} ${OBJECTDIR}/BB_UART.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_UART.o.d" -o ${OBJECTDIR}/BB_UART.o BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 else
 ${OBJECTDIR}/Talking_Test.o: Talking_Test.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR} 
+	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/Talking_Test.o.d 
 	@${RM} ${OBJECTDIR}/Talking_Test.o 
-	@${FIXDEPS} "${OBJECTDIR}/Talking_Test.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Talking_Test.o.d" -o ${OBJECTDIR}/Talking_Test.o Talking_Test.c   -legacy-libc
+	@${FIXDEPS} "${OBJECTDIR}/Talking_Test.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/Talking_Test.o.d" -o ${OBJECTDIR}/Talking_Test.o Talking_Test.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o: ../Talking_Test.X/BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/_ext/1722080020 
+	@${MKDIR} "${OBJECTDIR}/_ext/1722080020" 
 	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d 
 	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ../Talking_Test.X/BB_BOARD.c   -legacy-libc
+	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_BOARD.o ../Talking_Test.X/BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/1722080020/BB_UART.o: ../Talking_Test.X/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} ${OBJECTDIR}/_ext/1722080020 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1722080020/BB_UART.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/_ext/1722080020/BB_UART.o.d" -o ${OBJECTDIR}/_ext/1722080020/BB_UART.o ../Talking_Test.X/BB_UART.c   -legacy-libc
+${OBJECTDIR}/BB_QUEUE.o: BB_QUEUE.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_QUEUE.o.d 
+	@${RM} ${OBJECTDIR}/BB_QUEUE.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_QUEUE.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_QUEUE.o.d" -o ${OBJECTDIR}/BB_QUEUE.o BB_QUEUE.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/BB_UART.o: BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/BB_UART.o.d 
+	@${RM} ${OBJECTDIR}/BB_UART.o 
+	@${FIXDEPS} "${OBJECTDIR}/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/BB_UART.o.d" -o ${OBJECTDIR}/BB_UART.o BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 
@@ -144,13 +162,13 @@ endif
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
 dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk    
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}         -legacy-libc  -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC02000:0x1FC02FEF -mreserve=boot@0x1FC02000:0x1FC024FF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -mdebugger -D__MPLAB_DEBUGGER_PK3=1 -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)   -mreserve=data@0x0:0x1FC -mreserve=boot@0x1FC02000:0x1FC02FEF -mreserve=boot@0x1FC02000:0x1FC024FF  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--defsym=__MPLAB_DEBUG=1,--defsym=__DEBUG=1,--defsym=__MPLAB_DEBUGGER_PK3=1,--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml
 	
 else
 dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
-	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}         -legacy-libc -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"
-	${MP_CC_DIR}\\xc32-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} 
+	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml
+	${MP_CC_DIR}/xc32-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/Talking_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} 
 endif
 
 
@@ -169,7 +187,7 @@ endif
 # Enable dependency checking
 .dep.inc: .depcheck-impl
 
-DEPFILES=$(shell mplabwildcard ${POSSIBLE_DEPFILES})
+DEPFILES=$(shell "${PATH_TO_IDE_BIN}"mplabwildcard ${POSSIBLE_DEPFILES})
 ifneq (${DEPFILES},)
 include ${DEPFILES}
 endif

@@ -49,9 +49,6 @@ unsigned char peak(CBRef cB);
 unsigned char readFront(CBRef cB);
 unsigned char writeBack(CBRef cB, unsigned char data);
 
-// Pavlo added:
-//void BB_WriteUART1(const char * string);
-
 /*******************************************************************************
  * PRIVATE VARIABLES                                                           *
  ******************************************************************************/
@@ -63,11 +60,6 @@ static uint8_t AddingToTransmit = FALSE;
 static uint8_t GettingFromReceive = FALSE;
 static uint8_t TransmitCollisionOccured = FALSE;
 static uint8_t ReceiveCollisionOccured = FALSE;
-
-/*******************************************************************************
- * Public VARIABLES                                                           *
- ******************************************************************************/
-//char * string = "Hello World!";
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                           *
@@ -90,23 +82,22 @@ void BB_UART_Init(void)
 
     //    // UART init functions
     // turn on UART1 without an interrupt
-    //    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
-    //    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
+    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
+    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
 
-    //    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
-    //    U1MODEbits.PDSEL = 0;
-    //    U1MODEbits.STSEL = 0;
-    //
-    //    // configure TX & RX pins as output & input pins
-    //    U1STAbits.UTXEN = 1;
-    //    U1STAbits.URXEN = 1;
-    //    
-    //    // configure hardware flow control using RTS and CTS
-    //    U1MODEbits.UEN = 0;
-    //
-    //    // enable the uart
-    //    U1MODEbits.ON = 1;
+    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
+    U1MODEbits.PDSEL = 0;
+    U1MODEbits.STSEL = 0;
 
+    // configure TX & RX pins as output & input pins
+    U1STAbits.UTXEN = 1;
+    U1STAbits.URXEN = 1;
+    // configure hardware flow control using RTS and CTS
+    U1MODEbits.UEN = 0;
+
+    // enable the uart
+    U1MODEbits.ON = 1;
+    
     // Old UART init
     UARTConfigure(UART1, 0x00);
     UARTSetDataRate(UART1, F_PB, 115200);
@@ -254,10 +245,6 @@ char IsTransmitEmpty(void)
  ****************************************************************************/
 void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
 {
-    //drive LD4 high
-    PORTWrite(IOPORT_G, BIT_15);
-    DelayMs(100);
-
     if (INTGetFlag(INT_U1RX)) {
         INTClearFlag(INT_U1RX);
         if (!GettingFromReceive) {
@@ -486,7 +473,7 @@ int main(void)
     }
 #endif
     GetChar();
-    //    unsigned char ch = 0;
+//    unsigned char ch = 0;
     while (1) {
         if (IsTransmitEmpty() == TRUE)
             if (IsReceiveEmpty() == FALSE)
@@ -497,25 +484,3 @@ int main(void)
 }
 
 #endif
-
-// NEW FUNCTIONS - FEB 27, 2017 - PAVLO
-/*
- * BB_WriteUART1(const char * string) 
- * 
- * To be called in ISR, and shall NOT block
- * 
- * This one is not supposed to pole, like the previous one did
- */
-//void BB_WriteUART1(const char * string)
-//{
-//    // if the char in the string is not null terminating
-//    // and if the TX buffer is not full
-//    // then TX register gets the char
-//    // increment the char pointer "string"
-//    if (*string != '\0') {
-//        if (!U1STAbits.UTXBF) {
-//            U1TXREG = *string;
-//            ++string;
-//        }
-//    }
-//}
