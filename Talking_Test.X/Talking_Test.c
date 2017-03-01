@@ -10,9 +10,10 @@
 /*									*/
 /************************************************************************/
 
-#include "BB_BOARD.h"
+
 #include <plib.h>
 #include <stdio.h>
+#include "BB_BOARD.h"
 #include "BB_UART.h"
 /* ------------------------------------------------------------ */
 /*				Configuration Bits				                */
@@ -23,8 +24,8 @@
 /*				Forward Declarations							*/
 /* ------------------------------------------------------------ */
 
-void BB_ReadUART1(char * string, int maxLength);
-void BB_WriteUART1(const char * string);
+//void BB_ReadUART1(char * string, int maxLength);
+//void BB_WriteUART1(const char * string);
 void DeviceInit();
 void DelayInit();
 void DelayMs(int cms);
@@ -43,25 +44,24 @@ void DelayMs(int cms);
 int main()
 {
 
+    PORTWrite(IOPORT_G, BIT_13);
     BB_BOARD_Init();
 
     //Set LD1 through LD4 as digital output
-    DeviceInit();
+
+    //    DeviceInit();
     //initialize timer for delay
     DelayInit();
 
-    U1TXREG = 'T';
-    
+
+
+    PORTWrite(IOPORT_G, BIT_12);
+
     /* Perform the main application loop.
      */
     while (1) {
-
-        
-        //BB_ReadUART1(message, MAX_MESSAGE_LENGTH); // get message from computer
-        BB_WriteUART1(" This is a test money"); // send message back
-        BB_WriteUART1("\r\n");
-
-        //PutChar('T');
+        printf("Testing! /n");
+        DelayMs(100);
 
         //        //drive LD1 high
         //        PORTWrite(IOPORT_G, BIT_12);
@@ -76,71 +76,11 @@ int main()
         //        PORTWrite(IOPORT_G, BIT_15);
         //        DelayMs(100);
     }
-    
+
 }
 
 
-// Read from UART3
-// block other functions until you get a '\r' or '\n'
-// send the pointer to your char array and the number of elements in the array
 
-void BB_ReadUART1(char * message, int maxLength)
-{
-    char data = 0;
-    int complete = 0, num_bytes = 0;
-    // loop until you get a '\r' or '\n'
-    while (!complete) {
-        if (U1STAbits.URXDA) { // if data is available
-            data = U1RXREG; // read the data
-            if ((data == '\n') || (data == '\r')) {
-                complete = 1;
-            } else {
-                message[num_bytes] = data;
-                ++num_bytes;
-                // roll over if the array is too small
-                if (num_bytes >= maxLength) {
-                    num_bytes = 0;
-                }
-            }
-        }
-    }
-    // end the string
-    message[num_bytes] = '\0';
-}
-
-// Write a character array using UART3
-
-void BB_WriteUART1(const char * string)
-{
-    while (*string != '\0') {
-        while (U1STAbits.UTXBF) {
-            ; // wait until tx buffer isn't full
-        }
-        U1TXREG = *string;
-        ++string;
-    }
-}
-
-/*
- * BB_WriteUART1(const char * string) 
- * 
- * To be called in ISR, and shall NOT block
- * 
- * This one is not supposed to pole, like the previous one did
- */
-//void BB_WriteUART1(const char * string)
-//{
-//    // if the char in the string is not null terminating
-//    // and if the TX buffer is not full
-//    // then TX register gets the char
-//    // increment the char pointer "string"
-//    if (*string != '\0') {
-//        if (!U1STAbits.UTXBF) {
-//            U1TXREG = *string;
-//            ++string;
-//        }
-//    }
-//}
 /* ------------------------------------------------------------ */
 
 /*  DeviceInit()
@@ -158,16 +98,16 @@ void BB_WriteUART1(const char * string)
  **		Set LD1 through LD4 as digital output
 /* ------------------------------------------------------------ */
 
-void DeviceInit()
-{
-    //On MX4ck LED1 is on RG12
-    //		   LED2 is on RG13
-    //		   LED3 is on RG14
-    //		   LED4 is on RG15
-    //Set ports for onboard LEDs to outputs
-    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
-
-}
+//void DeviceInit()
+//{
+//    //On MX4ck LED1 is on RG12
+//    //		   LED2 is on RG13
+//    //		   LED3 is on RG14
+//    //		   LED4 is on RG15
+//    //Set ports for onboard LEDs to outputs
+//    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
+//
+//}
 
 /* ------------------------------------------------------------ */
 

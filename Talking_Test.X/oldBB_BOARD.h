@@ -18,7 +18,6 @@
  ******************************************************************************/
 
 #define SYS_FREQ 80000000ul    // 80 million Hz
-#define ERROR -1
 
 //suppresses annoying warnings
 #ifndef _SUPPRESS_PLIB_WARNING

@@ -83,38 +83,27 @@ static uint8_t ReceiveCollisionOccured = FALSE;
 void BB_UART_Init(void)
 {
     transmitBuffer = (struct CircBuffer*) &outgoingUart; //set up buffer for receive
-    newCircBuffer(transmitBuffer);
+    //    newCircBuffer(transmitBuffer);
 
     receiveBuffer = (struct CircBuffer*) &incomingUart; //set up buffer for transmit
-    newCircBuffer(receiveBuffer);
+    //    newCircBuffer(receiveBuffer);
 
-    //    // UART init functions
-    // turn on UART1 without an interrupt
-    //    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
-    //    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
 
-    //    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
-    //    U1MODEbits.PDSEL = 0;
-    //    U1MODEbits.STSEL = 0;
-    //
-    //    // configure TX & RX pins as output & input pins
-    //    U1STAbits.UTXEN = 1;
-    //    U1STAbits.URXEN = 1;
-    //    
-    //    // configure hardware flow control using RTS and CTS
-    //    U1MODEbits.UEN = 0;
-    //
-    //    // enable the uart
-    //    U1MODEbits.ON = 1;
+    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
 
-    // Old UART init
+
+    // Configure UART
     UARTConfigure(UART1, 0x00);
     UARTSetDataRate(UART1, F_PB, 115200);
-    UARTSetFifoMode(UART1, UART_INTERRUPT_ON_RX_NOT_EMPTY | UART_INTERRUPT_ON_RX_NOT_EMPTY);
-
-    INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
-
     UARTEnable(UART1, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_TX | UART_RX));
+    //    From PLIB UART: Enabling the UART transmitter may cause an immediate UART TX interrupt
+    //    request (if the UART TX interrupt is enabled), unless the transmit buffer
+    //    has been pre-loaded with data.
+
+    // Configure UART Interrupts    
+    U1TXREG = 'A'; // put a bit in the TX FIFO to allow it to stop interrupting since done will happen
+    UARTSetFifoMode(UART1, UART_INTERRUPT_ON_TX_DONE | UART_INTERRUPT_ON_RX_NOT_EMPTY);
+    INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
     INTEnable(INT_U1RX, INT_ENABLED);
     INTEnable(INT_U1TX, INT_ENABLED);
 }
@@ -254,31 +243,28 @@ char IsTransmitEmpty(void)
  ****************************************************************************/
 void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
 {
-    //drive LD4 high
-    PORTWrite(IOPORT_G, BIT_15);
-    DelayMs(100);
-
-    if (INTGetFlag(INT_U1RX)) {
-        INTClearFlag(INT_U1RX);
-        if (!GettingFromReceive) {
-            writeBack(receiveBuffer, (unsigned char) U1RXREG);
-        } else {
-            //acknowledge we have a collision and return
-            ReceiveCollisionOccured = TRUE;
-        }
-    }
-    if (INTGetFlag(INT_U1TX)) {
-        INTClearFlag(INT_U1TX);
-        if (!(getLength(transmitBuffer) == 0)) {
-            if (!AddingToTransmit) {
-                U1TXREG = readFront(transmitBuffer);
+        if (INTGetFlag(INT_U1RX)) {
+            PORTWrite(IOPORT_G, BIT_12);
+            INTClearFlag(INT_U1RX);
+            if (!GettingFromReceive) {
+                writeBack(receiveBuffer, (unsigned char) U1RXREG);
             } else {
                 //acknowledge we have a collision and return
-                TransmitCollisionOccured = TRUE;
+                ReceiveCollisionOccured = TRUE;
             }
         }
-    }
-
+        if (INTGetFlag(INT_U1TX)) {
+            PORTWrite(IOPORT_G, BIT_15);
+            INTClearFlag(INT_U1TX);
+            if (!(getLength(transmitBuffer) == 0)) {
+                if (!AddingToTransmit) {
+                    U1TXREG = readFront(transmitBuffer);
+                } else {
+                    //acknowledge we have a collision and return
+                    TransmitCollisionOccured = TRUE;
+                }
+            }
+        }
 }
 
 /*******************************************************************************
