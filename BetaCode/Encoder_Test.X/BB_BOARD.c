@@ -7,7 +7,7 @@
 
 #include <xc.h>
 #include "BB_BOARD.h"
-#include "BB_Encoder.h"
+//#include "BB_Encoder.h"
 
 #include <plib.h>
 #include <peripheral/osc.h>
@@ -53,7 +53,7 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 
-#define  PB_CLOCK SYS_FREQ/2
+#define  PB_CLOCK SYS_FREQ
 #define TurnOffAndClearInterrupt(Name) INTEnable(Name,INT_DISABLED); INTClearFlag(Name)// Configure UART1 for output
 //#define DESIRED_BAUD 115200
 
@@ -89,15 +89,17 @@ void BB_BOARD_Init()
 
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
+    
+    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
 
-    //BB_UART_Init();
-    
-    MotorsInit();
-    
-    Encoder_Init();
+    BB_UART_Init();
+
+    //    MotorsInit();
+
+    //    Encoder_Init();
 
     __builtin_enable_interrupts();
-    
+
 }
 
 /**
