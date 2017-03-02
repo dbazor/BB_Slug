@@ -53,3 +53,4 @@ funclist
 nbproject/Makefile-*
 disassembly/
 *.map
+/BetaCode/Encoder_Test.X/nbproject/private/
