@@ -7,7 +7,6 @@
 
 #include <xc.h>
 #include "BB_BOARD.h"
-//#include "BB_Encoder.h"
 
 #include <plib.h>
 #include <peripheral/osc.h>
@@ -53,7 +52,7 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 
-#define  PB_CLOCK SYS_FREQ
+#define  PB_CLOCK SYS_FREQ/2
 #define TurnOffAndClearInterrupt(Name) INTEnable(Name,INT_DISABLED); INTClearFlag(Name)// Configure UART1 for output
 //#define DESIRED_BAUD 115200
 
@@ -89,14 +88,26 @@ void BB_BOARD_Init()
 
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
-    
-    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
 
     BB_UART_Init();
 
-    //    MotorsInit();
-
-    //    Encoder_Init();
+//    // UART init functions
+//    // turn on UART1 without an interrupt
+//    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
+//    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
+//
+//    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
+//    U1MODEbits.PDSEL = 0;
+//    U1MODEbits.STSEL = 0;
+//
+//    // configure TX & RX pins as output & input pins
+//    U1STAbits.UTXEN = 1;
+//    U1STAbits.URXEN = 1;
+//    // configure hardware flow control using RTS and CTS
+//    U1MODEbits.UEN = 0;
+//
+//    // enable the uart
+//    U1MODEbits.ON = 1;
 
     __builtin_enable_interrupts();
 
