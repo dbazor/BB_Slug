@@ -53,7 +53,7 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 
-#define  PB_CLOCK SYS_FREQ/2
+#define  PB_CLOCK SYS_FREQ
 #define TurnOffAndClearInterrupt(Name) INTEnable(Name,INT_DISABLED); INTClearFlag(Name)// Configure UART1 for output
 //#define DESIRED_BAUD 115200
 

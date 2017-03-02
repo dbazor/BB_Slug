@@ -83,17 +83,14 @@ static uint8_t ReceiveCollisionOccured = FALSE;
 void BB_UART_Init(void)
 {
     transmitBuffer = (struct CircBuffer*) &outgoingUart; //set up buffer for receive
-    //    newCircBuffer(transmitBuffer);
+    newCircBuffer(transmitBuffer);
 
     receiveBuffer = (struct CircBuffer*) &incomingUart; //set up buffer for transmit
-    //    newCircBuffer(receiveBuffer);
-
-
-    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
+    newCircBuffer(receiveBuffer);
 
 
     // Configure UART
-    UARTConfigure(UART1, 0x00);
+    UARTConfigure(UART1, UART_ENABLE_PINS_TX_RX_ONLY); // changed from 0x00
     UARTSetDataRate(UART1, F_PB, 115200);
     UARTEnable(UART1, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_TX | UART_RX));
     //    From PLIB UART: Enabling the UART transmitter may cause an immediate UART TX interrupt
@@ -105,7 +102,7 @@ void BB_UART_Init(void)
     UARTSetFifoMode(UART1, UART_INTERRUPT_ON_TX_DONE | UART_INTERRUPT_ON_RX_NOT_EMPTY);
     INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
     INTEnable(INT_U1RX, INT_ENABLED);
-    INTEnable(INT_U1TX, INT_ENABLED);
+    INTEnable(INT_U1TX, INT_DISABLED);
 }
 
 /**
@@ -122,10 +119,12 @@ void PutChar(char ch)
         writeBack(transmitBuffer, ch);
         AddingToTransmit = FALSE;
         if (U1STAbits.TRMT) {
+            //            INTEnable(INT_U1TX, INT_ENABLED);
             INTSetFlag(INT_U1TX);
         }
         //re-enter the interrupt if we removed a character while getting another one
         if (TransmitCollisionOccured) {
+            //            INTEnable(INT_U1TX, INT_ENABLED);
             INTSetFlag(INT_U1TX);
             TransmitCollisionOccured = FALSE;
         }
@@ -165,7 +164,12 @@ char GetChar(void)
  * @author Max Dunne, 2011.11.10 */
 void _mon_putc(char c)
 {
-    PutChar(c);
+    //PutChar(c); 
+    while (U1STAbits.UTXBF) {
+        ;
+    }
+    U1TXREG = c;
+
 }
 
 /**
@@ -177,9 +181,18 @@ void _mon_putc(char c)
  * @author Max Dunne, 2011.11.10 */
 void _mon_puts(const char* s)
 {
+    //INTEnable(INT_U1TX, INT_DISABLED);
+    //    int i;
+    //    for (i = 0; i<sizeof (s); i++)
+    //        PutChar(s[i]);
+    //    INTEnable(INT_U1TX, INT_ENABLED); 
     int i;
-    for (i = 0; i<sizeof (s); i++)
-        PutChar(s[i]);
+    for (i = 0; i<sizeof (s); i++) {
+        while (U1STAbits.UTXBF) {
+            ;
+        }
+        U1TXREG = s[i];
+    }
 }
 
 /**
@@ -243,28 +256,34 @@ char IsTransmitEmpty(void)
  ****************************************************************************/
 void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
 {
-        if (INTGetFlag(INT_U1RX)) {
-            PORTWrite(IOPORT_G, BIT_12);
-            INTClearFlag(INT_U1RX);
-            if (!GettingFromReceive) {
-                writeBack(receiveBuffer, (unsigned char) U1RXREG);
+    if (INTGetFlag(INT_U1RX)) {
+        //PORTWrite(IOPORT_G, BIT_12);
+        INTClearFlag(INT_U1RX);
+        if (!GettingFromReceive) {
+            writeBack(receiveBuffer, (unsigned char) U1RXREG);
+        } else {
+            //acknowledge we have a collision and return
+            ReceiveCollisionOccured = TRUE;
+        }
+    }
+    if (INTGetFlag(INT_U1TX)) {
+        PORTWrite(IOPORT_G, BIT_15);
+
+        if (!(getLength(transmitBuffer) == 0)) {
+            if (!AddingToTransmit) {
+
+                U1TXREG = readFront(transmitBuffer);
+
             } else {
                 //acknowledge we have a collision and return
-                ReceiveCollisionOccured = TRUE;
+                TransmitCollisionOccured = TRUE;
             }
-        }
-        if (INTGetFlag(INT_U1TX)) {
-            PORTWrite(IOPORT_G, BIT_15);
+        } else if (getLength(transmitBuffer) == 0) {
+            PORTWrite(IOPORT_G, BIT_14);
+            INTEnable(INT_U1TX, INT_DISABLED);
             INTClearFlag(INT_U1TX);
-            if (!(getLength(transmitBuffer) == 0)) {
-                if (!AddingToTransmit) {
-                    U1TXREG = readFront(transmitBuffer);
-                } else {
-                    //acknowledge we have a collision and return
-                    TransmitCollisionOccured = TRUE;
-                }
-            }
         }
+    }
 }
 
 /*******************************************************************************

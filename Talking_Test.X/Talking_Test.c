@@ -55,15 +55,37 @@ int main()
 
 
 
-    PORTWrite(IOPORT_G, BIT_12);
+    //PORTWrite(IOPORT_G, BIT_13);
+    //    DelayMs(100);
+    //    printf("Testing! /n");
+
+    //    PutChar('T');
+    //    U1TXREG = 'A';
+
 
     /* Perform the main application loop.
      */
     while (1) {
-        printf("Testing! /n");
         DelayMs(100);
+        printf("Testing! \n");
+        if (!IsTransmitEmpty()) {
+            PORTWrite(IOPORT_G, BIT_12);
+        }
+        else {
+            PORTWrite(IOPORT_G, BIT_13);
 
-        //        //drive LD1 high
+        }
+        //        printf("Testing! \n");
+        //        PutChar('T');
+        //        U1TXREG = 'X';
+        //        U1TXREG = 'G';
+        //        U1TXREG = 'Y';
+        //        DelayMs(100);
+        //        printf("Testing! /n");
+
+
+
+        //drive LD1 high
         //        PORTWrite(IOPORT_G, BIT_12);
         //        DelayMs(100);
         //        // drive LD2 high
