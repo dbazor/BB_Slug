@@ -223,10 +223,10 @@ static void Motor1(int PWM, int direction)
     motor1Direction = direction;
     
     if (direction == FORWARD) {
-        PORTSetBits(IOPORT_E, BIT_0);
+        PORTSetBits(MOTOR_1_DIR);
         
     } else if (direction == REVERSE) {
-        PORTClearBits(IOPORT_E, BIT_0); 
+        PORTClearBits(MOTOR_1_DIR); 
     }
 }
 
@@ -253,10 +253,10 @@ static void Motor2(int PWM, int direction)
     motor2Direction = direction;
     
     if (direction == FORWARD) {
-        PORTSetBits(IOPORT_E, BIT_1);
+        PORTSetBits(MOTOR_2_DIR);
         
     } else if (direction == REVERSE) {
-        PORTClearBits(IOPORT_E, BIT_1); 
+        PORTClearBits(MOTOR_2_DIR); 
     }
 }
 
@@ -283,10 +283,10 @@ static void Motor3(int PWM, int direction)
     motor3Direction = direction;
     
     if (direction == FORWARD) {
-        PORTSetBits(IOPORT_E, BIT_2);
+        PORTSetBits(MOTOR_3_DIR);
         
     } else if (direction == REVERSE) {
-        PORTClearBits(IOPORT_E, BIT_2); 
+        PORTClearBits(MOTOR_3_DIR); 
     }
 }
 

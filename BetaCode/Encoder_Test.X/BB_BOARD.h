@@ -20,6 +20,19 @@
 #define SYS_FREQ 80000000ul    // 80 million Hz
 #define ERROR -1
 
+#define BB_LED_1 IOPORT_G, BIT_12
+#define BB_LED_2 IOPORT_G, BIT_13
+#define BB_LED_3 IOPORT_G, BIT_14
+#define BB_LED_4 IOPORT_G, BIT_15
+
+#define ENCODER_1A IOPORT_D, BIT_9
+#define ENCODER_2A IOPORT_D, BIT_10
+#define ENCODER_3A IOPORT_D, BIT_12
+
+#define ENCODER_1B IOPORT_E, BIT_4
+#define ENCODER_2B IOPORT_E, BIT_5
+#define ENCODER_3B IOPORT_E, BIT_6
+
 //suppresses annoying warnings
 #ifndef _SUPPRESS_PLIB_WARNING
 #define _SUPPRESS_PLIB_WARNING

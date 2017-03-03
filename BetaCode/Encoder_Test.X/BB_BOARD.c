@@ -91,12 +91,13 @@ void BB_BOARD_Init()
     DDPCONbits.JTAGEN = 0;
     
     PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
+    PORTClearBits(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
 
     BB_UART_Init();
 
-    //    MotorsInit();
+    MotorsInit();
 
-    //    Encoder_Init();
+    Encoder_Init();
 
     __builtin_enable_interrupts();
 

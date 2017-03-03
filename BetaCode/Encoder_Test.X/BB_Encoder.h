@@ -11,11 +11,14 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 #define TMR3_ROLLOVER 0xFFFF    // defines rollover count for IC2?s 16-bit Timer3
-                                // DOUBLE CHECK THIS!
+                                // DOUBLE CHECK THIS! 
+
+
 
 /*******************************************************************************
  * FUNCTION PROTOYPES                                                          *
- ******************************************************************************/
+ ******************************************************************************/ 
+
 //interrupt void InputCapture2_ISR(void);
 void Encoder_Init(void);   
 int GetEncoder1Count();

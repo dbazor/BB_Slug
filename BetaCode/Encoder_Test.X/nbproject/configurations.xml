@@ -19,8 +19,8 @@
       <itemPath>BB_BOARD.c</itemPath>
       <itemPath>BB_Motor.c</itemPath>
       <itemPath>BB_UART.c</itemPath>
-      <itemPath>Motor_Test_Main.c</itemPath>
       <itemPath>BB_Encoder.c</itemPath>
+      <itemPath>Encoder_Test.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
