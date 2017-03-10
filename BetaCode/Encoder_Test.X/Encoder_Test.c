@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "BB_Motor.h"
 #include "BB_Encoder.h"
-
+#include "BB_LEDS.h"
 /* ------------------------------------------------------------ */
 /*				Definitions										*/
 /* ------------------------------------------------------------ */
@@ -121,7 +121,9 @@ int main()
         
         if (i >= 2240 || i <= -2240) {
            SetEncoder1Count(0);
-            PORTToggleBits(BB_LED_2); 
+            //PORTToggleBits(BB_LED_2);  
+           //Turn_On_LED(BB_LED_2); 
+           Toggle_LED(BB_LED_4);
         }
         
         int j = GetEncoder2Count(); 

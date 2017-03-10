@@ -12,7 +12,7 @@
 #include <plib.h>
 #include <peripheral/osc.h>
 #include <peripheral/lock.h>
-
+#include "BB_LEDS.h"
 
 
 #ifdef BOARD_TEST
@@ -89,9 +89,9 @@ void BB_BOARD_Init()
 
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
-    
-    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
-    PORTClearBits(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
+    Leds_Init();
+    //    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
+    //    PORTClearBits(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
 
     BB_UART_Init();
 
