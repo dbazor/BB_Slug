@@ -26,7 +26,7 @@
 // configure the microcontroller for use with the on-board (MX7) licensed debugger circuit
 #pragma config ICESEL = ICS_PGx1
 
-// NU32 suggested setups
+// NU32 suggested setup
 // Device Configuration Registers
 
 //#pragma config DEBUG = OFF          // Background Debugger disabled

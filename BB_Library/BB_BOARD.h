@@ -4,6 +4,14 @@
  *
  * Created on February 2, 2017, 12:10 AM
  */
+//suppresses annoying warnings
+#ifndef _SUPPRESS_PLIB_WARNING
+#define _SUPPRESS_PLIB_WARNING
+#endif
+
+#ifndef _DISABLE_OPENADC10_CONFIGPORT_WARNING
+#define _DISABLE_OPENADC10_CONFIGPORT_WARNING
+#endif
 
 #ifndef BB_BOARD_H
 #define	BB_BOARD_H
@@ -21,7 +29,7 @@
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
 
-#define SYS_FREQ 80000000ul    // 80 million Hz
+#define SYS_FREQ (80000000ul)    // 80 million Hz
 #define ERROR -1
 
 #define BB_LED_1 IOPORT_G, BIT_12
@@ -37,14 +45,7 @@
 #define ENCODER_2B IOPORT_E, BIT_5
 #define ENCODER_3B IOPORT_E, BIT_6
 
-//suppresses annoying warnings
-#ifndef _SUPPRESS_PLIB_WARNING
-#define _SUPPRESS_PLIB_WARNING
-#endif
 
-#ifndef _DISABLE_OPENADC10_CONFIGPORT_WARNING
-#define _DISABLE_OPENADC10_CONFIGPORT_WARNING
-#endif
 
 /*****************************************************************************/
 

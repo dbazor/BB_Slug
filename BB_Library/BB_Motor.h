@@ -23,7 +23,7 @@
 #define MOTOR_3_DIR IOPORT_E, BIT_2
 
 // Prototypes
-void MotorsInit(void);   // called in boardinit
+void MotorsInit(void); // called in boardinit
 void SetMotorSpeed(int PWM, int motorNum);
 int GetMotorSpeed(int motorNum);
 int GetMotorDirection(int motorNum);

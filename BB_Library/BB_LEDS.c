@@ -30,9 +30,11 @@ void Turn_On_LED(IoPortId portId, unsigned int outputs)
 void Turn_Off_LED(IoPortId portId, unsigned int outputs)
 {
     PORTClearBits(portId, outputs);
-} 
-void Toggle_LED(IoPortId portId, unsigned int outputs){ 
-    PORTToggleBits( portId, outputs);
+}
+
+void Toggle_LED(IoPortId portId, unsigned int outputs)
+{
+    PORTToggleBits(portId, outputs);
 }
 /*******************************************************************************
  * PRIVATE VARIABLES                                                           *
