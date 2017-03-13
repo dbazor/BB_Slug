@@ -1,0 +1,38 @@
+<BOOKMARKS>
+  <BM>
+    <ID>1</ID>
+    <Line>162</Line>
+    <File>C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\BNO55_I2C_driver.c</File>
+    <Comment>static void BNO55_ReadTemp() {</Comment>
+  </BM>
+  <BM>
+    <ID>1</ID>
+    <Line>294</Line>
+    <File>C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\BNO55_I2C_driver.c</File>
+    <Comment>void MPU_I2C_Read_Multi(unsigned char s_addr, unsigned char r_addr, unsigned char len, unsigned char *dat) {</Comment>
+  </BM>
+  <BM>
+    <ID>1</ID>
+    <Line>292</Line>
+    <File>C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\BNO55_I2C_driver.c</File>
+    <Comment>void MPU_I2C_Read_Multi(unsigned char s_addr, unsigned char r_addr, unsigned char len, unsigned char *dat) {</Comment>
+  </BM>
+  <BM>
+    <ID>2</ID>
+    <Line>31</Line>
+    <File>C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\BNO55_I2C_driver.c</File>
+    <Comment>  unsigned char dat;</Comment>
+  </BM>
+  <BM>
+    <ID>3</ID>
+    <Line>180</Line>
+    <File>C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\BNO55_I2C_driver.c</File>
+    <Comment>      accel_x_out[50], accel_y_out[50], accel_z_out[50],</Comment>
+  </BM>
+  <BM>
+    <ID>1</ID>
+    <Line>155</Line>
+    <File>C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\BNO55_I2C_driver.c</File>
+    <Comment>   temp_data = temp_data  | RAW_DATA_ACCEL[0] ;</Comment>
+  </BM>
+</BOOKMARKS>
