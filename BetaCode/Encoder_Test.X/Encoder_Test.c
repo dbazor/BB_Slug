@@ -13,6 +13,7 @@
 #include "BB_Motor.h"
 #include "BB_Encoder.h"
 #include "BB_LEDS.h"
+#include "BB_UART.h"
 /* ------------------------------------------------------------ */
 /*				Definitions										*/
 /* ------------------------------------------------------------ */
@@ -116,7 +117,21 @@ int main()
 
     SetMotorSpeed(500, MOTOR_1);
     while (1) {
-        
+        char state = GetChar();
+        if (state == '1'){
+            Turn_On_LED(IOPORT_G, BIT_15);
+        }
+        else if (state == '2'){
+             Turn_On_LED(IOPORT_G, BIT_14);
+        }
+
+        else {
+             Turn_On_LED(IOPORT_G, BIT_12);
+        }
+
+        /*
+
+
         int i = GetEncoder1Count(); 
         
         if (i >= 2240 || i <= -2240) {
@@ -140,7 +155,8 @@ int main()
         } 
        
     }
-
+*/
+    }
     return 0;
 }
 

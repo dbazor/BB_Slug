@@ -91,7 +91,7 @@ void BB_UART_Init(void)
 
     // Configure UART
     UARTConfigure(UART1, UART_ENABLE_PINS_TX_RX_ONLY); // changed from 0x00
-    UARTSetDataRate(UART1, F_PB, 115200);
+    UARTSetDataRate(UART1, F_PB, 9600);
     UARTEnable(UART1, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_TX | UART_RX));
     //    From PLIB UART: Enabling the UART transmitter may cause an immediate UART TX interrupt
     //    request (if the UART TX interrupt is enabled), unless the transmit buffer
@@ -102,7 +102,7 @@ void BB_UART_Init(void)
     UARTSetFifoMode(UART1, UART_INTERRUPT_ON_TX_DONE | UART_INTERRUPT_ON_RX_NOT_EMPTY);
     INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
     INTEnable(INT_U1RX, INT_ENABLED);
-    INTEnable(INT_U1TX, INT_DISABLED);
+    INTEnable(INT_U1TX, INT_ENABLED);
 }
 
 /**
