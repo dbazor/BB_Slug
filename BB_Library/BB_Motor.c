@@ -14,6 +14,7 @@
 
 #include <plib.h>
 #include "BB_Motor.h"
+#include <math.h>
 
 /*******************************************************************************
  * PRIVATE FUNCTIONS PROTOTYPES                                                *
@@ -31,6 +32,10 @@ volatile static int motor3Speed;
 volatile static int motor1Direction;
 volatile static int motor2Direction;
 volatile static int motor3Direction;
+#define SPEED(x) (90 + (x))
+#define DRIVE(x,y,z)   SetMotorSpeed(90 + (x),MOTOR_1); SetMotorSpeed(90 + (y),MOTOR_2); SetMotorSpeed(90 + (z),MOTOR_3)
+
+#define MAXSPEED 1000
 
 /*  MotorsInit(void)
  **
@@ -82,10 +87,33 @@ void MotorsInit(void)
 
     // Configure direction pins on Port E, pins 0, 1, and 2 
     // This corresponds to (Port B, PMOD pins 1, 2, and 3 on Mx7)
-    PORTSetPinsDigitalOut(IOPORT_E, BIT_0 | BIT_1 | BIT_2);
+    PORTSetPinsDigitalOut(IOPORT_E, BIT_0 | BIT_1 | BIT_2 | BIT_3);
 
     // Set all pins high initially (or forward)
-    PORTSetBits(IOPORT_E, BIT_0 | BIT_1 | BIT_2);
+    PORTSetBits(IOPORT_E, BIT_0 | BIT_1 | BIT_2| BIT_3);
+}
+
+/*  SetDrive(int angle, int rotation)
+ **
+ **	Parameters:
+ **		PWM, range: -1000 to 1000
+ **     motorNum is either MOTOR_1, MOTOR_2, or MOTOR_3
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		
+/* ------------------------------------------------------------ */
+void SetDrive(int angle, int rotation)
+{
+    float x = cos(M_PI * (float) angle / 180);
+    float y = sin(M_PI * (float) angle / 180);
+
+    DRIVE((int)(x*MAXSPEED),(int)((-0.5*x + 0.866*y)*MAXSPEED),(int)((-0.5*x-0.866*y)*MAXSPEED));
 }
 
 /*  SetMotorSpeed(int PWM, int motorNum)

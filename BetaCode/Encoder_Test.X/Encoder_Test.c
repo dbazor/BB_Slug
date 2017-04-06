@@ -31,8 +31,8 @@ void DelayMs(int cms);
 /* ------------------------------------------------------------ */
 /*				Private Variables								*/
 /* ------------------------------------------------------------ */
-volatile int m1E1Count = 0;         // motor 1 encoder count
-volatile int m2E2Count = 0;         // motor 2 encoder count
+volatile int m1E1Count = 0; // motor 1 encoder count
+volatile int m2E2Count = 0; // motor 2 encoder count
 //volatile int m3E3Count = 0;         // motor 2 encoder count
 //volatile int localm1E1Count = 0;
 
@@ -107,7 +107,7 @@ volatile int m2E2Count = 0;         // motor 2 encoder count
 /* ------------------------------------------------------------ */
 /*				Main											*/
 
-/* ------------------------------------------------------------ */ 
+/* ------------------------------------------------------------ */
 
 int main()
 {
@@ -115,19 +115,81 @@ int main()
     DelayInit();
     DeviceInit();
 
-    SetMotorSpeed(500, MOTOR_1);
-    while (1) {
-        char state = GetChar();
-        if (state == '1'){
-            Turn_On_LED(IOPORT_G, BIT_15);
-        }
-        else if (state == '2'){
-             Turn_On_LED(IOPORT_G, BIT_14);
-        }
+    int PWM = 350;
 
-        else {
-             Turn_On_LED(IOPORT_G, BIT_12);
-        }
+    
+    
+//    SetMotorSpeed(PWM, MOTOR_1);
+//    DelayMs(2000);
+//    MotorsStop();
+//
+//    DelayMs(2000);
+//    SetMotorSpeed(-PWM, MOTOR_1);
+//    DelayMs(1000);
+//    MotorsStop();
+//
+//    DelayMs(2000);
+//    SetMotorSpeed(PWM, MOTOR_1);
+//    DelayMs(2000);
+//    MotorsStop();
+//
+//    DelayMs(2000);
+//    SetMotorSpeed(-PWM, MOTOR_1);
+//    DelayMs(1000);
+//    MotorsStop();
+
+    SetMotorSpeed(PWM, MOTOR_1);
+    DelayMs(1000);
+    MotorsStop();
+    DelayMs(1000);
+    SetMotorSpeed(-PWM, MOTOR_1);
+    DelayMs(1000);
+    MotorsStop();
+    
+    while (1) { 
+        
+
+        //        char state = GetChar();
+        // Select Motor
+        //        switch (state) {
+        //        case 'F':
+        //            SetMotorSpeed(-PWM, MOTOR_1);
+        //            SetMotorSpeed(PWM, MOTOR_2);
+        //            SetMotorSpeed(0, MOTOR_3);
+        //            break;
+        //        case 'B':
+        //            SetMotorSpeed(PWM, MOTOR_1);
+        //            SetMotorSpeed(-PWM, MOTOR_2);
+        //            SetMotorSpeed(0, MOTOR_3);
+        //            break;
+        //        case 'L':
+        //            SetMotorSpeed(PWM, MOTOR_1);
+        //            SetMotorSpeed(PWM, MOTOR_2);
+        //            SetMotorSpeed(PWM, MOTOR_3);
+        //            break;
+        //        case 'R':
+        //            SetMotorSpeed(-PWM, MOTOR_1);
+        //            SetMotorSpeed(-PWM, MOTOR_2);
+        //            SetMotorSpeed(-PWM, MOTOR_3);
+        //            break;
+        //        case 'X':
+        //            MotorsStop();
+        //            break;           
+        //        case '1':
+        //            SetMotorSpeed(-PWM, MOTOR_1);
+        //            break;
+        //        case '2':
+        //            SetMotorSpeed(-PWM, MOTOR_2);
+        //            break;
+        //        case '3':
+        //            SetMotorSpeed(-PWM, MOTOR_3);
+        //            break;
+        //        default:
+        //            MotorsStop();
+        //        }
+
+        //        DelayMs(100);
+        //        MotorsStop();
 
         /*
 
@@ -155,7 +217,7 @@ int main()
         } 
        
     }
-*/
+         */
     }
     return 0;
 }
