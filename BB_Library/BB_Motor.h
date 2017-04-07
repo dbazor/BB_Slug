@@ -18,8 +18,12 @@
 #define PERIOD 1000
 #define MAX_PWM PERIOD
 
+#define MOTOR_1_DIR IOPORT_E, BIT_1
+#define MOTOR_2_DIR IOPORT_E, BIT_2
+#define MOTOR_3_DIR IOPORT_E, BIT_3
+
 // Prototypes
-void MotorsInit(void);   // called in boardinit
+void MotorsInit(void); // called in boardinit
 void SetMotorSpeed(int PWM, int motorNum);
 int GetMotorSpeed(int motorNum);
 int GetMotorDirection(int motorNum);

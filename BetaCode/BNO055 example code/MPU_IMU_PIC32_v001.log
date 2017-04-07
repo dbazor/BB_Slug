@@ -1,0 +1,43 @@
+0	1	mikroCPIC32.exe -MSF -DBG -pP32MX795F512L -DL -SSA -EBASE 0x9FC01000 -INTDEF MV_SRS7_IS32 -O11111114 -fo80 -N"C:\Users\Alexander Wolf\Documents\PROJEKTE\227 Balacing Robot\PIC32 BNO055\MPU_IMU_v001\MPU_IMU_PIC32_v001.mcp32" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Defs\" -SP"C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC32\Uses\" -SP"C:\Users\Alexander Wolf\Documents\PROJEKTE\227 Balacing Robot\PIC32 BNO055\MPU_IMU_v001\" -SP"C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\" -SP"C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\MPU IMU 9150\PIC32\MPU_IMU_v001\" -SP"C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\MPU IMU 6050\MPU IMO Click\PIC32\MPU_IMU_v001\" -IP"C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\MPU IMU 6050\MPU IMO Click\PIC32\MPU_IMU_v001\" -IP"C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\MPU IMU 9150\PIC32\MPU_IMU_v001\" -IP"C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\BOSCH BNO055\PIC32\MPU_IMU_v001\" -IP"C:\Users\Alexander Wolf\Documents\PROJEKTE\227 Balacing Robot\PIC32 BNO055\MPU_IMU_v001\" "MPU_IMU_PIC32_v001.c" "BNO55_I2C_driver.c" "__Lib_CP0.emcl" "__Lib_Math.emcl" "__Lib_MathDouble.emcl" "__Lib_System.emcl" "__Lib_SoftResetDma.emcl" "__Lib_Delays.emcl" "__Lib_CType.emcl" "__Lib_CString.emcl" "__Lib_CStdlib.emcl" "__Lib_CMath.emcl" "__Lib_Conversions.emcl" "__Lib_Sprintf.emcl" "__Lib_Sprinti.emcl" "__Lib_Sprintl.emcl" "__Lib_I2C_12345.emcl" "__Lib_UART_123456.emcl"	 
+warning: 0	1501	Specified search path does not exist: 'C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\MPU IMU 6050\MPU IMO Click\PIC32\MPU_IMU_v001'	 
+warning: 0	1502	Specified include path does not exist: 'C:\Users\Alexander Wolf\Documents\PROJEKTE\PROGRAMMIERUNG\PIC\Programme\Eigene Programme II\MPU IMU\MPU IMU 6050\MPU IMO Click\PIC32\MPU_IMU_v001'	 
+diagnostics: 0	122	Compilation Started	bno55_i2c_driver.h
+hint: 0	1004	interrupt handler (Interrupt_EXTERN_1 at 0x0007)	MPU_IMU_PIC32_v001.c
+hint: 131	1163	Variable 'result' has been declared, but not used	MPU_IMU_PIC32_v001.c
+diagnostics: 164	123	Compiled Successfully	MPU_IMU_PIC32_v001.c
+hint: 79	1164	Variable 'result' has been eliminated by optimizer	MPU_IMU_PIC32_v001.c
+diagnostics: 0	122	Compilation Started	bno55_i2c_driver.h
+hint: 154	1163	Variable 'temp_data' has been declared, but not used	BNO55_I2C_driver.c
+hint: 206	1163	Variable 'gyro_x_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 206	1163	Variable 'gyro_y_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 206	1163	Variable 'gyro_z_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 207	1163	Variable 'accel_x_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 207	1163	Variable 'accel_y_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 207	1163	Variable 'accel_z_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 208	1163	Variable 'mag_x_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 208	1163	Variable 'mag_y_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 208	1163	Variable 'mag_z_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 210	1163	Variable 'temp_out' has been declared, but not used	BNO55_I2C_driver.c
+hint: 211	1163	Variable 'gyro_x_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 211	1163	Variable 'gyro_y_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 211	1163	Variable 'gyro_z_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 212	1163	Variable 'accel_x_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 212	1163	Variable 'accel_y_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 212	1163	Variable 'accel_z_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 214	1163	Variable 'mag_x_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 214	1163	Variable 'mag_y_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 214	1163	Variable 'mag_z_float' has been declared, but not used	BNO55_I2C_driver.c
+hint: 215	1163	Variable 'stn_out_temo' has been declared, but not used	BNO55_I2C_driver.c
+hint: 341	1163	Variable 's_addr_internR' has been declared, but not used	BNO55_I2C_driver.c
+diagnostics: 393	123	Compiled Successfully	BNO55_I2C_driver.c
+hint: 108	1164	Variable 'dat_temp' has been eliminated by optimizer	BNO55_I2C_driver.c
+hint: 299	1164	Variable 'dat_temp' has been eliminated by optimizer	BNO55_I2C_driver.c
+diagnostics: 0	127	All files Compiled in 124 ms	 
+hint: 0	1144	Used RX: 32 (100%)   Free RX: 0 (0%)	Used RX: 32 (100%)   Free RX: 0 (0%)
+hint: 0	1144	Static RAM (bytes): 483   Dynamic RAM (bytes): 130585	Static RAM (bytes): 483   Dynamic RAM (bytes): 130585
+hint: 0	1144	Used ROM (bytes): 18171 (3%)  Free ROM (bytes): 506117 (97%)	Used ROM (bytes): 18171 (3%)  Free ROM (bytes): 506117 (97%)
+hint: 0	1144	Used BOOTROM (bytes): 2104 (17%)  Free BOOTROM (bytes): 10169 (83%)	Used BOOTROM (bytes): 2104 (17%)  Free BOOTROM (bytes): 10169 (83%)
+diagnostics: 0	125	Project Linked Successfully	MPU_IMU_PIC32_v001.mcp32
+diagnostics: 0	128	Linked in 250 ms	 
+diagnostics: 0	129	Project 'MPU_IMU_PIC32_v001.mcp32' completed: 546 ms	 
+diagnostics: 0	103	Finished successfully: 29 Okt 2015, 17:37:30	MPU_IMU_PIC32_v001.mcp32

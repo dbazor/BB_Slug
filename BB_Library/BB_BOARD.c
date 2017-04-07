@@ -7,12 +7,12 @@
 
 #include <xc.h>
 #include "BB_BOARD.h"
-#include "BB_Encoder.h"
+//#include "BB_Encoder.h"
 
 #include <plib.h>
 #include <peripheral/osc.h>
 #include <peripheral/lock.h>
-
+#include "BB_LEDS.h"
 
 
 #ifdef BOARD_TEST
@@ -26,7 +26,7 @@
 // configure the microcontroller for use with the on-board (MX7) licensed debugger circuit
 #pragma config ICESEL = ICS_PGx1
 
-// NU32 suggested setups
+// NU32 suggested setup
 // Device Configuration Registers
 
 //#pragma config DEBUG = OFF          // Background Debugger disabled
@@ -53,7 +53,7 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 
-#define  PB_CLOCK SYS_FREQ/2
+#define  PB_CLOCK SYS_FREQ
 #define TurnOffAndClearInterrupt(Name) INTEnable(Name,INT_DISABLED); INTClearFlag(Name)// Configure UART1 for output
 //#define DESIRED_BAUD 115200
 
@@ -89,15 +89,19 @@ void BB_BOARD_Init()
 
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
+    Leds_Init();
+    //    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
+    //    PORTClearBits(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
 
-    //BB_UART_Init();
-    
+    BB_UART_Init();
+
+      Leds_Init();
     MotorsInit();
-    
+
     Encoder_Init();
 
     __builtin_enable_interrupts();
-    
+
 }
 
 /**

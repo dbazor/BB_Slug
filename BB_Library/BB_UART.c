@@ -49,6 +49,9 @@ unsigned char peak(CBRef cB);
 unsigned char readFront(CBRef cB);
 unsigned char writeBack(CBRef cB, unsigned char data);
 
+// Pavlo added:
+//void BB_WriteUART1(const char * string);
+
 /*******************************************************************************
  * PRIVATE VARIABLES                                                           *
  ******************************************************************************/
@@ -60,6 +63,11 @@ static uint8_t AddingToTransmit = FALSE;
 static uint8_t GettingFromReceive = FALSE;
 static uint8_t TransmitCollisionOccured = FALSE;
 static uint8_t ReceiveCollisionOccured = FALSE;
+
+/*******************************************************************************
+ * Public VARIABLES                                                           *
+ ******************************************************************************/
+//char * string = "Hello World!";
 
 /*******************************************************************************
  * PUBLIC FUNCTIONS                                                           *
@@ -80,32 +88,19 @@ void BB_UART_Init(void)
     receiveBuffer = (struct CircBuffer*) &incomingUart; //set up buffer for transmit
     newCircBuffer(receiveBuffer);
 
-    //    // UART init functions
-    // turn on UART1 without an interrupt
-    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
-    U1BRG = ((SYS_FREQ / DESIRED_BAUD) / 16) - 1;
 
-    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
-    U1MODEbits.PDSEL = 0;
-    U1MODEbits.STSEL = 0;
-
-    // configure TX & RX pins as output & input pins
-    U1STAbits.UTXEN = 1;
-    U1STAbits.URXEN = 1;
-    // configure hardware flow control using RTS and CTS
-    U1MODEbits.UEN = 0;
-
-    // enable the uart
-    U1MODEbits.ON = 1;
-    
-    // Old UART init
-    UARTConfigure(UART1, 0x00);
-    UARTSetDataRate(UART1, F_PB, 115200);
-    UARTSetFifoMode(UART1, UART_INTERRUPT_ON_RX_NOT_EMPTY | UART_INTERRUPT_ON_RX_NOT_EMPTY);
-
-    INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
-
+    // Configure UART
+    UARTConfigure(UART1, UART_ENABLE_PINS_TX_RX_ONLY); // changed from 0x00
+    UARTSetDataRate(UART1, F_PB, 9600);
     UARTEnable(UART1, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_TX | UART_RX));
+    //    From PLIB UART: Enabling the UART transmitter may cause an immediate UART TX interrupt
+    //    request (if the UART TX interrupt is enabled), unless the transmit buffer
+    //    has been pre-loaded with data.
+
+    // Configure UART Interrupts    
+    U1TXREG = 'A'; // put a bit in the TX FIFO to allow it to stop interrupting since done will happen
+    UARTSetFifoMode(UART1, UART_INTERRUPT_ON_TX_DONE | UART_INTERRUPT_ON_RX_NOT_EMPTY);
+    INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
     INTEnable(INT_U1RX, INT_ENABLED);
     INTEnable(INT_U1TX, INT_ENABLED);
 }
@@ -124,10 +119,12 @@ void PutChar(char ch)
         writeBack(transmitBuffer, ch);
         AddingToTransmit = FALSE;
         if (U1STAbits.TRMT) {
+            //            INTEnable(INT_U1TX, INT_ENABLED);
             INTSetFlag(INT_U1TX);
         }
         //re-enter the interrupt if we removed a character while getting another one
         if (TransmitCollisionOccured) {
+            //            INTEnable(INT_U1TX, INT_ENABLED);
             INTSetFlag(INT_U1TX);
             TransmitCollisionOccured = FALSE;
         }
@@ -167,7 +164,12 @@ char GetChar(void)
  * @author Max Dunne, 2011.11.10 */
 void _mon_putc(char c)
 {
-    PutChar(c);
+    //PutChar(c); 
+    while (U1STAbits.UTXBF) {
+        ;
+    }
+    U1TXREG = c;
+
 }
 
 /**
@@ -179,9 +181,18 @@ void _mon_putc(char c)
  * @author Max Dunne, 2011.11.10 */
 void _mon_puts(const char* s)
 {
+    //INTEnable(INT_U1TX, INT_DISABLED);
+    //    int i;
+    //    for (i = 0; i<sizeof (s); i++)
+    //        PutChar(s[i]);
+    //    INTEnable(INT_U1TX, INT_ENABLED); 
     int i;
-    for (i = 0; i<sizeof (s); i++)
-        PutChar(s[i]);
+    for (i = 0; i<sizeof (s); i++) {
+        while (U1STAbits.UTXBF) {
+            ;
+        }
+        U1TXREG = s[i];
+    }
 }
 
 /**
@@ -246,6 +257,7 @@ char IsTransmitEmpty(void)
 void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
 {
     if (INTGetFlag(INT_U1RX)) {
+        //PORTWrite(IOPORT_G, BIT_12);
         INTClearFlag(INT_U1RX);
         if (!GettingFromReceive) {
             writeBack(receiveBuffer, (unsigned char) U1RXREG);
@@ -255,17 +267,23 @@ void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
         }
     }
     if (INTGetFlag(INT_U1TX)) {
-        INTClearFlag(INT_U1TX);
+        PORTWrite(IOPORT_G, BIT_15);
+
         if (!(getLength(transmitBuffer) == 0)) {
             if (!AddingToTransmit) {
+
                 U1TXREG = readFront(transmitBuffer);
+
             } else {
                 //acknowledge we have a collision and return
                 TransmitCollisionOccured = TRUE;
             }
+        } else if (getLength(transmitBuffer) == 0) {
+            PORTWrite(IOPORT_G, BIT_14);
+            INTEnable(INT_U1TX, INT_DISABLED);
+            INTClearFlag(INT_U1TX);
         }
     }
-
 }
 
 /*******************************************************************************
@@ -473,7 +491,7 @@ int main(void)
     }
 #endif
     GetChar();
-//    unsigned char ch = 0;
+    //    unsigned char ch = 0;
     while (1) {
         if (IsTransmitEmpty() == TRUE)
             if (IsReceiveEmpty() == FALSE)
@@ -484,3 +502,25 @@ int main(void)
 }
 
 #endif
+
+// NEW FUNCTIONS - FEB 27, 2017 - PAVLO
+/*
+ * BB_WriteUART1(const char * string) 
+ * 
+ * To be called in ISR, and shall NOT block
+ * 
+ * This one is not supposed to pole, like the previous one did
+ */
+//void BB_WriteUART1(const char * string)
+//{
+//    // if the char in the string is not null terminating
+//    // and if the TX buffer is not full
+//    // then TX register gets the char
+//    // increment the char pointer "string"
+//    if (*string != '\0') {
+//        if (!U1STAbits.UTXBF) {
+//            U1TXREG = *string;
+//            ++string;
+//        }
+//    }
+//}
