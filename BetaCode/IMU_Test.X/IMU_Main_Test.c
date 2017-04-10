@@ -87,18 +87,40 @@ int main()
     I2CEnable(I2C1, TRUE);
 
     int rcv = 0xFF; //For received data
-    int dataLocation = BNO055_CHIP_ID_ADDR;
-
+//    int dataLocation = BNO055_CHIP_ID_ADDR;
+    
+    // 4-8-17
+    // BNO055_ACC_DATA_X_LSB   0x08
+    // BNO055_ACC_DATA_X_MSB   0x09
+    
+    int dataLocation = UNIT_SEL;
+    unsigned char dat;
+    uint16_t accXmeasurement = 0;
+    
+    // Select units for ACC data
+    dat = 0x00000001;
+    MPU_I2C_Write(SLAVE_ADDR, UNIT_SEL, 1, &dat);
+    rcv = RcvData(SLAVE_ADDR); //Receives data from address 0x40
+    
+    //dataLocation = BNO055_ACC_DATA_X_MSB;   
+    
     //// Attempt to configure IMU here, to get data instead of zeros from various IMU registers
     //Config_BNO55();
     ////
     
     while (1) {
-        SendData(dataLocation, SLAVE_ADDR); //Sends hex data 0xAA to slave address 0x40
-        rcv = RcvData(SLAVE_ADDR); //Receives data from address 0x40
-        printf("The output of %x is: %8x\n", dataLocation, rcv);
-        Delayms(500);
-        dataLocation++;
+        dataLocation = BNO055_ACC_DATA_X_MSB;   
+        SendData(dataLocation, SLAVE_ADDR); 
+        rcv = RcvData(SLAVE_ADDR);
+        //accXmeasurement = rcv;
+        printf("The output of BNO055_ACC_DATA_X is: %d ", rcv);        
+        dataLocation = BNO055_ACC_DATA_X_LSB;   
+        SendData(dataLocation, SLAVE_ADDR); 
+        rcv = RcvData(SLAVE_ADDR); 
+        
+        printf("%d\n",  rcv); 
+               
+        Delayms(300);
     }
 
     while (1) {
@@ -186,7 +208,7 @@ void SendData(int data, unsigned int address)
     StartI2C1(); //Send the Start Bit
     IdleI2C1(); //Wait to complete
 
-    MasterWriteI2C1((address << 1) | 0); //Sends the slave address over the I2C line.  This must happen first so the 
+    MasterWriteI2C1((address << 1) | 0); //Sends the slave address over the I2C line. This must happen first so the 
     //proper slave is selected to receive data.
     IdleI2C1(); //Wait to complete
 

@@ -154,16 +154,16 @@ void Config_BNO55(){
 //}
 //
 //
-//static void BNO55_ReadAccel() {
-//  volatile int temp_data;
-//
-//   MPU_I2C_Read_Multi(BNO55_I2C_ADDR, ACCEL_DATA_ADR, 6, &RAW_DATA_ACCEL[0]);   // Read Accel data from MPU werte bereits in funktion berechnet
-//   BNO55.accel.x = (int)((RAW_DATA_ACCEL[1] << 8) | RAW_DATA_ACCEL[0] );
-//   BNO55.accel.y = (int)((RAW_DATA_ACCEL[3] << 8) | RAW_DATA_ACCEL[2] );
-//   BNO55.accel.z = (int)((RAW_DATA_ACCEL[5] << 8) | RAW_DATA_ACCEL[4] );
-// 
-//}
-//
+static void BNO55_ReadAccel() {
+  volatile int temp_data;
+
+   MPU_I2C_Read_Multi(BNO55_I2C_ADDR, ACCEL_DATA_ADR, 6, &RAW_DATA_ACCEL[0]);   // Read Accel data from MPU werte bereits in funktion berechnet
+   BNO55.accel.x = (int)((RAW_DATA_ACCEL[1] << 8) | RAW_DATA_ACCEL[0] );
+   BNO55.accel.y = (int)((RAW_DATA_ACCEL[3] << 8) | RAW_DATA_ACCEL[2] );
+   BNO55.accel.z = (int)((RAW_DATA_ACCEL[5] << 8) | RAW_DATA_ACCEL[4] );
+ 
+}
+
 //static void BNO55_ReadGyro() {
 //
 //   MPU_I2C_Read_Multi(BNO55_I2C_ADDR, GYRO_DATA_ADR, 6, &RAW_DATA_GYRO[0]);   // Read Accel data from MPU
@@ -388,22 +388,26 @@ void MPU_I2C_Read(unsigned char s_addr, unsigned char r_addr, unsigned char len,
 }
 
 
-//void MPU_I2C_Read_Multi(unsigned char s_addr, unsigned char r_addr, unsigned char len, unsigned char *dat) {
-//  volatile unsigned int i;
-//  volatile unsigned char s_addr_internW , s_addr_internR;
-//
-//  s_addr_internW = (s_addr << 1) & 0xFE;     // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
-//  s_addr_internR = (s_addr << 1) | 0x01;     // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Read  1bit an stelle 0
-//
-//  I2C2_Start();                         // issue I2C start signal
-//  I2C2_Write( s_addr_internW);            // send byte via I2C  (device address + W(&0xFE))
-//  I2C2_Write(r_addr);                   // send byte (data address)
-//  I2C2_Restart();                       // issue I2C signal repeated start
-//  I2C2_Write(s_addr_internR);            // send byte (device address + R(|0x01))
-//  for (i = 0; i < (len-1); i++){
-//    *dat = I2C2_Read(_I2C_ACK);      // Read the data (acknowledge)
-//    dat++;
-//  }
-//  *dat = I2C2_Read(_I2C_NACK);         // Read the data (NO acknowledge)
-//  I2C2_Stop();
-//}
+void MPU_I2C_Read_Multi(unsigned char s_addr, unsigned char r_addr, unsigned char len, unsigned char *dat) {
+  volatile unsigned int i;
+  volatile unsigned char s_addr_internW , s_addr_internR;
+
+  s_addr_internW = (s_addr << 1) & 0xFE;     // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
+  s_addr_internR = (s_addr << 1) | 0x01;     // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Read  1bit an stelle 0
+
+  StartI2C1();                         // issue I2C start signal
+  IdleI2C1();
+  MasterWriteI2C1( s_addr_internW);            // send byte via I2C  (device address + W(&0xFE))
+  IdleI2C1();
+  MasterWriteI2C1(r_addr);                   // send byte (data address)
+  IdleI2C1();
+  RestartI2C1();                       // issue I2C signal repeated start
+  MasterWriteI2C1(s_addr_internR);            // send byte (device address + R(|0x01))
+  for (i = 0; i < (len-1); i++){
+    *dat = MasterReadI2C1();      // Read the data (acknowledge)
+    dat++;
+  }
+  *dat = MasterReadI2C1();         // Read the data (NO acknowledge)
+  StopI2C1();
+  IdleI2C1();
+}
