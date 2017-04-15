@@ -92,10 +92,12 @@ void Config_BNO55()
         MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, 1, &dat);
         if (dat == NDOF_CON) {
             //UART2_write_text("Configuration succes\x0D\x0D");
+            printf("Configured\n");
             return;
         }
     }
     //UART2_write_text("Configuration ERROR\x0D");
+    printf("Error: Failed to configure\n");
 }
 
 
@@ -172,8 +174,6 @@ static void BNO55_ReadAccel()
 // Private blocking functions
 static void MPU_Send_Byte(unsigned char data)
 {
-
-
     while (I2CTransmitterIsReady(I2C1) == FALSE) {
         ;
     }
@@ -377,40 +377,10 @@ void MPU_I2C_Write(unsigned char s_addr, unsigned char r_addr, unsigned char len
     s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
 
     I2CStart(I2C1); // issue I2C start signal
-
-    //    while (I2CTransmitterIsReady(I2C1) == FALSE) {
-    //        ;
-    //    }
-    //    I2CSendByte(I2C1, s_addr_internW); // send byte via I2C  (device address + W(&0xFE))
-    //    while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
-    //        ;
-    //    }
     MPU_Send_Byte(s_addr_internW);
-
-
-
-
-
-
-    //    while (I2CTransmitterIsReady(I2C1) == FALSE) {
-    //        ;
-    //    }
-    //    I2CSendByte(I2C1, r_addr); // send byte (address of EEPROM location)
-    //    while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
-    //        ;
-    //    }
     MPU_Send_Byte(r_addr);
 
-
-
     for (i = 0; i < len; i++) {
-        //        while (I2CTransmitterIsReady(I2C1) == FALSE) {
-        //            ;
-        //        }
-        //        I2CSendByte(I2C1, *dat++); // send data (data to be written)
-        //        while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
-        //            ;
-        //        }
         MPU_Send_Byte(*dat++);
     }
     I2CStop(I2C1); // issue I2C stop signal
