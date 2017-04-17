@@ -9,7 +9,6 @@
       <itemPath>../../BB_Library/BB_LEDS.h</itemPath>
       <itemPath>../../BB_Library/BB_Motor.h</itemPath>
       <itemPath>../../BB_Library/BB_UART.h</itemPath>
-      <itemPath>../../BB_Library/BNO55_I2C_driver.h</itemPath>
       <itemPath>../../BB_Library/BNO55_Register_Map.h</itemPath>
       <itemPath>../../BB_Library/typedefs.h</itemPath>
       <itemPath>../../BB_Library/BB_IMU.h</itemPath>
@@ -28,7 +27,6 @@
       <itemPath>../../BB_Library/BB_Encoder.c</itemPath>
       <itemPath>../../BB_Library/BB_Motor.c</itemPath>
       <itemPath>IMU_Main_Test.c</itemPath>
-      <itemPath>../../BB_Library/BNO55_I2C_driver.c</itemPath>
       <itemPath>../../BB_Library/BB_IMU.c</itemPath>
       <itemPath>../../BB_Library/BB_I2C.c</itemPath>
     </logicalFolder>

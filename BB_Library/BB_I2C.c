@@ -85,7 +85,7 @@ BOOL StartTransfer(BOOL restart)
     // Wait for the signal to complete
     do {
         status = I2CGetStatus(BNO55_I2C_BUS);
-        printf("do while \n");
+        printf("do while in start \n");
     } while (!(status & I2C_START));
 
     printf("out of do while\n");
@@ -265,7 +265,6 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     int DataSz;
     UINT8 i2cData[2];
     I2C_7_BIT_ADDRESS SlaveAddress;
-    UINT8 i2cbyte;
     printf(" read address is %x \n", r_addr);
     I2C_FORMAT_7_BIT_ADDRESS(SlaveAddress, s_addr, I2C_WRITE);
 
