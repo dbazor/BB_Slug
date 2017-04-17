@@ -63,16 +63,21 @@
 BOOL StartTransfer(BOOL restart)
 {
     I2C_STATUS status;
-
+    //    printf("Start Transfer function\n");
     // Send the Start (or Restart) signal
     if (restart) {
+        //        while (!I2CBusIsIdle(BNO55_I2C_BUS)) {
+        //            printf("1bus not idle!\n");
+        //        }
         I2CRepeatStart(BNO55_I2C_BUS);
     } else {
         // Wait for the bus to be idle, then start the transfer
-        while (!I2CBusIsIdle(BNO55_I2C_BUS));
+        while (!I2CBusIsIdle(BNO55_I2C_BUS)) {
+            printf("2bus not idle!\n");
+        }
 
         if (I2CStart(BNO55_I2C_BUS) != I2C_SUCCESS) {
-            DBPRINTF("Error: Bus collision during transfer Start\n");
+            printf("Error: Bus collision during transfer Start\n");
             return FALSE;
         }
     }
@@ -80,9 +85,10 @@ BOOL StartTransfer(BOOL restart)
     // Wait for the signal to complete
     do {
         status = I2CGetStatus(BNO55_I2C_BUS);
-
+        printf("do while \n");
     } while (!(status & I2C_START));
 
+    printf("out of do while\n");
     return TRUE;
 }
 
@@ -165,7 +171,6 @@ BOOL TransmitOneByte(UINT8 data)
 void StopTransfer(void)
 {
     I2C_STATUS status;
-
     // Send the Stop signal
     I2CStop(BNO55_I2C_BUS);
 
@@ -261,21 +266,21 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     UINT8 i2cData[2];
     I2C_7_BIT_ADDRESS SlaveAddress;
     UINT8 i2cbyte;
-
+    printf(" read address is %x \n", r_addr);
     I2C_FORMAT_7_BIT_ADDRESS(SlaveAddress, s_addr, I2C_WRITE);
 
     i2cData[0] = SlaveAddress.byte;
     i2cData[1] = r_addr; // location to be read from
     i2cData[2] = *dat; // data to be sent
     DataSz = 3;
-//    printf("Starting Write\n");
+    printf("Starting Write\n");
 
     // Start the transfer to read the EEPROM.
     if (!StartTransfer(FALSE)) {
         printf("Error: StartTransfer failed!\n");
         return FALSE;
     }
-//    printf("StartTransfer successful.\n");
+    printf("StartTransfer successful.\n");
     // Transmit all data
     Index = 0;
     while (Index < DataSz) {
@@ -283,7 +288,7 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
         if (TransmitOneByte(i2cData[Index])) {
             // Advance to the next byte
 
-//            printf("byte transmitted.\n");
+            printf("byte transmitted.\n");
             Index++;
         } else {
             printf("Error: Transmit one byte failed!\n");
@@ -291,9 +296,11 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
         }
 
         // Verify that the byte was acknowledged
-//        printf("Waiting for ACK\n");
-        while (!I2CByteWasAcknowledged(BNO55_I2C_BUS));
-//        printf("ACK received.\n");
+        printf("Waiting for ACK\n");
+        while (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
+            printf("waiting for ack\n");
+        }
+        printf("ACK received.\n");
     }
 
 
@@ -344,7 +351,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     i2cData[0] = SlaveAddress.byte;
     i2cData[1] = r_addr; // location to be read from
     DataSz = 2;
-
+    printf(" read address is %x \n", r_addr);
     // Start the transfer to read the EEPROM.
     if (!StartTransfer(FALSE)) {
         printf("Error: StartTransfer failed!\n");
@@ -364,10 +371,10 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
         }
 
         // Verify that the byte was acknowledged
-        if (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
-            printf("Error: Sent byte was not acknowledged!\n");
-            return FALSE;
+        while (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
+            printf("waiting for ack\n");
         }
+        printf("ACK received.\n");
     }
 
     // Restart and send the EEPROM's internal address to switch to a read transfer
@@ -473,10 +480,10 @@ BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat)
         }
 
         // Verify that the byte was acknowledged
-        if (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
-            printf("Error: Sent byte was not acknowledged!\n");
-            return FALSE;
+        while (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
+            printf("waiting for ack\n");
         }
+        printf("ACK received.\n");
     }
 
     // Restart and send the EEPROM's internal address to switch to a read transfer
@@ -509,14 +516,13 @@ BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat)
         // read in all of the date to up to len-1
         for (Index = 0; Index < (len - 1); Index++) {
             while (!I2CReceivedDataIsAvailable(BNO55_I2C_BUS));
-            I2CAcknowledgeByte(I2C1, TRUE);
             *dat++ = I2CGetByte(I2C1); // Read the data (acknowledge)
+            I2CAcknowledgeByte(I2C1, TRUE);
             while (!I2CAcknowledgeHasCompleted(I2C1));
         }
         while (!I2CReceivedDataIsAvailable(BNO55_I2C_BUS));
-        I2CAcknowledgeByte(I2C1, FALSE); // (NO acknowledge)
         *dat = I2CGetByte(I2C1); // Read the data 
-
+        I2CAcknowledgeByte(I2C1, FALSE); // (NO acknowledge)
     }
 
     // End the transfer (stop here if an error occured)

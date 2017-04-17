@@ -66,82 +66,104 @@ void Delayms(unsigned t);
 /*				Main											*/
 
 /* ------------------------------------------------------------ */
-
 int main()
 {
     BB_BOARD_Init();
-
-    int rcv = 0xFF; //For received data
-    int dataLocation = 0; //  UNIT_SEL; // do this later
-    unsigned char rcvData = 0xF0;
-    unsigned char sndData = 0x01;
-    unsigned char dat;
-
-    //    dataLocation = BNO055_ACC_DATA_X_LSB; // this is a read only value!
-    dataLocation = BNO055_CHIP_ID;
-    printf("Starting\n");
-
-    BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
-    printf("0 Chip id: %x\n", rcvData);
-    Delayms(1000);
-    //    RcvData(dataLocation);
-    //    printf("0 Chip id: %d\n", rcvData);
-    //    Delayms(1000);
-    dataLocation = BNO055_GYR_OFFSET_Z_MSB;
+    printf(" before init \n");
+    IMU_Init();
+    printf("After init \n");
+    UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
+    UINT8 rcvData[6];
     while (1) {
-        //         Read test
-        UINT8 addr = 0;
-        for (addr = 0; addr < 6; addr++) {
-            BB_I2C_Read(SLAVE_ADDR, addr, &rcvData);
-            printf("0 Chip id: %x\n", rcvData);
-            Delayms(1000);
+        BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 6, &rcvData[0]);
+        printf(" after read multi \n");
+        int i;
+        for (i = 0; i < 6; i++) {
+            printf("euler angle %d : %x\n", i, rcvData[i]);
+
         }
-        // TEST: 
-        // 1) Read register 
-        // 2) Attempt to write to register
-        // 3) Read register again
-        // 4) Attempt to write to register again
-        // 5) Read register for the last time
-
-        // Select BNO055 config mode
-
-        BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
-        printf("1 Received byte: %x\n", rcvData);
         Delayms(1000);
-
-        sndData = 0x01;
-        BB_I2C_Write(SLAVE_ADDR, dataLocation, &sndData);
-        printf("2 Transmitted byte: %x\n", sndData);
-        Delayms(1000);
-
-        BB_I2C_Read(SLAVE_ADDR, dataLocation++, &rcvData);
-        printf("3 Received byte: %x\n", rcvData);
-        Delayms(1000);
-        //
-        //        sndData = 0x23;
-        //        BB_I2C_Write(SLAVE_ADDR, dataLocation, &sndData);
-        //        printf("4 Transmitted byte: %x\n", sndData);
-        //        Delayms(1000);
-        //
-        //        BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
-        //        printf("5 Received byte: %x\n", rcvData);
-        //        Delayms(1000);
-
-        //        MPU_I2C_Write(BNO55_I2C_ADDR, OPR_MODE, &dat);
-        //        Delayms(50);
-        //        MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, dat);
-        //        if (dat == NDOF_CON) {
-        //            printf("Configured\n");
-        //        }
-
-        printf("end of loop \n \n");
-        Delayms(5000);
-        //        sndData++;
     }
-
-
+    while (1);
     return 0;
 }
+
+
+//int main()
+//{
+//    BB_BOARD_Init();
+//
+//    int rcv = 0xFF; //For received data
+//    int dataLocation = 0; //  UNIT_SEL; // do this later
+//    unsigned char rcvData = 0xF0;
+//    unsigned char sndData = 0x01;
+//    unsigned char dat;
+//
+//    //    dataLocation = BNO055_ACC_DATA_X_LSB; // this is a read only value!
+//    dataLocation = BNO055_CHIP_ID;
+//    printf("Starting\n");
+//
+//    BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
+//    printf("0 Chip id: %x\n", rcvData);
+//    Delayms(1000);
+//    //    RcvData(dataLocation);
+//    //    printf("0 Chip id: %d\n", rcvData);
+//    //    Delayms(1000);
+//    dataLocation = BNO055_GYR_OFFSET_Z_MSB;
+//    while (1) {
+//        //         Read test
+//        UINT8 addr = 0;
+//        for (addr = 0; addr < 6; addr++) {
+//            BB_I2C_Read(SLAVE_ADDR, addr, &rcvData);
+//            printf("0 Chip id: %x\n", rcvData);
+//            Delayms(1000);
+//        }
+//        // TEST: 
+//        // 1) Read register 
+//        // 2) Attempt to write to register
+//        // 3) Read register again
+//        // 4) Attempt to write to register again
+//        // 5) Read register for the last time
+//
+//        // Select BNO055 config mode
+//
+//        BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
+//        printf("1 Received byte: %x\n", rcvData);
+//        Delayms(1000);
+//
+//        sndData = 0x01;
+//        BB_I2C_Write(SLAVE_ADDR, dataLocation, &sndData);
+//        printf("2 Transmitted byte: %x\n", sndData);
+//        Delayms(1000);
+//
+//        BB_I2C_Read(SLAVE_ADDR, dataLocation++, &rcvData);
+//        printf("3 Received byte: %x\n", rcvData);
+//        Delayms(1000);
+//        //
+//        //        sndData = 0x23;
+//        //        BB_I2C_Write(SLAVE_ADDR, dataLocation, &sndData);
+//        //        printf("4 Transmitted byte: %x\n", sndData);
+//        //        Delayms(1000);
+//        //
+//        //        BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
+//        //        printf("5 Received byte: %x\n", rcvData);
+//        //        Delayms(1000);
+//
+//        //        MPU_I2C_Write(BNO55_I2C_ADDR, OPR_MODE, &dat);
+//        //        Delayms(50);
+//        //        MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, dat);
+//        //        if (dat == NDOF_CON) {
+//        //            printf("Configured\n");
+//        //        }
+//
+//        printf("end of loop \n \n");
+//        Delayms(5000);
+//        //        sndData++;
+//    }
+//
+//
+//    return 0;
+//}
 
 void Delayms(unsigned t)
 // This uses Timer 1, can be changed to another timer. Assumes FPB = SYS_FREQ

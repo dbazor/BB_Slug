@@ -9,10 +9,11 @@
       <itemPath>../../BB_Library/BB_LEDS.h</itemPath>
       <itemPath>../../BB_Library/BB_Motor.h</itemPath>
       <itemPath>../../BB_Library/BB_UART.h</itemPath>
-      <itemPath>BB_I2C.h</itemPath>
       <itemPath>../../BB_Library/BNO55_I2C_driver.h</itemPath>
       <itemPath>../../BB_Library/BNO55_Register_Map.h</itemPath>
       <itemPath>../../BB_Library/typedefs.h</itemPath>
+      <itemPath>../../BB_Library/BB_IMU.h</itemPath>
+      <itemPath>../../BB_Library/BB_I2C.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -24,11 +25,12 @@
       <itemPath>../../BB_Library/BB_BOARD.c</itemPath>
       <itemPath>../../BB_Library/BB_LEDS.c</itemPath>
       <itemPath>../../BB_Library/BB_UART.c</itemPath>
-      <itemPath>BB_I2C.c</itemPath>
       <itemPath>../../BB_Library/BB_Encoder.c</itemPath>
       <itemPath>../../BB_Library/BB_Motor.c</itemPath>
       <itemPath>IMU_Main_Test.c</itemPath>
       <itemPath>../../BB_Library/BNO55_I2C_driver.c</itemPath>
+      <itemPath>../../BB_Library/BB_IMU.c</itemPath>
+      <itemPath>../../BB_Library/BB_I2C.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
