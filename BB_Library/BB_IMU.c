@@ -60,18 +60,18 @@ BOOL IMU_Init()
      */
     /*   */
 
-    
-    
+
+
     // Select BNO055 config mode
     dat = 0x00;
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
-    
-    
+
+
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
     Delayms(100);
-    //    printf (" OPR MODE \n");
+    printf(" OPR MODE \n");
 
     //    // Select page 1 to configure sensors
     //    dat = 0x01;
@@ -92,7 +92,7 @@ BOOL IMU_Init()
         printf("Error: in Write to OPR MODE \n");
     }
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, 1, &dat);
-    //    printf(" UNIT SEL \n"); 
+    printf(" UNIT SEL \n");
 
     // Select BNO055 gyro temperature source
     dat = 0x01;
@@ -100,7 +100,7 @@ BOOL IMU_Init()
         printf("Error: in Write to OPR MODE \n");
     }
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, 1, &dat);
-    //    printf(" TEMP SOURCE \n");
+    printf(" TEMP SOURCE \n");
     //    
     // Select BNO055 system power mode
     dat = 0x00;
@@ -108,19 +108,19 @@ BOOL IMU_Init()
         printf("Error: in Write to OPR MODE \n");
     }
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, 1, &dat);
-    //    printf(" PWR MODE \n");
+    printf(" PWR MODE \n");
 
     // Write Configuration to BNO55 Registers
     // EXIT Config mode and switch to selected Operation mode
     for (i = 0; i <= 5; i++) { // S 21
         //       dat = AMG_CON;
         dat = NDOF_CON;
-        //        printf( " in loop %d OPR MODE \n",i);
-        if (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
+        printf(" in loop %d OPR MODE \n", i);
+        while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
         }
         Delayms(100);
-        if (!BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat)) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
         }
         if (dat == NDOF_CON) {
