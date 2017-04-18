@@ -63,18 +63,13 @@
 BOOL StartTransfer(BOOL restart)
 {
     I2C_STATUS status;
-    //    printf("Start Transfer function\n");
+
     // Send the Start (or Restart) signal
     if (restart) {
-        //        while (!I2CBusIsIdle(BNO55_I2C_BUS)) {
-        //            printf("1bus not idle!\n");
-        //        }
         I2CRepeatStart(BNO55_I2C_BUS);
     } else {
         // Wait for the bus to be idle, then start the transfer
-        while (!I2CBusIsIdle(BNO55_I2C_BUS)) {
-            printf("2bus not idle!\n");
-        }
+        while (!I2CBusIsIdle(BNO55_I2C_BUS));
 
         if (I2CStart(BNO55_I2C_BUS) != I2C_SUCCESS) {
             printf("Error: Bus collision during transfer Start\n");
@@ -85,11 +80,38 @@ BOOL StartTransfer(BOOL restart)
     // Wait for the signal to complete
     do {
         status = I2CGetStatus(BNO55_I2C_BUS);
-        printf("do while in start \n");
+
     } while (!(status & I2C_START));
 
-    printf("out of do while\n");
     return TRUE;
+    //    I2C_STATUS status;
+    //    //    printf("Start Transfer function\n");
+    //    // Send the Start (or Restart) signal
+    //    if (restart) {
+    //
+    //        //            printf("1bus not idle!\n");
+    //
+    //        I2CRepeatStart(BNO55_I2C_BUS);
+    //    } else {
+    //        // Wait for the bus to be idle, then start the transfer
+    //        while (!I2CBusIsIdle(BNO55_I2C_BUS)) {
+    //            //printf("2bus not idle!\n");
+    //        }
+    //
+    //        while (I2CStart(BNO55_I2C_BUS) != I2C_SUCCESS) {
+    //            printf("Error: Bus collision during transfer Start\n");
+    //            return FALSE;
+    //        }
+    //    }
+    //
+    //    // Wait for the signal to complete
+    //    do {
+    //        status = I2CGetStatus(BNO55_I2C_BUS);
+    //        //printf("do while in start \n");
+    //    } while (!(status & I2C_START));
+    //
+    //    //printf("out of do while\n");
+    //    return TRUE;
 }
 
 /*******************************************************************************
@@ -220,6 +242,7 @@ void BB_I2C_Init()
     // Set the I2C baudrate
     UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, BB_BOARD_GetPBClock(), I2C_CLOCK_FREQ);
     if (abs(actualClock - I2C_CLOCK_FREQ) > I2C_CLOCK_FREQ / 10) {
+
         printf("Error: I2C1 clock frequency (%u) error exceeds 10%%.\n", (unsigned) actualClock);
     }
 
@@ -275,11 +298,12 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     printf("Starting Write\n");
 
     // Start the transfer to read the EEPROM.
-    if (!StartTransfer(FALSE)) {
+    while (!StartTransfer(FALSE)) {
         printf("Error: StartTransfer failed!\n");
-        return FALSE;
+        StopTransfer();
+        //return FALSE;
     }
-    printf("StartTransfer successful.\n");
+    //printf("StartTransfer successful.\n");
     // Transmit all data
     Index = 0;
     while (Index < DataSz) {
@@ -287,19 +311,24 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
         if (TransmitOneByte(i2cData[Index])) {
             // Advance to the next byte
 
-            printf("byte transmitted.\n");
+            //printf("byte transmitted.\n");
             Index++;
+
+            // Verify that the byte was acknowledged
+            //printf("Waiting for ACK\n");
+            if (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
+                printf("Error: Sent byte was not acknowledged\n");
+                I2CStop(BNO55_I2C_BUS);
+                return FALSE;
+            }
+
         } else {
             printf("Error: Transmit one byte failed!\n");
+            I2CStop(BNO55_I2C_BUS);
             return FALSE;
         }
 
-        // Verify that the byte was acknowledged
-        printf("Waiting for ACK\n");
-        while (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
-            printf("waiting for ack\n");
-        }
-        printf("ACK received.\n");
+
     }
 
 
@@ -337,7 +366,7 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
   Remarks:
     None
  *****************************************************************************/
-BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
+BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
 {
     // Initialize the data buffer
     int Index;
@@ -351,9 +380,11 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     i2cData[1] = r_addr; // location to be read from
     DataSz = 2;
     printf(" read address is %x \n", r_addr);
+
     // Start the transfer to read the EEPROM.
     if (!StartTransfer(FALSE)) {
         printf("Error: StartTransfer failed!\n");
+        I2CStop(BNO55_I2C_BUS);
         return FALSE;
     }
 
@@ -364,16 +395,17 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
         if (TransmitOneByte(i2cData[Index])) {
             // Advance to the next byte
             Index++;
+
+            if (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
+                printf("Error: Sent byte was not acknowledged\n");
+                I2CStop(BNO55_I2C_BUS);
+                return FALSE;
+            }
         } else {
             printf("Error: Transmit one byte failed1\n");
+            I2CStop(BNO55_I2C_BUS);
             return FALSE;
         }
-
-        // Verify that the byte was acknowledged
-        while (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
-            printf("waiting for ack\n");
-        }
-        printf("ACK received.\n");
     }
 
     // Restart and send the EEPROM's internal address to switch to a read transfer
@@ -381,6 +413,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     // Send a Repeated Started condition
     if (!StartTransfer(TRUE)) {
         printf("Error: ReStartTransfer failed!\n");
+        I2CStop(BNO55_I2C_BUS);
         return FALSE;
     }
 
@@ -391,11 +424,13 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
         // Verify that the byte was acknowledged
         if (!I2CByteWasAcknowledged(BNO55_I2C_BUS)) {
             printf("Error: Sent byte was not acknowledged\n");
+            I2CStop(BNO55_I2C_BUS);
             return FALSE;
         }
 
     } else {
         printf("Error: Change to read failed! \n");
+        I2CStop(BNO55_I2C_BUS);
         return FALSE;
     }
 
@@ -405,6 +440,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
 
     if (I2CReceiverEnable(BNO55_I2C_BUS, TRUE) == I2C_RECEIVE_OVERFLOW) {
         printf("Error: I2C Receive Overflow\n");
+        I2CStop(BNO55_I2C_BUS);
         return FALSE;
     } else {
         // read in one byte
@@ -414,13 +450,14 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     }
 
     // End the transfer (stop here if an error occured)
+
     while (!I2CAcknowledgeHasCompleted(BNO55_I2C_BUS));
     StopTransfer();
 }
 
 /*******************************************************************************
   Function:
-    void BB_I2C_Read()
+    void BB_I2C_Read_Multi()
 
   Summary:
     Reads one or more bytes from I2C1 Bus
@@ -445,7 +482,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
   Remarks:
     Call this on startup
  *****************************************************************************/
-BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat)
+BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 * dat)
 {
     // Initialize the data buffer
     int Index;

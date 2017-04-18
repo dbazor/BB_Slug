@@ -5,6 +5,8 @@
         <group>
             <file>file:/C:/Users/Daniel/BB_Slug/BB_Library/BB_BOARD.c</file>
             <file>file:/C:/Users/Daniel/BB_Slug/BB_Library/BB_I2C.h</file>
+            <file>file:/C:/Users/Daniel/BB_Slug/BB_Library/BB_IMU.h</file>
+            <file>file:/C:/Users/Daniel/BB_Slug/BB_Library/BNO55_Register_Map.h</file>
             <file>file:/C:/Users/Daniel/BB_Slug/BetaCode/IMU_Test_Daniel.X/IMU_Main_Test.c</file>
             <file>file:/C:/Users/Daniel/BB_Slug/BB_Library/BB_I2C.c</file>
             <file>file:/C:/Users/Daniel/BB_Slug/BB_Library/BB_IMU.c</file>

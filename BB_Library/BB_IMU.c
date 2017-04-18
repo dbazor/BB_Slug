@@ -60,11 +60,15 @@ BOOL IMU_Init()
      */
     /*   */
 
+    
+    
     // Select BNO055 config mode
     dat = 0x00;
-    if (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
+    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
+    
+    
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
     Delayms(100);
     //    printf (" OPR MODE \n");
@@ -84,7 +88,7 @@ BOOL IMU_Init()
 
     // Select BNO055 sensor units (temperature in degrees F, rate in rps, accel in m/s^2)
     dat = 0x16;
-    if (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
+    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, 1, &dat);
@@ -92,7 +96,7 @@ BOOL IMU_Init()
 
     // Select BNO055 gyro temperature source
     dat = 0x01;
-    if (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, &dat)) {
+    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, 1, &dat);
@@ -100,7 +104,7 @@ BOOL IMU_Init()
     //    
     // Select BNO055 system power mode
     dat = 0x00;
-    if (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, &dat)) {
+    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, 1, &dat);
@@ -108,9 +112,6 @@ BOOL IMU_Init()
 
     // Write Configuration to BNO55 Registers
     // EXIT Config mode and switch to selected Operation mode
-    //    dat = 0x00;
-    //    BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat);
-    //    printf("mode = %x\n",dat);
     for (i = 0; i <= 5; i++) { // S 21
         //       dat = AMG_CON;
         dat = NDOF_CON;
