@@ -17,6 +17,8 @@
 
 #define PERIOD 1000
 #define MAX_PWM PERIOD
+#define MAX_VOLTAGE 12
+// add a min voltage
 
 #define MOTOR_1_DIR IOPORT_E, BIT_1
 #define MOTOR_2_DIR IOPORT_E, BIT_2

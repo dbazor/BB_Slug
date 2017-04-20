@@ -95,7 +95,7 @@ void BB_BOARD_Init()
 
     BB_UART_Init();
 
-      Leds_Init();
+    Leds_Init();
     MotorsInit();
 
     Encoder_Init();
