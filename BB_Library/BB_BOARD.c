@@ -69,6 +69,7 @@ void BB_BOARD_Init()
 {
     // disable interrupts
     __builtin_disable_interrupts();
+    
     //disables all A/D pins for a clean start
     AD1PCFG = 0xffff;
 
@@ -95,17 +96,18 @@ void BB_BOARD_Init()
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
 
+
     //    // *NOTE: This is in the peripheral library example code init()
     //    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
     
     Leds_Init();
 
     BB_UART_Init();
-    
+
     MotorsInit();
-
     Encoder_Init();
-
+    BB_I2C_Init();
+    
     __builtin_enable_interrupts();
 
 }

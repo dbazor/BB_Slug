@@ -87,6 +87,7 @@ int main()
     I2CEnable(I2C1, TRUE);
 
     int rcv = 0xFF; //For received data
+
 //    int dataLocation = BNO055_CHIP_ID_ADDR;
     
     // 4-8-17
@@ -121,6 +122,7 @@ int main()
         printf("%d\n",  rcv); 
                
         Delayms(300);
+
     }
 
     while (1) {
