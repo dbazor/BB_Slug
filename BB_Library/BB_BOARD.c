@@ -202,7 +202,59 @@ void BB_BOARD_End()
 
     //Serial and A/D are left on for output and battery monitoring respectively
 }
+/* ------------------------------------------------------------ */
 
+/***	DelayUs
+ **
+ **	Parameters:
+ **		t -> number of microseconds to delay
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Delay the requested number of microseconds. Uses Timer1.
+/* ------------------------------------------------------------ */
+
+void DelayUs(unsigned t)
+{
+    OpenTimer1(T1_ON | T1_PS_1_64, 0xFFFF);
+    while (t--) {
+        WriteTimer1(0);
+        while (ReadTimer1() < SYS_FREQ / 64 / 1000);
+    }
+    CloseTimer1();
+}
+
+/* ------------------------------------------------------------ */
+
+/***	DelayMs
+ **
+ **	Parameters:
+ **		t -> number of milliseconds to delay
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Delay the requested number of milliseconds. Uses Timer1.
+/* ------------------------------------------------------------ */
+
+void DelayMs(unsigned t)
+{
+    OpenTimer1(T1_ON | T1_PS_1_256, 0xFFFF);
+    while (t--) {
+        WriteTimer1(0);
+        while (ReadTimer1() < SYS_FREQ / 256 / 1000);
+    }
+    CloseTimer1();
+}
 
 
 

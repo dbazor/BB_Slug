@@ -78,6 +78,41 @@ void BB_BOARD_End();
  * @author Daniel Bazor 2017.02.02 */
 unsigned int BB_BOARD_GetPBClock();
 
+/* ------------------------------------------------------------ */
+
+/***	DelayMs
+ **
+ **	Parameters:
+ **		t -> number of milliseconds to delay
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Delay the requested number of milliseconds. Uses Timer1.
+/* ------------------------------------------------------------ */
+
+void DelayMs(unsigned t);
+
+/***	DelayUs
+ **
+ **	Parameters:
+ **		t -> number of microseconds to delay
+ **
+ **	Return Value:
+ **		none
+ **
+ **	Errors:
+ **		none
+ **
+ **	Description:
+ **		Delay the requested number of microseconds. Uses Timer1.
+/* ------------------------------------------------------------ */
+
+void DelayUs(unsigned t);
 
 #endif	/* BB_BOARD_H */
 

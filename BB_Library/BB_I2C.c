@@ -12,9 +12,9 @@
 // Connect SDA1 to the SDA pin on the slave and SCL1 to the SCL pin on a slave
 
 #include "BB_I2C.h"
+#include "BB_BOARD.h"
 #include <plib.h>
 #include "BNO55_Register_Map.h"
-#include "BB_BOARD.h"
 
 
 /*******************************************************************************
@@ -240,7 +240,7 @@ void BB_I2C_Init()
     I2CConfigure(I2C1, I2C_ENABLE_SLAVE_CLOCK_STRETCHING | I2C_ENABLE_HIGH_SPEED);
 
     // Set the I2C baudrate
-    UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, BB_BOARD_GetPBClock(), I2C_CLOCK_FREQ);
+    UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, GetPeripheralClock(), I2C_CLOCK_FREQ);
     if (abs(actualClock - I2C_CLOCK_FREQ) > I2C_CLOCK_FREQ / 10) {
 
         printf("Error: I2C1 clock frequency (%u) error exceeds 10%%.\n", (unsigned) actualClock);

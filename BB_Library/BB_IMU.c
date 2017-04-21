@@ -70,7 +70,7 @@ BOOL IMU_Init()
 
 
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
-    Delayms(100);
+    DelayMs(100);
     printf(" OPR MODE \n");
 
     //    // Select page 1 to configure sensors
@@ -119,7 +119,7 @@ BOOL IMU_Init()
         while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
         }
-        Delayms(100);
+        DelayMs(100);
         while (!BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
         }

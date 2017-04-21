@@ -25,7 +25,7 @@
 #define cntMsDelay      5000
 #define thsndDelay      1000
 #define PRESCALE        64
-#define TIMER4_FREQ     2000
+#define TIMER4_FREQ     2000    // this is the frequency the motor controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
 #define JC03            IOPORT_G, BIT_1
 
@@ -48,16 +48,38 @@ volatile float eCountRadians = 0;
 /*				Interrupts                      */
 
 /* ------------------------------------------------------------ */
+
+/*******************************************************************************
+  Function:
+    Timer4Handler(void)
+
+  Summary:
+    Timer4 ISR for motor controller
+
+  Description:
+    Called at a frequency defined by TIMER4_FREQ to run the motor controller 
+    periodically.
+
+  Precondition:
+    Setup in BB_Controller_INIT eventually
+
+  Remarks:
+    None
+ *****************************************************************************/
 void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
 {
-    // clear the interrupt flag
+    // clear the interrupt flag always
     mT4ClearIntFlag();
 
-    // .. things to do
-    // .. in this case, toggle the LED
-    //mPORTDToggleBits(BIT_0);
+    // these are just to check the frequency
     Toggle_LED(BB_LED_4);
     PORTToggleBits(JC03);
+    
+    // Not to test the controller
+    
+    
+    
+    
     eCountRadians = GetEncoderRadians(MOTOR_1);
 }
 
@@ -175,116 +197,4 @@ int main()
     while (1); // sit and spin
 
     return 0;
-}
-
-/* ------------------------------------------------------------ */
-
-/*  DeviceInit()
- **
- **	Parameters:
- **		none
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Set LD1 through LD4 as digital output
-/* ------------------------------------------------------------ */
-
-void DeviceInit()
-{
-    //On MX4ck LED1 is on RG12
-    //		   LED2 is on RG13
-    //		   LED3 is on RG14
-    //		   LED4 is on RG15
-    //Set ports for onboard LEDs to outputs
-    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
-    PORTSetPinsDigitalOut(IOPORT_E, BIT_1);
-    PORTSetPinsDigitalIn(IOPORT_E, BIT_0);
-}
-
-/* ------------------------------------------------------------ */
-
-/***	DelayInit
- **
- **	Parameters:
- **		none
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Initialized the hardware for use by delay functions. This
- **		initializes Timer 1 to count at 10Mhz.
-/* ------------------------------------------------------------ */
-
-void DelayInit()
-{
-    unsigned int tcfg;
-
-    /* Configure Timer 1. This sets it up to count a 10Mhz with a period of 0xFFFF
-     */
-    tcfg = T1_ON | T1_IDLE_CON | T1_SOURCE_INT | T1_PS_1_8 | T1_GATE_OFF | T1_SYNC_EXT_OFF;
-    OpenTimer1(tcfg, 0xFFFF);
-
-}
-
-/* ------------------------------------------------------------ */
-
-/***	DelayUs
- **
- **	Parameters:
- **		t -> number of microseconds to delay
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Delay the requested number of microseconds. Uses Timer1.
-/* ------------------------------------------------------------ */
-
-void DelayUs(unsigned t)
-{
-    OpenTimer1(T1_ON | T1_PS_1_64, 0xFFFF);
-    while (t--) {
-        WriteTimer1(0);
-        while (ReadTimer1() < SYS_FREQ / 64 / 1000);
-    }
-    CloseTimer1();
-}
-
-/* ------------------------------------------------------------ */
-
-/***	DelayMs
- **
- **	Parameters:
- **		t -> number of milliseconds to delay
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Delay the requested number of milliseconds. Uses Timer1.
-/* ------------------------------------------------------------ */
-
-void DelayMs(unsigned t)
-{
-    OpenTimer1(T1_ON | T1_PS_1_256, 0xFFFF);
-    while (t--) {
-        WriteTimer1(0);
-        while (ReadTimer1() < SYS_FREQ / 256 / 1000);
-    }
-    CloseTimer1();
 }
