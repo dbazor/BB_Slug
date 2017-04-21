@@ -18,10 +18,9 @@
 
 #include <xc.h>                     // processor SFR definitions
 #include <sys/attribs.h>            // __ISR macro
-#include "BB_UART.h"
+#include <plib.h>
 #include <stdint.h>
 #include <GenericTypeDefs.h> 
-#include "BB_LEDS.h" 
 #include <plib.h> 
 #include <stdio.h> 
 
@@ -30,7 +29,8 @@
  ******************************************************************************/
 
 #define SYS_FREQ (80000000ul)    // 80 million Hz
-#define ERROR -1
+#define PB_DIV   1
+#define ERROR   -1
 
 #define BB_LED_1 IOPORT_G, BIT_12
 #define BB_LED_2 IOPORT_G, BIT_13
@@ -45,7 +45,9 @@
 #define ENCODER_2B IOPORT_E, BIT_5
 #define ENCODER_3B IOPORT_E, BIT_6
 
-
+#define	GetSystemClock()              (80000000ul)
+#define	GetPeripheralClock()          (GetSystemClock()/(1 << OSCCONbits.PBDIV))
+#define	GetInstructionClock()         (GetSystemClock())
 
 /*****************************************************************************/
 

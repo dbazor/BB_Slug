@@ -19,8 +19,6 @@
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
-
-#define F_PB (BB_BOARD_GetPBClock())
 #define QUEUESIZE 1024
 #define DESIRED_BAUD 115200
 
@@ -91,7 +89,7 @@ void BB_UART_Init(void)
 
     // Configure UART
     UARTConfigure(UART1, UART_ENABLE_PINS_TX_RX_ONLY); // changed from 0x00
-    UARTSetDataRate(UART1, F_PB, DESIRED_BAUD);
+    UARTSetDataRate(UART1, GetPeripheralClock(), DESIRED_BAUD);
     UARTEnable(UART1, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_TX | UART_RX));
     //    From PLIB UART: Enabling the UART transmitter may cause an immediate UART TX interrupt
     //    request (if the UART TX interrupt is enabled), unless the transmit buffer
@@ -267,7 +265,7 @@ void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
         }
     }
     if (INTGetFlag(INT_U1TX)) {
-        PORTWrite(IOPORT_G, BIT_15);
+        //PORTWrite(IOPORT_G, BIT_15);
 
         if (!(getLength(transmitBuffer) == 0)) {
             if (!AddingToTransmit) {
@@ -279,7 +277,7 @@ void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
                 TransmitCollisionOccured = TRUE;
             }
         } else if (getLength(transmitBuffer) == 0) {
-            PORTWrite(IOPORT_G, BIT_14);
+            //PORTWrite(IOPORT_G, BIT_14);
             INTEnable(INT_U1TX, INT_DISABLED);
             INTClearFlag(INT_U1TX);
         }
