@@ -68,6 +68,7 @@ void BB_BOARD_Init()
 {
     // disable interrupts
     __builtin_disable_interrupts();
+    
     //disables all A/D pins for a clean start
     AD1PCFG = 0xffff;
 
@@ -89,17 +90,13 @@ void BB_BOARD_Init()
 
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
-    Leds_Init();
-    //    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
-    //    PORTClearBits(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
 
     BB_UART_Init();
-
-      Leds_Init();
+    Leds_Init();
     MotorsInit();
-
     Encoder_Init();
-
+    BB_I2C_Init();
+    
     __builtin_enable_interrupts();
 
 }
