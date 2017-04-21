@@ -3,9 +3,7 @@
     <type>com.microchip.mplab.nbide.embedded.makeproject</type>
     <configuration>
         <data xmlns="http://www.netbeans.org/ns/make-project/1">
-
-            <name>I2C_Test</name>
-
+            <name>MotorController</name>
             <creation-uuid>39a6e6e3-0fcb-4c77-baf5-b2dfaa0cd493</creation-uuid>
             <make-project-type>0</make-project-type>
             <c-extensions>c</c-extensions>

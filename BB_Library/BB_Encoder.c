@@ -12,10 +12,19 @@
 #include "BB_Encoder.h"
 #include <xc.h>
 #include <plib.h>
+#include "BB_Motor.h"
+#include <math.h>
+
 
 /*******************************************************************************
  * PRIVATE FUNCTIONS PROTOTYPES                                                *
  ******************************************************************************/
+
+/*******************************************************************************
+ * Defines                                                                      *
+ ******************************************************************************/
+#define tick2Radian  (2*M_PI/2240)
+
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
  ******************************************************************************/
@@ -160,7 +169,8 @@ void Encoder_Init(void)
 }
 
 /*  
- **
+ ** GetEncoderCount(int motorNUm)
+ * 
  ** Notes:
  **
  **     NOT DONE YET
@@ -178,37 +188,24 @@ void Encoder_Init(void)
  **		
 /* ------------------------------------------------------------ */
 
-int GetEncoder1Count()
+int GetEncoderCount(int motorNum)
 {
-    return m1E1Count;
-}
-
-/*  Setting variables function 
- **
- ** Notes:
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
-
-void SetEncoder1Count(int value)
-{
-    m1E1Count = value;
+    switch (motorNum) {
+    case MOTOR_1:
+        return m1E1Count;
+        break;
+    case MOTOR_2:
+        return m2E2Count;
+        break;
+    case MOTOR_3:
+        return m3E3Count;
+        break;
+    }
 }
 
 /*  
- **
+ ** GetEncoderRadians(int motorNUm)
+ * 
  ** Notes:
  **
  **     NOT DONE YET
@@ -226,9 +223,19 @@ void SetEncoder1Count(int value)
  **		
 /* ------------------------------------------------------------ */
 
-int GetEncoder2Count()
+float GetEncoderRadians(int motorNum)
 {
-    return m2E2Count;
+    switch (motorNum) {
+    case MOTOR_1:
+        return tick2Radian*m1E1Count;
+        break;
+    case MOTOR_2:
+        return tick2Radian*m2E2Count;
+        break;
+    case MOTOR_3:
+        return tick2Radian*m3E3Count;
+        break;
+    }
 }
 
 /*  Setting variables function 
@@ -250,55 +257,17 @@ int GetEncoder2Count()
  **		
 /* ------------------------------------------------------------ */
 
-void SetEncoder2Count(int value)
+void SetEncoderCount(int motorNum, int value)
 {
-    m2E2Count = value;
-}
-
-/*  
- **
- ** Notes:
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
-
-int GetEncoder3Count()
-{
-    return m3E3Count;
-}
-
-/*  Setting variables function 
- **
- ** Notes:
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
-
-void SetEncoder3Count(int value)
-{
-    m3E3Count = value;
+    switch (motorNum) {
+    case MOTOR_1:
+        m1E1Count = value;
+        break;
+    case MOTOR_2:
+        m2E2Count = value;
+        break;
+    case MOTOR_3:
+        m3E3Count = value;
+        break;
+    }
 }
