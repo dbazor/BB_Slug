@@ -13,7 +13,7 @@
 
 #include "BB_UART.h"
 #include "BB_LEDS.h"
-
+#include "BB_MOTOR_CONTROLLER.h"
 
 
 #ifdef BOARD_TEST
@@ -69,14 +69,14 @@ void BB_BOARD_Init()
 {
     // disable interrupts
     __builtin_disable_interrupts();
-    
+
     //disables all A/D pins for a clean start
     AD1PCFG = 0xffff;
 
     // Come back and double check what all of these commands are doing - Possibly replace some
-    
-    
-    
+
+
+
     // NU32 startup functions
     __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583); // enable the cache
 
@@ -99,7 +99,7 @@ void BB_BOARD_Init()
 
     //    // *NOTE: This is in the peripheral library example code init()
     //    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
-    
+
     Leds_Init();
 
     BB_UART_Init();
@@ -107,7 +107,18 @@ void BB_BOARD_Init()
     MotorsInit();
     Encoder_Init();
     BB_I2C_Init();
-    
+
+    // PID Motor Controller Interrupt
+    // *NOTE:
+    //      Make sure to change both T4_PS_1_64 and the PRESCALE #define
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // STEP 2. configure Timer 1 using internal clock, 1:64 pre-scaler
+    OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
+    // set up the timer interrupt with a priority of 2
+    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
+    // enable multi-vector interrupts
+    INTEnableSystemMultiVectoredInt();
+
     __builtin_enable_interrupts();
 
 }

@@ -17,6 +17,7 @@
 
 #define PERIOD 1000
 #define MAX_PWM PERIOD
+#define MIN_PWM (-MAX_PWM)
 #define MAX_VOLTAGE 12
 // add a min voltage
 
