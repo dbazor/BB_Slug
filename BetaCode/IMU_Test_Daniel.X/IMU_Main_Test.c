@@ -67,8 +67,7 @@ void Delayms(unsigned t);
 /*				Main											*/
 
 /* ------------------------------------------------------------ */
-int main()
-{
+int main() {
 
     BB_BOARD_Init();
     printf(" before init \n");
@@ -97,33 +96,35 @@ int main()
 
     IMU_Data ReturnData;
     UINT8 data;
+    IMU_Data TestStruct;
     while (1) {
 
         // sanity check    
-        
-//        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_LSB, &data);
-//        printf(" EUL PITCH LSB = %d \n", data);
-//        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_MSB, &data);
-//        printf(" EUL PITCH MSB = %d \n", data);
-        
+
+        //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_LSB, &data);
+        //        printf(" EUL PITCH LSB = %d \n", data);
+        //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_MSB, &data);
+        //        printf(" EUL PITCH MSB = %d \n", data);
+        printf(" Before the function call \n");
+        TestStruct = IMU_Get_Euler_Angles();
         printf("\n\n");
-        printf("heading = %l \n", returnData.euler.Heading);
-        printf("roll = %l \n", returnData.euler.Roll);
-        printf("pitch = %l \n", returnData.euler.Pitch);
-        
-//        IMU_Read_Euler_Angles(ReturnData);
-//        float roll_float = (float) ReturnData.euler.Roll;
-//        float pitch_float = (float) ReturnData.euler.Pitch;
-//        float heading_float = (float) ReturnData.euler.Heading;
-//
-//        heading_float = heading_float / 16.0;
-//        roll_float = roll_float / 16.0;
-//        pitch_float = pitch_float / 16.0;
-//        printf("heading = %l \n", heading_float);
-//        printf("Pitch = %d \n", roll_float);
-//        printf("Roll = %d \n", pitch_float);
+        printf("heading = %d \n", TestStruct.euler.Heading);
+        printf("roll = %d \n", TestStruct.euler.Roll);
+        printf("pitch = %d \n", TestStruct.euler.Pitch);
+
+        //        IMU_Read_Euler_Angles(ReturnData);
+        //        float roll_float = (float) ReturnData.euler.Roll;
+        //        float pitch_float = (float) ReturnData.euler.Pitch;
+        //        float heading_float = (float) ReturnData.euler.Heading;
+        //
+        //        heading_float = heading_float / 16.0;
+        //        roll_float = roll_float / 16.0;
+        //        pitch_float = pitch_float / 16.0;
+        //        printf("heading = %l \n", heading_float);
+        //        printf("Pitch = %d \n", roll_float);
+        //        printf("Roll = %d \n", pitch_float);
         Delayms(500);
-        
+
         //UINT8 rcvData1[6] = {2, 2, 2, 2, 2, 2}; // clear each loop to be sure it is new
         //        while (!BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 2, &rcvData1[0])) {
         //            printf("Error: in Write to OPR MODE \n");
@@ -279,8 +280,7 @@ void Delayms(unsigned t)
  *						    *
  * Returns: nothing				    *
  ***************************************************/
-void SendData(int data, unsigned int address)
-{
+void SendData(int data, unsigned int address) {
     StartI2C1(); //Send the Start Bit
     IdleI2C1(); //Wait to complete
 

@@ -10,24 +10,13 @@
 /******************************************************************************/ 
 
 
-
-
-/*******************************************************************************
- * PUBLIC FUNCTION PROTOTYPES                                                  *
- ******************************************************************************/ 
-BOOL IMU_Init(); 
-BOOL IMU_Read_Euler_Angles(); 
-BOOL IMU_Get_Calibration(); 
-BOOL IMU_Set_Calibration(); 
-BOOL IMU_Get_Euler_Angles();
-
 /*******************************************************************************
  * PUBLIC FUNCTION Typdefs                                                 *
  ******************************************************************************/ 
 typedef struct {
-  int Heading;
-  int Roll;
-  int Pitch;
+  UINT16 Heading;
+  UINT16 Roll;
+  UINT16 Pitch;
 } eAxis;
 
 
@@ -37,6 +26,13 @@ typedef struct {
    float gdt;            
 } IMU_Data;
 
-volatile IMU_Data returnData; // should make a getter() for this, and move it to the C file.
+/*******************************************************************************
+ * PUBLIC FUNCTION PROTOTYPES                                                  *
+ ******************************************************************************/
+BOOL IMU_Init();
+BOOL IMU_Get_Calibration();
+BOOL IMU_Set_Calibration();
+IMU_Data IMU_Get_Euler_Angles();
+
 
 #endif
