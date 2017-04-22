@@ -14,7 +14,7 @@
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
-
+//UINT8 EULER_DATA1, EULER_DATA2, EULER_DATA3, EULER_DATA4, EULER_DATA5, EULER_DATA6;
 
 
 /*******************************************************************************
@@ -133,13 +133,29 @@ BOOL IMU_Init()
     return FALSE;
 }
 
-BOOL IMU_Read_Euler_Angles();
+BOOL IMU_Read_Euler_Angles()
+{
+    UINT8 eulerData[6] = {2, 2, 2, 2, 2, 2};
+    int i;
+    UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
+    for (i = 0; i < 6; i++) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &eulerData[i])) {
+            printf("Error: in Write to OPR MODE \n");
+        }
+    }
+    
+    returnData.euler.Heading =  (float)((eulerData[1] << 8) | eulerData[0]) / 16.0;
+    returnData.euler.Roll =     (float)((eulerData[3] << 8) | eulerData[2]) / 16.0;
+    returnData.euler.Pitch =    (float)((eulerData[5] << 8) | eulerData[4]) / 16.0;
+   
+    return TRUE; // Add success check
+}
+
+BOOL IMU_Get_Euler_Angles();
 
 BOOL IMU_Get_Calibration();
 
 BOOL IMU_Set_Calibration();
-
-
 
 /*******************************************************************************
  * Private Support Functions                                                   *
