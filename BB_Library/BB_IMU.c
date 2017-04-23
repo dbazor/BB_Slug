@@ -20,7 +20,9 @@
  * PRIVATE variables                                                             *
  ******************************************************************************/
 static IMU_Data returnData;
-
+static  ACC_Calibration ACC_Offset;
+static  GYR_Calibration GYR_Offset;
+static  MAG_Calibration MAG_Offset;
 
 /*******************************************************************************
  * FUNCTION DEFINITIONS                                                        *
@@ -91,7 +93,7 @@ BOOL IMU_Init() {
     //    printf(" PAGE ID \n"); 
 
     // Select BNO055 sensor units (temperature in degrees F, rate in rps, accel in m/s^2)
-    dat = 0x12;
+    dat = 0x12;// 16 radians 12 degrees
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
@@ -144,7 +146,7 @@ static BOOL IMU_Read_Euler_Angles() {
     for (i = 0; i < 6; i++) {
         if (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &eulerData[i])) {
             printf("Error: in Write to OPR MODE \n");
-
+            return FALSE;
         }
     }
         // store all euler data in a global struct
@@ -161,7 +163,28 @@ IMU_Data IMU_Get_Euler_Angles(){
     }
 }
 
-BOOL IMU_Get_Calibration();
+static BOOL IMU_Read_Calibration(){
+    UINT8 OffSetData[18] = {0};
+    int i;
+    UINT8 dataLocation = BNO055_ACC_OFFSET_X_LSB;
+    for (i=0;i<18;i++){
+        if(!BB_I2C_Read(BNO55_I2C_ADDR,dataLocation++,&OffSetData[i])){
+            printf(" failed to get offset data \n");
+            return FALSE;
+        }
+    }
+        ACC_Offset.angle.x = (float)((OffSetData[1] << 8) | OffSetData[0]) / 16.0;
+        ACC_Offset.angle.y = (float)((OffSetData[3] << 8) | OffSetData[2]) / 16.0;
+        ACC_Offset.angle.z = (float)((OffSetData[5] << 8) | OffSetData[4]) / 16.0;
+
+
+
+
+}
+
+BOOL IMU_Get_Calibration(){
+
+}
 
 BOOL IMU_Set_Calibration();
 

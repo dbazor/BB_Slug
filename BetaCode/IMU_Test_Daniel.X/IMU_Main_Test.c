@@ -109,20 +109,15 @@ int main() {
         TestStruct = IMU_Get_Euler_Angles();
         printf("\n\n");
         printf("heading = %d \n", TestStruct.euler.Heading);
-        printf("roll = %d \n", TestStruct.euler.Roll);
-        printf("pitch = %d \n", TestStruct.euler.Pitch);
+        printf("roll    = %d \n", TestStruct.euler.Roll);
+        printf("pitch   = %d \n", TestStruct.euler.Pitch);
 
         //        IMU_Read_Euler_Angles(ReturnData);
         //        float roll_float = (float) ReturnData.euler.Roll;
         //        float pitch_float = (float) ReturnData.euler.Pitch;
         //        float heading_float = (float) ReturnData.euler.Heading;
         //
-        //        heading_float = heading_float / 16.0;
-        //        roll_float = roll_float / 16.0;
-        //        pitch_float = pitch_float / 16.0;
-        //        printf("heading = %l \n", heading_float);
-        //        printf("Pitch = %d \n", roll_float);
-        //        printf("Roll = %d \n", pitch_float);
+
         Delayms(500);
 
         //UINT8 rcvData1[6] = {2, 2, 2, 2, 2, 2}; // clear each loop to be sure it is new

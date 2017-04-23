@@ -14,17 +14,36 @@
  * PUBLIC FUNCTION Typdefs                                                 *
  ******************************************************************************/ 
 typedef struct {
-  UINT16 Heading;
-  UINT16 Roll;
-  UINT16 Pitch;
+  signed int Heading;
+  signed int Roll;
+  signed int Pitch;
 } eAxis;
 
 
 typedef struct {
    eAxis euler;
-   short temp;
-   float gdt;            
+   short temp;            
 } IMU_Data;
+
+typedef struct {
+ int x;
+ int y;
+ int z;
+} CoordAxis;
+
+typedef struct {
+   CoordAxis angle;
+} ACC_Calibration;
+
+typedef struct {
+   CoordAxis angle;
+} MAG_Calibration;
+
+typedef struct {
+   CoordAxis angle;
+} GYR_Calibration;
+
+
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
