@@ -44,6 +44,15 @@
  * Private Support Functions                                                   *
  ******************************************************************************/
 
+/*******************************************************************************
+ * PUBLIC VARIABLES                                                            *
+ ******************************************************************************/
+// see extern declaration in BB_MOTOR_CONTROLLER.h
+volatile PIDControl motor1_pid; 
+volatile PIDControl motor2_pid;
+volatile PIDControl motor3_pid;
+
+volatile BOOL loopFlag = FALSE;
 
 /*******************************************************************************
  * Interrupts                                                                  *
@@ -71,11 +80,12 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     // clear the interrupt flag always
     mT4ClearIntFlag();
 
+    PID_Update(&motor1_pid);
+    loopFlag = TRUE;
+    
     // these are just to check the frequency
-    Toggle_LED(BB_LED_4);
+    Turn_On_LED(BB_LED_4);
     PORTToggleBits(JC03); // for oscilloscope frequency check
-
-
 
     // Now to test the controller
     //eCountRadians = GetEncoderRadians(MOTOR_1);
@@ -93,10 +103,10 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
  *
  * @return              control output <code>u</code>
  */
-void PID_Update(volatile PIDControl *p, UINT8 motorNum)
+void PID_Update(volatile PIDControl *p)
 {
     // Get the current sensor reading
-    p->input = GetEncoderCount(motorNum);
+    p->input = 5;//GetEncoderCount(p->motorNum);
 
     /*Compute all the working error variables*/
     p->error = p->reference - p->input; // Error = r - senor
@@ -126,7 +136,7 @@ void PID_Update(volatile PIDControl *p, UINT8 motorNum)
  * @Function SetTunings(void)
  * @param   *p - pointer to motor controller struct
  *          Kp - proportional constant, range: (1 - 4e6)
- *          Ki - integral constant,     range: (1 - 858e6)
+ *          Ki - integral constant,     range: (2 - 858e6)
  *          Kd - derivative constant,   range: (5 - 2147)
  * @return none
  * @brief
@@ -134,10 +144,10 @@ void PID_Update(volatile PIDControl *p, UINT8 motorNum)
  * @author  */
 void SetTunings(volatile PIDControl *p, UINT32 Kp, UINT32 Ki, UINT32 Kd)
 {
-    UINT32 SampleTimeInSec = (SAMPLE_TIME * 1000);
+    float SampleTimeInSec = (SAMPLE_TIME * 1000.0);
     p->kp = Kp;
-    p->ki = Ki * SampleTimeInSec;
-    p->kd = Kd / SampleTimeInSec;
+    p->ki = (Ki * SampleTimeInSec);
+    p->kd = (UINT32)(Kd / SampleTimeInSec);
 }
 
 /**
@@ -150,7 +160,7 @@ void SetTunings(volatile PIDControl *p, UINT32 Kp, UINT32 Ki, UINT32 Kd)
 void PID_Init(volatile PIDControl *p, BOOL firstInit, UINT8 motorNum, UINT32 kp, UINT32 ki, UINT32 kd)
 {
     if (firstInit) { // first init
-        SetTunings(p, kp, ki, kd);
+        
         p->error = 0;
         p->input = GetEncoderCount(motorNum); // encoder reading
         p->output = 0; // control effort
@@ -158,6 +168,8 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, UINT8 motorNum, UINT32 kp,
         p->integralOut = 0;
         p->lastInput = 0;
         p->motorNum = motorNum;
+        
+        SetTunings(p, kp, ki, kd);
         
     } else { // not first init
         p->lastInput = GetEncoderCount(p->motorNum);
@@ -183,14 +195,14 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, UINT8 motorNum, UINT32 kp,
  * @author  */
 void PID_Print(volatile PIDControl *p)
 {
-    printf("\nkp: \t\t%l\n", p->kp);
-    printf("ki: \t\t%l\n", p->ki);
-    printf("kd: \t\t%l\n", p->kd);
-    printf("error: \t\t%l\n", p->error);
-    printf("input: \t\t%l\n", p->input);
-    printf("output: \t\t%l\n", p->output);
-    printf("reference: \t\t%l\n", p->reference);
-    printf("integralOut: \t\t%l\n", p->integralOut);
-    printf("lastInput: \t\t%l\n", p->lastInput);
+    printf("kp:         %ld\n", p->kp);
+    printf("ki:         %ld\n", p->ki);
+    printf("kd:         %ld\n", p->kd);
+    printf("error:      %ld\n", p->error);
+    printf("input:      %ld\n", p->input);
+    printf("output:     %ld\n", p->output);
+    printf("reference:  %ld\n", p->reference);
+    printf("integralOut:%ld\n", p->integralOut);
+    printf("lastInput:  %ld\n", p->lastInput);
 }
 

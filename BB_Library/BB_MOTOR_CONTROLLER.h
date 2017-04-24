@@ -23,10 +23,10 @@
 #define PRESCALE        64
 #define TIMER4_FREQ     2000    // this is the frequency the motor controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
-#define SAMPLE_TIME     (1/TIMER4_FREQ)
-#define MOTOR1_KP       1
-#define MOTOR1_KI       0
-#define MOTOR1_KD       0
+#define SAMPLE_TIME     (1.0/(float)TIMER4_FREQ)
+#define MOTOR1_KP       1   // Kp - proportional constant, range: (1 - 4e6)
+#define MOTOR1_KI       2   // Ki - integral constant,     range: (2 - 858e6)
+#define MOTOR1_KD       5   // Kd - derivative constant,   range: (5 - 2147)
 
 /*******************************************************************************
  * PUBLIC Variables                                                             *
@@ -49,9 +49,11 @@ typedef struct PIDControler {
     
 }PIDControl;
 
-volatile PIDControl motor1_pid;
-volatile PIDControl motor2_pid;
-volatile PIDControl motor3_pid;
+extern volatile PIDControl motor1_pid;
+extern volatile PIDControl motor2_pid;
+extern volatile PIDControl motor3_pid;
+
+extern volatile BOOL loopFlag;
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
@@ -63,7 +65,7 @@ volatile PIDControl motor3_pid;
  * @return int
  * @brief  
  * @author M*/
-void PID_Update(volatile PIDControl *p, UINT8 motorNum);
+void PID_Update(volatile PIDControl *p);
 /**
  * @Function SetTunings(void)
  * @param   *p - pointer to motor controller struct

@@ -40,8 +40,6 @@ void DelayUs(unsigned t);
 /* ------------------------------------------------------------ */
 volatile float eCountRadians = 0;
 
-
-
 /* ------------------------------------------------------------ */
 /*                            Main                              */
 
@@ -52,17 +50,20 @@ int main()
 
     PORTSetPinsDigitalOut(JC03); // PMOD Pin JC 03
     PORTClearBits(JC03);
-    
-    PID_Init(&motor1_pid, TRUE, MOTOR_1, MOTOR1_KP, MOTOR1_KI, MOTOR1_KD); 
-    
-    float oldECR = 0;
+
+    //    PID_Print(&motor1_pid);
+
+    PID_Init(&motor1_pid, TRUE, MOTOR_1, MOTOR1_KP, MOTOR1_KI, MOTOR1_KD);
+
+    int count;
     while (1) {
-        if (eCountRadians != oldECR) {
-            printf("eCountRadians: %f \n", eCountRadians);
-            oldECR = eCountRadians;
-        }
+        //        if (loopFlag) {
+        //        loopFlag = FALSE;
+        PID_Print(motor1_pid);
+        //        count++;
+        //        }
     }
-    
+
     while (1); // sit and spin
 
     return 0;
