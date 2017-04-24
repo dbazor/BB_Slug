@@ -188,7 +188,7 @@ void Encoder_Init(void)
  **		
 /* ------------------------------------------------------------ */
 
-int GetEncoderCount(int motorNum)
+int GetEncoderCount(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -223,7 +223,7 @@ int GetEncoderCount(int motorNum)
  **		
 /* ------------------------------------------------------------ */
 
-float GetEncoderRadians(int motorNum)
+float GetEncoderRadians(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -257,7 +257,7 @@ float GetEncoderRadians(int motorNum)
  **		
 /* ------------------------------------------------------------ */
 
-void SetEncoderCount(int motorNum, int value)
+void SetEncoderCount(UINT8 motorNum, UINT8 value)
 {
     switch (motorNum) {
     case MOTOR_1:

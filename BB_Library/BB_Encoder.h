@@ -23,9 +23,8 @@
 
 //interrupt void InputCapture2_ISR(void);
 void Encoder_Init(void);
-int GetEncoderCount(int motorNum);
-float GetEncoderRadians(int motorNum);
-void SetEncoderCount(int motorNum, int value);
-//void __attribute__( interrupt(IPL3SOFT), vector(_INPUT_CAPTURE_2_VECTOR)) InputCapture2();
+int GetEncoderCount(UINT8 motorNum);
+float GetEncoderRadians(UINT8 motorNum);
+void SetEncoderCount(UINT8 motorNum, UINT8 value);
 
 #endif	/* BB_ENCODER_H */ 

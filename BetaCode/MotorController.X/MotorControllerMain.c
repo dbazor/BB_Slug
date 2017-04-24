@@ -53,7 +53,7 @@ int main()
     PORTSetPinsDigitalOut(JC03); // PMOD Pin JC 03
     PORTClearBits(JC03);
     
-    pid_control_init(&motor1_pid); 
+    PID_Init(&motor1_pid, TRUE, MOTOR_1, MOTOR1_KP, MOTOR1_KI, MOTOR1_KD); 
     
     float oldECR = 0;
     while (1) {

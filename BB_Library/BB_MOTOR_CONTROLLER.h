@@ -19,11 +19,14 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-#define JC03 IOPORT_G, BIT_1
+#define JC03            IOPORT_G, BIT_1
 #define PRESCALE        64
 #define TIMER4_FREQ     2000    // this is the frequency the motor controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
 #define SAMPLE_TIME     (1/TIMER4_FREQ)
+#define MOTOR1_KP       1
+#define MOTOR1_KI       0
+#define MOTOR1_KD       0
 
 /*******************************************************************************
  * PUBLIC Variables                                                             *
@@ -32,22 +35,23 @@
 /** PI control data structure.  This structure contains configuration (the
     proportional and integral gain, plus a final divisor), output limits, and
     an integration accumulator (the PI controller's state variable). */
-struct PIDControl {
+typedef struct PIDControler {
     UINT32 kp; /**< Proportional gain constant */
     UINT32 ki; /**< Integral gain constant */
     UINT32 kd; /**< Derivative gain constant */
-    UINT64 error;
-    UINT64 input;   // encoder reading
-    UINT64 output;  // control effort
-    UINT64 referrence;  // setpoint, must be written to
-    UINT64 integralOut;
-    UINT64 lastInput;
+    INT64 error;
+    INT64 input;   // encoder reading
+    INT64 output;  // control effort
+    INT64 reference;  // setpoint, must be written to
+    INT64 integralOut;
+    INT64 lastInput;
+    UINT8 motorNum;
     
-};
+}PIDControl;
 
-volatile struct PIDControl motor1_pid;
-volatile struct PIDControl motor2_pid;
-volatile struct PIDControl motor3_pid;
+volatile PIDControl motor1_pid;
+volatile PIDControl motor2_pid;
+volatile PIDControl motor3_pid;
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
@@ -59,7 +63,18 @@ volatile struct PIDControl motor3_pid;
  * @return int
  * @brief  
  * @author M*/
-void pid_control(struct PIDControl *p, int e);
+void PID_Update(volatile PIDControl *p, UINT8 motorNum);
+/**
+ * @Function SetTunings(void)
+ * @param   *p - pointer to motor controller struct
+ *          Kp - proportional constant, range: (1 - 4e6)
+ *          Ki - integral constant,     range: (1 - 858e6)
+ *          Kd - derivative constant,   range: (5 - 2147)
+ * @return none
+ * @brief
+ * @note 
+ * @author  */
+void SetTunings(volatile PIDControl *p, UINT32 Kp, UINT32 Ki, UINT32 Kd);
 
 /**
  * @Function int pid_control_init (struct PIControl *p, int e);
@@ -67,7 +82,7 @@ void pid_control(struct PIDControl *p, int e);
  * @return int
  * @brief  
  * @author M*/
-void pid_control_init(struct PIDControl *p);
+void PID_Init(volatile PIDControl *p, BOOL firstInit, UINT8 motorNum, UINT32 kp, UINT32 ki, UINT32 kd);
 
 #endif /* _PI_CONTROL_H */
 
