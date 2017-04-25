@@ -51,19 +51,25 @@ int main()
     PORTSetPinsDigitalOut(JC03); // PMOD Pin JC 03
     PORTClearBits(JC03);
 
-    //    PID_Print(&motor1_pid);
-
     PID_Init(&motor1_pid, TRUE, MOTOR_1, MOTOR1_KP, MOTOR1_KI, MOTOR1_KD);
-
-    int count;
+    PID_SetReference(&motor1_pid, 0); // set up as regulator
+    PID_Print(&motor1_pid);
+    
+    printf("\nPID init done\n");
+    DelayMs(5000); // delay for 5 seconds
+//    PIDControl printArray[10];
     while (1) {
-        //        if (loopFlag) {
-        //        loopFlag = FALSE;
-        PID_Print(motor1_pid);
-        //        count++;
-        //        }
+        if (loopFlag) {
+            loopFlag = FALSE;
+            PID_Print(&motor1_pid);
+        }
     }
-
+    printf("After while\n");
+//    for (count = 0; count < 10; count++) {
+//        printf("In for\n");
+//        PID_Print(&printArray[count]);
+//        DelayMs(1000);
+//    }
     while (1); // sit and spin
 
     return 0;

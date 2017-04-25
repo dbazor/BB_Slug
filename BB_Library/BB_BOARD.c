@@ -232,10 +232,10 @@ void BB_BOARD_End()
 
 void DelayUs(unsigned t)
 {
-    OpenTimer1(T1_ON | T1_PS_1_64, 0xFFFF);
+    OpenTimer1(T1_ON | T1_PS_1_8, 0xFFFF);
     while (t--) {
         WriteTimer1(0);
-        while (ReadTimer1() < SYS_FREQ / 64 / 1000);
+        while (ReadTimer1() < SYS_FREQ / 8 / 1000000);
     }
     CloseTimer1();
 }
@@ -259,10 +259,10 @@ void DelayUs(unsigned t)
 
 void DelayMs(unsigned t)
 {
-    OpenTimer1(T1_ON | T1_PS_1_256, 0xFFFF);
+    OpenTimer1(T1_ON | T1_PS_1_64, 0xFFFF);
     while (t--) {
         WriteTimer1(0);
-        while (ReadTimer1() < SYS_FREQ / 256 / 1000);
+        while (ReadTimer1() < SYS_FREQ / 64 / 1000);
     }
     CloseTimer1();
 }
