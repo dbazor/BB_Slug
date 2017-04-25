@@ -15,7 +15,7 @@
 #define MOTOR_2 2 
 #define MOTOR_3 3
 
-#define PERIOD 1000
+#define PERIOD 750 // reduced from 1000 to preserve motor
 #define MAX_PWM PERIOD
 #define MIN_PWM (-MAX_PWM)
 #define MAX_VOLTAGE 12

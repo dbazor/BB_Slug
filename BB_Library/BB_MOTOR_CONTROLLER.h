@@ -24,9 +24,9 @@
 #define TIMER4_FREQ     100    // this is the frequency the motor controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
 #define SAMPLE_TIME     (1.0/(float)TIMER4_FREQ)
-#define MOTOR1_KP       1   // Kp - proportional constant, range: (1 - 4e6)     // fix
+#define MOTOR1_KP       40   // Kp - proportional constant, range: (1 - 4e6)     // fix
 #define MOTOR1_KI       0   // Ki - integral constant,     range: (2 - 858e6)   // fix
-#define MOTOR1_KD       0   // Kd - derivative constant,   range: (5 - 2147)    // fix
+#define MOTOR1_KD       1   // Kd - derivative constant,   range: (5 - 2147)    // fix
 
 /*******************************************************************************
  * PUBLIC Variables                                                             *
