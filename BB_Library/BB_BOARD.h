@@ -4,6 +4,7 @@
  *
  * Created on February 2, 2017, 12:10 AM
  */
+
 //suppresses annoying warnings
 #ifndef _SUPPRESS_PLIB_WARNING
 #define _SUPPRESS_PLIB_WARNING
@@ -78,6 +79,23 @@ void BB_BOARD_End();
  * @author Daniel Bazor 2017.02.02 */
 unsigned int BB_BOARD_GetPBClock();
 
+/* ------------------------------------------------------------ */
+
+/**
+ * Function: DelayMs(void)
+ * @param t -> number of milliseconds to delay
+ * @return none
+ * @brief Delay the requested number of milliseconds. Uses Timer1.
+ **/
+void DelayMs(unsigned t);
+
+/**
+ * Function: DelayUs(void)
+ * @param t -> number of microseconds to delay
+ * @return none
+ * @brief Delay the requested number of microseconds. Uses Timer1.
+ **/
+void DelayUs(unsigned t);
 
 #endif	/* BB_BOARD_H */
 

@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c MotorControllerMain.c
+SOURCEFILES_QUOTED_IF_SPACED=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c MotorControllerMain.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_MOTOR_CONTROLLER.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/MotorControllerMain.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d ${OBJECTDIR}/_ext/418195140/BB_Encoder.o.d ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d ${OBJECTDIR}/_ext/418195140/BB_UART.o.d ${OBJECTDIR}/MotorControllerMain.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/MotorControllerMain.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d ${OBJECTDIR}/_ext/418195140/BB_Encoder.o.d ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d ${OBJECTDIR}/_ext/418195140/BB_UART.o.d ${OBJECTDIR}/MotorControllerMain.o.d ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/MotorControllerMain.o
+OBJECTFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/MotorControllerMain.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o
 
 # Source Files
-SOURCEFILES=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c MotorControllerMain.c
+SOURCEFILES=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c MotorControllerMain.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_MOTOR_CONTROLLER.c
 
 
 CFLAGS=
@@ -136,6 +136,24 @@ ${OBJECTDIR}/MotorControllerMain.o: MotorControllerMain.c  nbproject/Makefile-${
 	@${RM} ${OBJECTDIR}/MotorControllerMain.o 
 	@${FIXDEPS} "${OBJECTDIR}/MotorControllerMain.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/MotorControllerMain.o.d" -o ${OBJECTDIR}/MotorControllerMain.o MotorControllerMain.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/_ext/418195140/BB_I2C.o: ../../BB_Library/BB_I2C.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ../../BB_Library/BB_I2C.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_IMU.o: ../../BB_Library/BB_IMU.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ../../BB_Library/BB_IMU.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o: ../../BB_Library/BB_MOTOR_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ../../BB_Library/BB_MOTOR_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/_ext/418195140/BB_BOARD.o: ../../BB_Library/BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
@@ -172,6 +190,24 @@ ${OBJECTDIR}/MotorControllerMain.o: MotorControllerMain.c  nbproject/Makefile-${
 	@${RM} ${OBJECTDIR}/MotorControllerMain.o.d 
 	@${RM} ${OBJECTDIR}/MotorControllerMain.o 
 	@${FIXDEPS} "${OBJECTDIR}/MotorControllerMain.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/MotorControllerMain.o.d" -o ${OBJECTDIR}/MotorControllerMain.o MotorControllerMain.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_I2C.o: ../../BB_Library/BB_I2C.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ../../BB_Library/BB_I2C.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_IMU.o: ../../BB_Library/BB_IMU.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ../../BB_Library/BB_IMU.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o: ../../BB_Library/BB_MOTOR_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ../../BB_Library/BB_MOTOR_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

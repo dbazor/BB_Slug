@@ -99,27 +99,14 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
     IFS0bits.IC5IF = 0; // clear interrupt flag
 }
 
-/*  Encoder_Init(void)
- **
- ** Notes:
- **     !!! IMPORTANT !!! Call this function inside of BB_BOARD_Init()
- **     because Input Capture (IC) initialization must be done when 
- **     interrupts are disabled.
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
+/**
+ * Function: Encoder_Init(void)
+ * @param None
+ * @return None
+ * @brief Sets input capture pins and IO pins to read encoder signals
+ *      Also sets up IC2, IC3, and IC5 to all use Timer 3. Sets to captuer
+ *      on falling and rising edge. See function for more settings initialized
+ * @author Pavlo Vlastos */
 void Encoder_Init(void)
 {
     // Set up pins to read encoder A signals
@@ -168,27 +155,13 @@ void Encoder_Init(void)
     IC5CONbits.ON = 1; // turn on IC5
 }
 
-/*  
- ** GetEncoderCount(int motorNUm)
- * 
- ** Notes:
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
-
-int GetEncoderCount(int motorNum)
+/**
+ * Function: GetEncoderCount(UINT8 motorNum)
+ * @param UINT8 motorNum
+ * @return Integer representing Encoder Count
+ * @brief Get the encoder count of a specified motor
+ **/
+int GetEncoderCount(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -203,27 +176,13 @@ int GetEncoderCount(int motorNum)
     }
 }
 
-/*  
- ** GetEncoderRadians(int motorNUm)
- * 
- ** Notes:
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
-
-float GetEncoderRadians(int motorNum)
+/**
+ * Function: GetEncoderRadians(UINT8 motorNum)
+ * @param UINT8 motorNum
+ * @return Float representing Encoder Count in radians
+ * @brief Get the encoder count in radians of a specified motor
+ **/
+float GetEncoderRadians(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -238,26 +197,13 @@ float GetEncoderRadians(int motorNum)
     }
 }
 
-/*  Setting variables function 
- **
- ** Notes:
- **
- **     NOT DONE YET
- **
- **	Parameters:
- **		
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		
-/* ------------------------------------------------------------ */
-
-void SetEncoderCount(int motorNum, int value)
+/**
+ * Function: SetEncoderCount(UINT8 motorNum, UINT8 value)
+ * @param UINT8 motorNum, UINT8 value
+ * @return None
+ * @brief Set the encoder count of a specified motor, to a desired value
+ **/
+void SetEncoderCount(UINT8 motorNum, UINT8 value)
 {
     switch (motorNum) {
     case MOTOR_1:

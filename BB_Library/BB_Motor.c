@@ -135,6 +135,7 @@ void SetMotorSpeed(int PWM, int motorNum)
 {
     int direction;
 
+    // Setting direction
     if (PWM < 0) {
         direction = REVERSE;
         PWM = -PWM;
@@ -142,8 +143,11 @@ void SetMotorSpeed(int PWM, int motorNum)
         direction = FORWARD;
     }
 
+    // Clip output
     if (PWM > MAX_PWM) {
         PWM = MAX_PWM;
+    } else if (PWM < MIN_PWM) {
+        PWM = MIN_PWM;
     }
 
     // Select Motor
