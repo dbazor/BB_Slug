@@ -25,13 +25,54 @@
 #define MOTOR_2_DIR IOPORT_E, BIT_2
 #define MOTOR_3_DIR IOPORT_E, BIT_3
 
-// Prototypes
-void MotorsInit(void); // called in boardinit
-void SetMotorSpeed(int PWM, int motorNum);
-int GetMotorSpeed(int motorNum);
-int GetMotorDirection(int motorNum);
-void MotorsStop(void);
+/*******************************************************************************
+ * PROTOTYEPS                                                   *
+ ******************************************************************************/
 
-// 
+/**
+ * Function: MotorsInit()
+ * @param 
+ * @return 
+ * @brief   Initialize PWM and direction pins for motors
+ * @notes   This function is called in BB_BOARD_Init() from BB_Board.c
+ **/
+void MotorsInit(void);
+
+/**
+ * Function: SetMotorSpeed()
+ * @param   PWM         - integer within 1000 to -1000
+ *          motorNum    - MOTOR_x, where x is 1, 2, 3
+ * @return 
+ * @brief   
+ * @notes   
+ **/
+void SetMotorSpeed(int PWM, int motorNum);
+
+/**
+ * Function: GetMotorSpeed()
+ * @param   motorNum    - MOTOR_x, where x is 1, 2, 3
+ * @return  
+ * @brief   
+ * @notes   
+ **/
+int GetMotorSpeed(int motorNum);
+
+/**
+ * Function: GetMotorDirection()
+ * @param   motorNum    - MOTOR_x, where x is 1, 2, 3
+ * @return  motor direction
+ * @brief   
+ * @notes   
+ **/
+int GetMotorDirection(int motorNum);
+
+/**
+ * Function: GetMotorDirection()
+ * @param   motorNum    - MOTOR_x, where x is 1, 2, 3
+ * @return  
+ * @brief   
+ * @notes   
+ **/
+void MotorsStop(void);
 
 #endif	/* BB_MOTOR_H */

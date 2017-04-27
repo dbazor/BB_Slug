@@ -4,6 +4,7 @@
  *
  * Created on February 2, 2017, 12:10 AM
  */
+
 //suppresses annoying warnings
 #ifndef _SUPPRESS_PLIB_WARNING
 #define _SUPPRESS_PLIB_WARNING
@@ -80,38 +81,20 @@ unsigned int BB_BOARD_GetPBClock();
 
 /* ------------------------------------------------------------ */
 
-/***	DelayMs
- **
- **	Parameters:
- **		t -> number of milliseconds to delay
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Delay the requested number of milliseconds. Uses Timer1.
-/* ------------------------------------------------------------ */
-
+/**
+ * Function: DelayMs(void)
+ * @param t -> number of milliseconds to delay
+ * @return none
+ * @brief Delay the requested number of milliseconds. Uses Timer1.
+ **/
 void DelayMs(unsigned t);
 
-/***	DelayUs
- **
- **	Parameters:
- **		t -> number of microseconds to delay
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Delay the requested number of microseconds. Uses Timer1.
-/* ------------------------------------------------------------ */
-
+/**
+ * Function: DelayUs(void)
+ * @param t -> number of microseconds to delay
+ * @return none
+ * @brief Delay the requested number of microseconds. Uses Timer1.
+ **/
 void DelayUs(unsigned t);
 
 #endif	/* BB_BOARD_H */

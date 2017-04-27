@@ -2,7 +2,7 @@
  * File:   BB_BOARD.c
  * Author: Daniel
  *
- * Created on December 19, 2012, 2:08 PM
+ * Created on February 2, 2017, 12:10 AM
  */
 
 #include "BB_BOARD.h"
@@ -215,21 +215,12 @@ void BB_BOARD_End()
 }
 /* ------------------------------------------------------------ */
 
-/***	DelayUs
- **
- **	Parameters:
- **		t -> number of microseconds to delay
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Delay the requested number of microseconds. Uses Timer1.
-/* ------------------------------------------------------------ */
-
+/**
+ * Function: DelayMs(void)
+ * @param t -> number of milliseconds to delay
+ * @return none
+ * @brief Delay the requested number of milliseconds. Uses Timer1.
+ **/
 void DelayUs(unsigned t)
 {
     OpenTimer1(T1_ON | T1_PS_1_8, 0xFFFF);
@@ -242,21 +233,12 @@ void DelayUs(unsigned t)
 
 /* ------------------------------------------------------------ */
 
-/***	DelayMs
- **
- **	Parameters:
- **		t -> number of milliseconds to delay
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Delay the requested number of milliseconds. Uses Timer1.
-/* ------------------------------------------------------------ */
-
+/**
+ * Function: DelayUs(void)
+ * @param t -> number of microseconds to delay
+ * @return none
+ * @brief Delay the requested number of microseconds. Uses Timer1.
+ **/
 void DelayMs(unsigned t)
 {
     OpenTimer1(T1_ON | T1_PS_1_64, 0xFFFF);

@@ -21,32 +21,13 @@
  * FUNCTION DEFINITIONS                                                        *
  ******************************************************************************/
 
-/*******************************************************************************
-  Function:
-    BOOL IMU_Init()
-
-  Summary:
-    
-
-  Description:
-    
-
-  Precondition:
-
-  Parameters:
-    
-    
-  Returns:
-    TRUE    - If successful
-    FALSE   - Otherwise
-    
-  Example:
-    <code>
-    
-    </code>
-
-  Remarks:
- *****************************************************************************/
+/**
+ * Function: IMU_Init()
+ * @param   None 
+ * @return  TRUE    - If successful
+ *          FALSE   - Otherwise
+ * @brief Configure necessary IMU registers
+ **/
 BOOL IMU_Init()
 {
     unsigned char dat;
@@ -60,14 +41,11 @@ BOOL IMU_Init()
      */
     /*   */
 
-
-
     // Select BNO055 config mode
     dat = 0x00;
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
-
 
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
     DelayMs(100);
@@ -133,13 +111,32 @@ BOOL IMU_Init()
     return FALSE;
 }
 
+/**
+ * Function: IMU_Read_Euler_Angles()
+ * @param None
+ * @return TRUE    - If successful
+ *         FALSE   - Otherwise
+ * @brief 
+ **/
 BOOL IMU_Read_Euler_Angles();
 
+/**
+ * Function: IMU_Get_Calibration()
+ * @param None
+ * @return TRUE    - If successful
+ *         FALSE   - Otherwise
+ * @brief 
+ **/
 BOOL IMU_Get_Calibration();
 
+/**
+ * Function: IMU_Set_Calibration()
+ * @param None
+ * @return TRUE    - If successful
+ *         FALSE   - Otherwise
+ * @brief 
+ **/
 BOOL IMU_Set_Calibration();
-
-
 
 /*******************************************************************************
  * Private Support Functions                                                   *
