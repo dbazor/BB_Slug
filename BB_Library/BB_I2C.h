@@ -44,106 +44,59 @@
   Remarks:
     Call this on startup
  *****************************************************************************/
+
+/**
+ * Function: BB_I2C_Init()
+ * @param None
+ * @return None
+ * @brief Init function for I2C1. Sets clock and enables I2C1
+ * @author Daniel Bazor */
 void BB_I2C_Init();
 
-
-/*******************************************************************************
-  Function:
-    void BB_I2C_Write()
-
-  Summary:
-    Write one Byte to the I2C1 Bus
-
-  Description:
-    Writes to the slave at s_addr at the location r_addr the data at *dat
-
-  Precondition:
-    None
-
-  Parameters:
-    s_addr  - Slave address
-    r_addr  - Data address
- *dat    - data to be written
-    
-  Returns:
-    TRUE    - Data was sent successfully
-    FALSE   - There was a problem with the transfer
-    
-  Example:
-    <code>
-    success = BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
-    </code>
-
-  Remarks:
-    None
- *****************************************************************************/
+/**
+ * Function: BB_I2C_Write()
+ * @param   s_addr  - Slave address
+ *          r_addr  - Data address
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - There was a problem with the transfer
+ * @brief   Write one Byte to the I2C1 Bus. Writes to the slave at s_addr at 
+ *      the location r_addr the data at *dat
+ * @example <code>
+ *              success = BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
+ *          </code>
+ * @author Daniel Bazor */
 BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat);
 
-
-/*******************************************************************************
-  Function:
-    void BB_I2C_Read()
-
-  Summary:
-    Read one Byte from the I2C1 Bus
-
-  Description:
-    Reads from the slave at s_addr at the location r_addr the data at *dat
-
-  Precondition:
-    None
-
-  Parameters:
-    s_addr  - Slave address
-    r_addr  - Data address
-    *dat    - where to read data to
-    
-  Returns:
-    TRUE    - Data was sent successfully
-    FALSE   - There was a problem with the transfer
-    
-  Example:
-    <code>
-    success = BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
-    </code>
-
-  Remarks:
-    None
- *****************************************************************************/
+/**
+ * Function: BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
+ * @param   s_addr  - Slave address
+ *          r_addr  - Data address
+ *          *dat    - where to read data to
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - There was a problem with the transfer
+ * @brief   Read one Byte from the I2C1 Bus. Reads from the slave at s_addr 
+ *          at the location r_addr the data at *dat
+ * @example <code>
+ *              success = BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
+ *          </code>
+ * @author Daniel Bazor */
 BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat);
 
+/**
+ * Function: BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
+ * @param   s_addr  - Slave address
+ *          r_addr  - Data address
+ *          *dat    - where to read data to
+ *          len     - length of data to read
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - There was a problem with the transfer
+ * @brief   Read multiple Byte from the I2C1 Bus Reads from the slave at s_addr 
+ *          at the location r_addr the data at *dat
+ * @example <code>
+ *              success = BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, len, UINT8 &dat);
+ *          </code>
+ * @author Daniel Bazor */
 
-/*******************************************************************************
-  Function:
-    void BB_I2C_Read_Multi()
-
-  Summary:
-    Read one Byte from the I2C1 Bus
-
-  Description:
-    Reads from the slave at s_addr at the location r_addr the data at *dat
-
-  Precondition:
-    None
-
-  Parameters:
-    s_addr  - Slave address
-    r_addr  - Data address
-    len     - length of data to read
-    *dat    - where to read data to
-    
-  Returns:
-    TRUE    - Data was sent successfully
-    FALSE   - There was a problem with the transfer
-    
-  Example:
-    <code>
-    success = BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, len, UINT8 &dat);
-    </code>
-
-  Remarks:
-    None
- *****************************************************************************/
 BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat);
 
 #endif

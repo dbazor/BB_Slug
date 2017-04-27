@@ -14,7 +14,6 @@
 # You can invoke make with the values of the macros:
 # $ makeMP_CC="/opt/microchip/mplabc30/v3.30c/bin/pic30-gcc" ...  
 #
-
 PATH_TO_IDE_BIN=/Applications/microchip/mplabx/v3.51/mplab_ide.app/Contents/Resources/mplab_ide/platform/../mplab_ide/modules/../../bin/
 # Adding MPLAB X bin directory to path.
 PATH:=/Applications/microchip/mplabx/v3.51/mplab_ide.app/Contents/Resources/mplab_ide/platform/../mplab_ide/modules/../../bin/:$(PATH)

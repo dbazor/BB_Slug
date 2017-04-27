@@ -16,6 +16,7 @@
  ******************************************************************************/
 
 
+
 /*******************************************************************************
  * PRIVATE variables                                                             *
  ******************************************************************************/
@@ -28,33 +29,15 @@ static int CalibrationStat;
  * FUNCTION DEFINITIONS                                                        *
  ******************************************************************************/
 
-/*******************************************************************************
-  Function:
-    BOOL IMU_Init()
-
-  Summary:
-    
-
-  Description:
-    
-
-  Precondition:
-
-  Parameters:
-    
-    
-  Returns:
-    TRUE    - If successful
-    FALSE   - Otherwise
-    
-  Example:
-    <code>
-    
-    </code>
-
-  Remarks:
- *****************************************************************************/
-BOOL IMU_Init() {
+/**
+ * Function: IMU_Init()
+ * @param   None 
+ * @return  TRUE    - If successful
+ *          FALSE   - Otherwise
+ * @brief Configure necessary IMU registers
+ **/
+BOOL IMU_Init()
+{
     unsigned char dat;
     int i;
 
@@ -66,17 +49,15 @@ BOOL IMU_Init() {
      */
     /*   */
 
-
-
     // Select BNO055 config mode
     dat = 0x00;
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
 
-
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
-    Delayms(100);
+    DelayMs(100);
+  
     printf(" OPR MODE \n");
 
     //    // Select page 1 to configure sensors
@@ -94,6 +75,7 @@ BOOL IMU_Init() {
 
     // Select BNO055 sensor units (temperature in degrees F, rate in rps, accel in m/s^2)
     dat = 0x16; // 16 radians 12 degrees
+
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
@@ -125,13 +107,14 @@ BOOL IMU_Init() {
         while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
         }
-        Delayms(100);
+        DelayMs(100);
         while (!BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
         }
         if (dat == NDOF_CON) {
             printf("Configured\n");
-            while (SystemCalibration() <4) {
+
+            while (SystemCalibration() <3) {
                 printf(" waiting till calibrated \n");
                 if (SystemCalibration() ==1){
                     Turn_On_LED(IOPORT_G,BIT_12);
@@ -154,33 +137,13 @@ BOOL IMU_Init() {
     return FALSE;
 }
 
-/*******************************************************************************
-  Function:
-    BOOL IMU_Read_Euler_Angles()
-
-  Summary:
-  This Function populates a local strut with the euler angle coordinates
-  Roll, Pitch, and Heading
-
-  Description:
-
-
-  Precondition:
-
-  Parameters:
-
-
-  Returns:
-    TRUE    - If successful
-    FALSE   - Otherwise
-
-  Example:
-    <code>
-
-    </code>
-
-  Remarks:
- *****************************************************************************/
+ /**
+ * Function: IMU_Read_Euler_Angles()
+ * @param None
+ * @return TRUE    - If successful
+ *         FALSE   - Otherwise
+ * @brief 
+ **/
 static BOOL IMU_Read_Euler_Angles() {
     UINT8 eulerData[6] = {2, 2, 2, 2, 2, 2};
     int i;

@@ -19,6 +19,7 @@
 // Additional Includes (April 7, 2017)
 #include "BNO55_Register_Map.h"
 #include "BNO55_I2C_driver.h"
+
 #include "BB_IMU.h"
 // 
 
@@ -67,7 +68,9 @@ void Delayms(unsigned t);
 /*				Main											*/
 
 /* ------------------------------------------------------------ */
+
 int main() {
+
 
     BB_BOARD_Init();
     printf(" before init \n");
@@ -124,6 +127,7 @@ int main() {
         Delayms(500);
 
         //UINT8 rcvData1[6] = {2, 2, 2, 2, 2, 2}; // clear each loop to be sure it is new
+
         //        while (!BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 2, &rcvData1[0])) {
         //            printf("Error: in Write to OPR MODE \n");
         //        }
@@ -134,6 +138,7 @@ int main() {
         //            rcvData1[i] = i;
         //
         //        }
+
         //
         //        printf(" after read multi \n");
         //        int i;
@@ -146,6 +151,7 @@ int main() {
         //
         //        }
         //        printf("End of loop\n\n");
+
         //        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
         //            printf("Error: in Write to OPR MODE \n");
         //        }
@@ -168,6 +174,8 @@ int main() {
         //            printf("Error: in Write to OPR MODE \n");
         //        }
         //        printf("rcvData: %x\n End of loop\n\n", rcvData);
+
+
 
         //sndData++;
     }
@@ -278,7 +286,9 @@ void Delayms(unsigned t)
  *						    *
  * Returns: nothing				    *
  ***************************************************/
+
 void SendData(int data, unsigned int address) {
+
     StartI2C1(); //Send the Start Bit
     IdleI2C1(); //Wait to complete
 

@@ -92,12 +92,18 @@ void Config_BNO55()
         MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, 1, &dat);
         if (dat == NDOF_CON) {
             //UART2_write_text("Configuration succes\x0D\x0D");
+
+
             printf("Configured\n");
+
             return;
         }
     }
     //UART2_write_text("Configuration ERROR\x0D");
+
+
     printf("Error: Failed to configure\n");
+
 }
 
 
@@ -143,6 +149,7 @@ void Config_BNO55()
 //}
 //
 //
+
 static void BNO55_ReadEuler() {
   //                   Adresse         Register             wohin schreiben
    MPU_I2C_Read_Multi(BNO55_I2C_ADDR, EULER_DATA_ADR, 6, &EULER_DATA[0]);   // Read Accel data from MPU werte bereits in funktion berechnet
@@ -152,9 +159,11 @@ static void BNO55_ReadEuler() {
    BNO55.euler.Pitch   = (int)((EULER_DATA[5] << 8) | EULER_DATA[4] );
 /*
    S 30
-   Pitch -180° to +180° (turing clockwise increases values)
-   Roll -90° to +90° (increasing with increasing inclination)
-   Heading / Yaw 0° to 360° (turning clockwise increases values)
+
+   Pitch -180Â° to +180Â° (turing clockwise increases values)
+   Roll -90Â° to +90Â° (increasing with increasing inclination)
+   Heading / Yaw 0Â° to 360Â° (turning clockwise increases values)
+
  */
 }
 
@@ -176,32 +185,28 @@ static void BNO55_ReadAccel()
 static void MPU_Send_Byte(unsigned char data)
 {
 
-    // if transmitter is ready send the byte
-    if (I2CTransmitterIsReady(I2C1)) {
-        I2CSendByte(I2C1, data);
-    }
 
-    // if transmission completed and acked move on
-    if (I2CTransmissionHasCompleted(I2C1)) {
-        if (I2CByteWasAcknowledged(I2C1)) {
-            // transmission successful
-        } else {
-            printf("Send Byte not ACKed \n");
-        }
-    } else {
-        printf("Send Byte transition not completed \n");
+
+    while (I2CTransmitterIsReady(I2C1) == FALSE) {
+        ;
+    }
+    I2CSendByte(I2C1, data);
+    while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
+        ;
+
     }
 
 }
 
 static BYTE MPU_Get_Byte(BOOL ack)
 {
-    I2CReceiverEnable(I2C1, TRUE); // just found this which be what we were missing for reading
-    
-    if (I2CReceivedDataIsAvailable(I2C1)) {
-        I2CAcknowledgeByte(I2C1, ack);
-        return I2CGetByte(I2C1);
+
+
+    while (I2CReceivedDataIsAvailable(I2C1) == FALSE) {
+        ;
     }
+    I2CAcknowledgeByte(I2C1, ack);
+    return I2CGetByte(I2C1);
 
 }
 
@@ -230,7 +235,8 @@ static BYTE MPU_Get_Byte(BOOL ack)
 //   unsigned char dat = 0;
 //
 //   MPU_I2C_Read(BNO55_I2C_ADDR, TEMPERATUR_DATA_ADR , 1, &dat);
-//   RAW_DATA_TEMPERATUR  = (short) dat;        // 1°C = 1 LSB
+
+//   RAW_DATA_TEMPERATUR  = (short) dat;        // 1Â°C = 1 LSB
 //}
 //
 //void BNO55_Read() {
@@ -387,17 +393,45 @@ void MPU_I2C_Write(unsigned char s_addr, unsigned char r_addr, unsigned char len
     volatile unsigned int i;
     volatile unsigned char s_addr_internW, s_addr_internR;
 
-    s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
 
-    if (I2CBusIsIdle(I2C1))// issue I2C start signal
-    {
-        I2CStart(I2C1);
-    }
+    s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da fÃ¼r Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
 
+    I2CStart(I2C1); // issue I2C start signal
+
+    //    while (I2CTransmitterIsReady(I2C1) == FALSE) {
+    //        ;
+    //    }
+    //    I2CSendByte(I2C1, s_addr_internW); // send byte via I2C  (device address + W(&0xFE))
+    //    while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
+    //        ;
+    //    }
     MPU_Send_Byte(s_addr_internW);
+
+
+
+
+
+
+    //    while (I2CTransmitterIsReady(I2C1) == FALSE) {
+    //        ;
+    //    }
+    //    I2CSendByte(I2C1, r_addr); // send byte (address of EEPROM location)
+    //    while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
+    //        ;
+    //    }
     MPU_Send_Byte(r_addr);
 
+
+
     for (i = 0; i < len; i++) {
+        //        while (I2CTransmitterIsReady(I2C1) == FALSE) {
+        //            ;
+        //        }
+        //        I2CSendByte(I2C1, *dat++); // send data (data to be written)
+        //        while (I2CTransmissionHasCompleted(I2C1) == FALSE) {
+        //            ;
+        //        }
+
         MPU_Send_Byte(*dat++);
     }
     I2CStop(I2C1); // issue I2C stop signal
@@ -408,17 +442,19 @@ void MPU_I2C_Read(unsigned char s_addr, unsigned char r_addr, unsigned char len,
     unsigned int i;
     unsigned char s_addr_internW, s_addr_internR;
 
-    s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
-    s_addr_internR = (s_addr << 1) | 0x01; // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Read  1bit an stelle 0
 
-    if (I2CBusIsIdle(I2C1))// issue I2C start signal
-    {
-        I2CStart(I2C1);
-    }
+    s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da fÃ¼r Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
+    s_addr_internR = (s_addr << 1) | 0x01; // shift der Adresse um 1 Bit nach links da fÃ¼r Adresse nur obersten 7 Bits verwendet werden + Read  1bit an stelle 0
 
+
+    I2CStart(I2C1); // issue I2C start signal
+    //    I2CSendByte(I2C1, s_addr_internW); // send byte via I2C  (device address + W(&0xFE))
     MPU_Send_Byte(s_addr_internW);
+    //    I2CSendByte(I2C1, r_addr); // send byte (data address)
     MPU_Send_Byte(r_addr);
     I2CRepeatStart(I2C1); // issue I2C signal repeated start
+    //    I2CSendByte(I2C1, s_addr_internR); // send byte (device address + R(|0x01))
+
     MPU_Send_Byte(s_addr_internR);
 
     for (i = 0; i < (len - 1); i++) {
@@ -437,23 +473,25 @@ void MPU_I2C_Read_Multi(unsigned char s_addr, unsigned char r_addr, unsigned cha
     volatile unsigned int i;
     volatile unsigned char s_addr_internW, s_addr_internR;
 
-    s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
-    s_addr_internR = (s_addr << 1) | 0x01; // shift der Adresse um 1 Bit nach links da für Adresse nur obersten 7 Bits verwendet werden + Read  1bit an stelle 0
 
-    if (I2CBusIsIdle(I2C1))// issue I2C start signal
-    {
-        I2CStart(I2C1);
-    }
+    s_addr_internW = (s_addr << 1) & 0xFE; // shift der Adresse um 1 Bit nach links da fÃ¼r Adresse nur obersten 7 Bits verwendet werden + Write 0bit an stelle 0
+    s_addr_internR = (s_addr << 1) | 0x01; // shift der Adresse um 1 Bit nach links da fÃ¼r Adresse nur obersten 7 Bits verwendet werden + Read  1bit an stelle 0
 
+
+    I2CStart(I2C1); // issue I2C start signal
+    //    I2CSendByte(I2C1, s_addr_internW); // send byte via I2C  (device address + W(&0xFE))
     MPU_Send_Byte(s_addr_internW);
-
+    //    I2CSendByte(I2C1, r_addr); // send byte (data address)
     MPU_Send_Byte(r_addr);
     I2CRepeatStart(I2C1); // issue I2C signal repeated start
-
+    //    I2CSendByte(I2C1, s_addr_internR); // send byte (device address + R(|0x01))
     MPU_Send_Byte(s_addr_internR);
-
     for (i = 0; i < (len - 1); i++) {
-        *dat++ = MPU_Get_Byte(TRUE); // I2CGetByte(I2C1); // Read the data (acknowledge)
+        // I2CAcknowledgeByte(I2C1, TRUE);
+        *dat = MPU_Get_Byte(TRUE); // I2CGetByte(I2C1); // Read the data (acknowledge)
+
+        dat++;
+
     }
 
     I2CAcknowledgeByte(I2C1, FALSE);

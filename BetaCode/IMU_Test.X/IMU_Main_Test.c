@@ -87,54 +87,92 @@ int main()
     I2CEnable(I2C1, TRUE);
 
     int rcv = 0xFF; //For received data
-    int dataLocation = 0; //  UNIT_SEL; // do this later
-    unsigned char rcvData = 0x00;
-    unsigned char sndData = 0x00;
-    unsigned char dat;
+// <<<<<<< IMU
+//     int dataLocation = 0; //  UNIT_SEL; // do this later
+//     unsigned char rcvData = 0x00;
+//     unsigned char sndData = 0x00;
+//     unsigned char dat;
 
+//     //// Attempt to configure IMU here, to get data instead of zeros from various IMU registers
+//     //Config_BNO55();
+
+//     dataLocation = BNO055_ACC_DATA_X_LSB;
+//     printf("Starting\n");
+//     while (1) {
+//         // TEST: 
+//         // 1) Read register 
+//         // 2) Attempt to write to register
+//         // 3) Read register again
+//         // 4) Attempt to write to register again
+//         // 5) Read register for the last time
+
+//         MPU_I2C_Read(SLAVE_ADDR, dataLocation, 1, &rcvData);
+//         printf("1 Received byte: %d\n", rcvData);
+//         Delayms(500);
+        
+//         sndData = 0x00;
+//         MPU_I2C_Write(SLAVE_ADDR, dataLocation, 1, sndData);
+//         printf("2 Transmitted byte: %d\n", sndData);
+//         Delayms(500);
+        
+//         MPU_I2C_Read(SLAVE_ADDR, dataLocation, 1, &rcvData);
+//         printf("3 Received byte: %d\n", rcvData);
+//         Delayms(500);
+        
+//         sndData = 0x01;
+//         MPU_I2C_Write(SLAVE_ADDR, dataLocation, 1, sndData);
+//         printf("4 Transmitted byte: %d\n", sndData);
+//         Delayms(500);
+        
+//         MPU_I2C_Read(SLAVE_ADDR, dataLocation, 1, &rcvData);
+//         printf("5 Received byte: %d\n", rcvData);
+//         Delayms(500);
+        
+//         MPU_I2C_Write(BNO55_I2C_ADDR, OPR_MODE, 1, &dat);
+//         Delayms(50);
+//         MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, 1, &dat);
+//         if (dat == NDOF_CON) {
+//             printf("Configured\n");
+//         }
+        
+//         Delayms(500);
+// =======
+
+//    int dataLocation = BNO055_CHIP_ID_ADDR;
+    
+    // 4-8-17
+    // BNO055_ACC_DATA_X_LSB   0x08
+    // BNO055_ACC_DATA_X_MSB   0x09
+    
+    int dataLocation = UNIT_SEL;
+    unsigned char dat;
+    uint16_t accXmeasurement = 0;
+    
+    // Select units for ACC data
+    dat = 0x00000001;
+    MPU_I2C_Write(SLAVE_ADDR, UNIT_SEL, 1, &dat);
+    rcv = RcvData(SLAVE_ADDR); //Receives data from address 0x40
+    
+    //dataLocation = BNO055_ACC_DATA_X_MSB;   
+    
     //// Attempt to configure IMU here, to get data instead of zeros from various IMU registers
     //Config_BNO55();
-
-    dataLocation = BNO055_ACC_DATA_X_LSB;
-    printf("Starting\n");
+    ////
+    
     while (1) {
-        // TEST: 
-        // 1) Read register 
-        // 2) Attempt to write to register
-        // 3) Read register again
-        // 4) Attempt to write to register again
-        // 5) Read register for the last time
+        dataLocation = BNO055_ACC_DATA_X_MSB;   
+        SendData(dataLocation, SLAVE_ADDR); 
+        rcv = RcvData(SLAVE_ADDR);
+        //accXmeasurement = rcv;
+        printf("The output of BNO055_ACC_DATA_X is: %d ", rcv);        
+        dataLocation = BNO055_ACC_DATA_X_LSB;   
+        SendData(dataLocation, SLAVE_ADDR); 
+        rcv = RcvData(SLAVE_ADDR); 
+        
+        printf("%d\n",  rcv); 
+               
+        Delayms(300);
 
-        MPU_I2C_Read(SLAVE_ADDR, dataLocation, 1, &rcvData);
-        printf("1 Received byte: %d\n", rcvData);
-        Delayms(500);
-        
-        sndData = 0x00;
-        MPU_I2C_Write(SLAVE_ADDR, dataLocation, 1, sndData);
-        printf("2 Transmitted byte: %d\n", sndData);
-        Delayms(500);
-        
-        MPU_I2C_Read(SLAVE_ADDR, dataLocation, 1, &rcvData);
-        printf("3 Received byte: %d\n", rcvData);
-        Delayms(500);
-        
-        sndData = 0x01;
-        MPU_I2C_Write(SLAVE_ADDR, dataLocation, 1, sndData);
-        printf("4 Transmitted byte: %d\n", sndData);
-        Delayms(500);
-        
-        MPU_I2C_Read(SLAVE_ADDR, dataLocation, 1, &rcvData);
-        printf("5 Received byte: %d\n", rcvData);
-        Delayms(500);
-        
-        MPU_I2C_Write(BNO55_I2C_ADDR, OPR_MODE, 1, &dat);
-        Delayms(50);
-        MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, 1, &dat);
-        if (dat == NDOF_CON) {
-            printf("Configured\n");
-        }
-        
-        Delayms(500);
     }
 
     while (1) {

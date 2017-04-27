@@ -2,7 +2,7 @@
  * File:   BB_I2C.c
  * Author: BB Team
  *
- * Created on December 19, 2012, 2:08 PM
+ * 
  */
 // I2C Master utilities, 100 kHz, using polling rather than interrupts
 // The functions must be callled in the correct order as per the I2C protocol
@@ -12,54 +12,32 @@
 // Connect SDA1 to the SDA pin on the slave and SCL1 to the SCL pin on a slave
 
 #include "BB_I2C.h"
+#include "BB_BOARD.h"
 #include <plib.h>
 #include "BNO55_Register_Map.h"
-#include "BB_BOARD.h"
-
 
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 
-
-
-
 /*******************************************************************************
  * Private Support Functions                                                   *
  ******************************************************************************/
 
-/*******************************************************************************
-  Function:
-    BOOL StartTransfer( BOOL restart )
-
-  Summary:
-    Starts (or restarts) a transfer to/from the EEPROM.
-
-  Description:
-    This routine starts (or restarts) a transfer to/from the EEPROM, waiting (in
-    a blocking loop) until the start (or re-start) condition has completed.
-
-  Precondition:
-    The I2C module must have been initialized.
-
-  Parameters:
-    restart - If FALSE, send a "Start" condition
-            - If TRUE, send a "Restart" condition
-    
-  Returns:
-    TRUE    - If successful
-    FALSE   - If a collision occured during Start signaling
-    
-  Example:
-    <code>
-    StartTransfer(FALSE);
-    </code>
-
-  Remarks:
-    This is a blocking routine that waits for the bus to be idle and the Start
-    (or Restart) signal to complete.
- *****************************************************************************/
-
+/**
+ * Function: StartTransfer(BOOL restart)
+ * @param   restart - If FALSE, send a "Start" condition
+ *                  - If TRUE, send a "Restart" condition
+ * @return  TRUE    - If successful
+ *          FALSE   - If a collision occured during Start signaling
+ * @precondition    The I2C module must have been initialized.
+ * @brief   Starts (or restarts) a transfer to/from the EEPROM. This is a blocking 
+ *      routine that waits for the bus to be idle and the Start (or Restart) signal
+ *      to complete.
+ * @example <code>
+ *              StartTransfer(FALSE);
+ *          </code>
+ * @author Daniel Bazor */
 BOOL StartTransfer(BOOL restart)
 {
     I2C_STATUS status;
@@ -114,36 +92,15 @@ BOOL StartTransfer(BOOL restart)
     //    return TRUE;
 }
 
-/*******************************************************************************
-  Function:
-    BOOL TransmitOneByte( UINT8 data )
-
-  Summary:
-    This transmits one byte to the EEPROM.
-
-  Description:
-    This transmits one byte to the EEPROM, and reports errors for any bus
-    collisions.
-
-  Precondition:
-    The transfer must have been previously started.
-
-  Parameters:
-    data    - Data byte to transmit
-
-  Returns:
-    TRUE    - Data was sent successfully
-    FALSE   - A bus collision occured
-
-  Example:
-    <code>
-    TransmitOneByte(0xAA);
-    </code>
-
-  Remarks:
-    This is a blocking routine that waits for the transmission to complete.
- *****************************************************************************/
-
+/**
+ * Function: TransmitOneByte(UINT8 data)
+ * @param   data    - Data byte to transmit 
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - A bus collision occurred
+ * @brief   This transmits one byte to the EEPROM. This transmits one byte to the 
+ *      EEPROM, and reports errors for any bus collisions. This is a blocking 
+ *      routine that waits for the transmission to complete.
+ * @author Daniel Bazor */
 BOOL TransmitOneByte(UINT8 data)
 {
     // Wait for the transmitter to be ready
@@ -161,35 +118,19 @@ BOOL TransmitOneByte(UINT8 data)
     return TRUE;
 }
 
-/*******************************************************************************
-  Function:
-    void StopTransfer( void )
 
-  Summary:
-    Stops a transfer to/from the EEPROM.
-
-  Description:
-    This routine Stops a transfer to/from the EEPROM, waiting (in a 
-    blocking loop) until the Stop condition has completed.
-
-  Precondition:
-    The I2C module must have been initialized & a transfer started.
-
-  Parameters:
-    None.
-    
-  Returns:
-    None.
-    
-  Example:
-    <code>
-    StopTransfer();
-    </code>
-
-  Remarks:
-    This is a blocking routine that waits for the Stop signal to complete.
- *****************************************************************************/
-
+/**
+ * Function: StopTransfer(void)
+ * @param   data    - Data byte to transmit 
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - A bus collision occurred
+ * @precondition
+ *          The I2C module must have been initialized & a transfer started.
+ * @brief   Stops a transfer to/from the EEPROM. This routine Stops a transfer 
+ *      to/from the EEPROM, waiting (in a blocking loop) until the Stop condition 
+ *      has completed. This is a blocking routine that waits for the Stop signal 
+ *      to complete.
+ * @author Daniel Bazor */
 void StopTransfer(void)
 {
     I2C_STATUS status;
@@ -207,40 +148,22 @@ void StopTransfer(void)
  * Public Functions                                                           *
  ******************************************************************************/
 
-/*******************************************************************************
-  Function:
-    void BB_I2C_Init()
 
-  Summary:
-    Init function for I2C1
-
-  Description:
-    Sets clock and enables I2C1
-
-  Precondition:
-    None
-
-  Parameters:
-    None
-    
-  Returns:
-    None
-    
-  Example:
-    <code>
-    BB_I2C_Init();
-    </code>
-
-  Remarks:
-    Call this on startup
- *****************************************************************************/
+/**
+ * Function: BB_I2C_Init()
+ * @param None
+ * @return None
+ * @brief Init function for I2C1. Sets clock and enables I2C1
+ * @author Daniel Bazor */
 void BB_I2C_Init()
 {
     // Configure I2C1
     I2CConfigure(I2C1, I2C_ENABLE_SLAVE_CLOCK_STRETCHING | I2C_ENABLE_HIGH_SPEED);
 
     // Set the I2C baudrate
-    UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, BB_BOARD_GetPBClock(), I2C_CLOCK_FREQ);
+
+    UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, GetPeripheralClock(), I2C_CLOCK_FREQ);
+  
     if (abs(actualClock - I2C_CLOCK_FREQ) > I2C_CLOCK_FREQ / 10) {
 
         printf("Error: I2C1 clock frequency (%u) error exceeds 10%%.\n", (unsigned) actualClock);
@@ -251,36 +174,18 @@ void BB_I2C_Init()
 
 }
 
-/*******************************************************************************
-  Function:
-    void BB_I2C_Write()
-
-  Summary:
-    Write one Byte to the I2C1 Bus
-
-  Description:
-    Writes to the slave at s_addr at the location r_addr the data at *dat
-
-  Precondition:
-    None
-
-  Parameters:
-    s_addr  - Slave address
-    r_addr  - Data address
- *dat    - data to be written
-    
-  Returns:
-    TRUE    - Data was sent successfully
-    FALSE   - There was a problem with the transfer
-    
-  Example:
-    <code>
-    success = BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
-    </code>
-
-  Remarks:
-    None
- *****************************************************************************/
+/**
+ * Function: BB_I2C_Write()
+ * @param   s_addr  - Slave address
+ *          r_addr  - Data address
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - There was a problem with the transfer
+ * @brief   Write one Byte to the I2C1 Bus. Writes to the slave at s_addr at 
+ *      the location r_addr the data at *dat
+ * @example <code>
+ *              success = BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
+ *          </code>
+ * @author Daniel Bazor */
 BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
 {
     // Initialize the data buffer
@@ -327,45 +232,25 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
             I2CStop(BNO55_I2C_BUS);
             return FALSE;
         }
-
-
     }
-
-
     // End the transfer (stop here if an error occured)
     StopTransfer();
 }
 
-/*******************************************************************************
-  Function:
-    void BB_I2C_Read()
 
-  Summary:
-    Read one Byte from the I2C1 Bus
-
-  Description:
-    Reads from the slave at s_addr at the location r_addr the data at *dat
-
-  Precondition:
-    None
-
-  Parameters:
-    s_addr  - Slave address
-    r_addr  - Data address
- *dat    - data written to
-    
-  Returns:
-    TRUE    - Data was sent successfully
-    FALSE   - There was a problem with the transfer
-    
-  Example:
-    <code>
-    success = BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
-    </code>
-
-  Remarks:
-    None
- *****************************************************************************/
+/**
+ * Function: BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
+ * @param   s_addr  - Slave address
+ *          r_addr  - Data address
+ *          *dat    - where to read data to
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - There was a problem with the transfer
+ * @brief   Read one Byte from the I2C1 Bus. Reads from the slave at s_addr 
+ *          at the location r_addr the data at *dat
+ * @example <code>
+ *              success = BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
+ *          </code>
+ * @author Daniel Bazor */
 BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
 {
     // Initialize the data buffer
@@ -417,7 +302,6 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
         return FALSE;
     }
 
-
     // Transmit the address with the READ bit set
     I2C_FORMAT_7_BIT_ADDRESS(SlaveAddress, s_addr, I2C_READ);
     if (TransmitOneByte(SlaveAddress.byte)) {
@@ -433,7 +317,6 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
         I2CStop(BNO55_I2C_BUS);
         return FALSE;
     }
-
 
 
     // Read the data from the desired address
@@ -455,33 +338,21 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
     StopTransfer();
 }
 
-/*******************************************************************************
-  Function:
-    void BB_I2C_Read_Multi()
 
-  Summary:
-    Reads one or more bytes from I2C1 Bus
-
-  Description:
-    Sets clock and enables I2C1
-
-  Precondition:
-    None
-
-  Parameters:
-    None
-    
-  Returns:
-    None
-    
-  Example:
-    <code>
-    BB_I2C_Init();
-    </code>
-
-  Remarks:
-    Call this on startup
- *****************************************************************************/
+/**
+ * Function: BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
+ * @param   s_addr  - Slave address
+ *          r_addr  - Data address
+ *          *dat    - where to read data to
+ *          len     - length of data to read
+ * @return  TRUE    - Data was sent successfully
+ *          FALSE   - There was a problem with the transfer
+ * @brief   Read multiple Byte from the I2C1 Bus Reads from the slave at s_addr 
+ *          at the location r_addr the data at *dat
+ * @example <code>
+ *              success = BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, len, UINT8 &dat);
+ *          </code>
+ * @author Daniel Bazor */
 BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 * dat)
 {
     // Initialize the data buffer

@@ -2,17 +2,18 @@
  * File:   BB_BOARD.c
  * Author: Daniel
  *
- * Created on December 19, 2012, 2:08 PM
+ * Created on February 2, 2017, 12:10 AM
  */
 
-#include <xc.h>
 #include "BB_BOARD.h"
-//#include "BB_Encoder.h"
+#include "BB_Encoder.h"
 
-#include <plib.h>
 #include <peripheral/osc.h>
 #include <peripheral/lock.h>
+
+#include "BB_UART.h"
 #include "BB_LEDS.h"
+#include "BB_MOTOR_CONTROLLER.h"
 
 
 #ifdef BOARD_TEST
@@ -68,9 +69,13 @@ void BB_BOARD_Init()
 {
     // disable interrupts
     __builtin_disable_interrupts();
-    
+
     //disables all A/D pins for a clean start
     AD1PCFG = 0xffff;
+
+    // Come back and double check what all of these commands are doing - Possibly replace some
+
+
 
     // NU32 startup functions
     __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583); // enable the cache
@@ -91,12 +96,28 @@ void BB_BOARD_Init()
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
 
-    BB_UART_Init();
+    //    // *NOTE: This is in the peripheral library example code init()
+    //    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
+
     Leds_Init();
+
+    BB_UART_Init();
+
     MotorsInit();
     Encoder_Init();
     BB_I2C_Init();
-    
+
+    // PID Motor Controller Interrupt
+    // *NOTE:
+    //      Make sure to change both T4_PS_1_64 and the PRESCALE #define
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // STEP 2. configure Timer 1 using internal clock, 1:64 pre-scaler
+    OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
+    // set up the timer interrupt with a priority of 2
+    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
+    // enable multi-vector interrupts
+    INTEnableSystemMultiVectoredInt();
+
     __builtin_enable_interrupts();
 
 }
@@ -191,17 +212,42 @@ void BB_BOARD_End()
 
     //Serial and A/D are left on for output and battery monitoring respectively
 }
+/* ------------------------------------------------------------ */
 
 /**
- * Function: BOARD_GetPBClock(void)
- * @param None
- * @return PB_CLOCK - speed the peripheral clock is running in hertz
- * @brief returns the speed of the peripheral clock.  Nominally at 40Mhz
- * @author Max Dunne, 2013.09.01  */
-unsigned int BB_BOARD_GetPBClock()
+ * Function: DelayMs(void)
+ * @param t -> number of milliseconds to delay
+ * @return none
+ * @brief Delay the requested number of milliseconds. Uses Timer1.
+ **/
+void DelayUs(unsigned t)
 {
-    return PB_CLOCK;
+    OpenTimer1(T1_ON | T1_PS_1_8, 0xFFFF);
+    while (t--) {
+        WriteTimer1(0);
+        while (ReadTimer1() < SYS_FREQ / 8 / 1000000);
+    }
+    CloseTimer1();
 }
+
+/* ------------------------------------------------------------ */
+
+/**
+ * Function: DelayUs(void)
+ * @param t -> number of microseconds to delay
+ * @return none
+ * @brief Delay the requested number of microseconds. Uses Timer1.
+ **/
+void DelayMs(unsigned t)
+{
+    OpenTimer1(T1_ON | T1_PS_1_64, 0xFFFF);
+    while (t--) {
+        WriteTimer1(0);
+        while (ReadTimer1() < SYS_FREQ / 64 / 1000);
+    }
+    CloseTimer1();
+}
+
 
 
 #ifdef BOARD_TEST
