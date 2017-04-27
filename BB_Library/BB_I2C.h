@@ -44,6 +44,7 @@
   Remarks:
     Call this on startup
  *****************************************************************************/
+
 /**
  * Function: BB_I2C_Init()
  * @param None
@@ -95,6 +96,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat);
  *              success = BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, len, UINT8 &dat);
  *          </code>
  * @author Daniel Bazor */
+
 BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat);
 
 #endif

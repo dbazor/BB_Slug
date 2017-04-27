@@ -96,7 +96,6 @@ void BB_BOARD_Init()
     // disable JTAG to get B10, B11, B12 and B13 back
     DDPCONbits.JTAGEN = 0;
 
-
     //    // *NOTE: This is in the peripheral library example code init()
     //    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
 

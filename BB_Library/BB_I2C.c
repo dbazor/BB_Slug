@@ -16,7 +16,6 @@
 #include <plib.h>
 #include "BNO55_Register_Map.h"
 
-
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
@@ -119,6 +118,7 @@ BOOL TransmitOneByte(UINT8 data)
     return TRUE;
 }
 
+
 /**
  * Function: StopTransfer(void)
  * @param   data    - Data byte to transmit 
@@ -148,6 +148,7 @@ void StopTransfer(void)
  * Public Functions                                                           *
  ******************************************************************************/
 
+
 /**
  * Function: BB_I2C_Init()
  * @param None
@@ -160,7 +161,9 @@ void BB_I2C_Init()
     I2CConfigure(I2C1, I2C_ENABLE_SLAVE_CLOCK_STRETCHING | I2C_ENABLE_HIGH_SPEED);
 
     // Set the I2C baudrate
+
     UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, GetPeripheralClock(), I2C_CLOCK_FREQ);
+  
     if (abs(actualClock - I2C_CLOCK_FREQ) > I2C_CLOCK_FREQ / 10) {
 
         printf("Error: I2C1 clock frequency (%u) error exceeds 10%%.\n", (unsigned) actualClock);
@@ -230,10 +233,10 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
             return FALSE;
         }
     }
-
     // End the transfer (stop here if an error occured)
     StopTransfer();
 }
+
 
 /**
  * Function: BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
@@ -315,6 +318,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
         return FALSE;
     }
 
+
     // Read the data from the desired address
 
     if (I2CReceiverEnable(BNO55_I2C_BUS, TRUE) == I2C_RECEIVE_OVERFLOW) {
@@ -333,6 +337,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
     while (!I2CAcknowledgeHasCompleted(BNO55_I2C_BUS));
     StopTransfer();
 }
+
 
 /**
  * Function: BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
@@ -355,6 +360,7 @@ BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 * dat)
     int DataSz;
     UINT8 i2cData[2];
     I2C_7_BIT_ADDRESS SlaveAddress;
+
     I2C_FORMAT_7_BIT_ADDRESS(SlaveAddress, s_addr, I2C_WRITE);
 
     i2cData[0] = SlaveAddress.byte;

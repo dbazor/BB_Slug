@@ -19,6 +19,8 @@
 // Additional Includes (April 7, 2017)
 #include "BNO55_Register_Map.h"
 #include "BNO55_I2C_driver.h"
+
+#include "BB_IMU.h"
 // 
 
 /* ------------------------------------------------------------ */
@@ -66,37 +68,66 @@ void Delayms(unsigned t);
 /*				Main											*/
 
 /* ------------------------------------------------------------ */
-int main()
-{
+
+int main() {
+
 
     BB_BOARD_Init();
     printf(" before init \n");
     IMU_Init();
     printf("After init \n");
-    UINT8 dataLocation = BNO055_GYR_OFFSET_Z_MSB;
-    UINT8 sndData = 1; // clear each loop to be sure it is new
-    UINT8 rcvData = 0xFA; // clear each loop to be sure it is new
+    //    UINT8 dataLocation = BNO055_GYR_OFFSET_Z_MSB;
+    //    UINT8 sndData = 1; // clear each loop to be sure it is new
+    //    UINT8 rcvData = 0xFA; // clear each loop to be sure it is new
+    //
+    //    while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //        printf("Error: in Write to OPR MODE \n");
+    //    }
+    //    printf("rcvData: %x\n sndData: %x\n", rcvData, sndData);
+    //    rcvData = 0xFD;
+    //
+    //    while (!BB_I2C_Write(BNO55_I2C_ADDR, dataLocation, &sndData)) {
+    //        printf("Error: in Write to OPR MODE \n");
+    //    }
+    //    //Delayms(50);
+    //    while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //        printf("Error: in Write to OPR MODE \n");
+    //    }
+    //    printf("rcvData: %x\n End of loop\n\n", rcvData);
+    //    Delayms(2000);
+    //    dataLocation = BNO055_EUL_HEADING_LSB;
 
-    while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
-        printf("Error: in Write to OPR MODE \n");
-    }
-    printf("rcvData: %x\n sndData: %x\n", rcvData, sndData);
-    rcvData = 0xFD;
-
-    while (!BB_I2C_Write(BNO55_I2C_ADDR, dataLocation, &sndData)) {
-        printf("Error: in Write to OPR MODE \n");
-    }
-    //Delayms(50);
-    while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
-        printf("Error: in Write to OPR MODE \n");
-    }
-    printf("rcvData: %x\n End of loop\n\n", rcvData);
-    Delayms(2000);
-    dataLocation = BNO055_EUL_HEADING_LSB;
-
-    
+    IMU_Data ReturnData;
+    UINT8 data;
+    IMU_Data TestStruct;
+    Calibration_IMU CaiStat;
     while (1) {
-        UINT8 rcvData1[6] = {2, 2, 2, 2, 2, 2}; // clear each loop to be sure it is new
+
+        // sanity check    
+
+        //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_LSB, &data);
+        //        printf(" EUL PITCH LSB = %d \n", data);
+        //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_MSB, &data);
+        //        printf(" EUL PITCH MSB = %d \n", data);
+        CaiStat = IMU_Get_Calibration();
+        printf(" The Calibratin Status of the IMU: %d \n", CaiStat.SYS_Cal);
+        printf(" Before the function call \n");
+        TestStruct = IMU_Get_GYR_Angles();
+        printf("\n\n");
+        printf("heading = %f \n", TestStruct.GYR.Heading);
+        printf("roll    = %f \n", TestStruct.GYR.Roll);
+        printf("pitch   = %f \n", TestStruct.GYR.Pitch);
+
+        //        IMU_Read_Euler_Angles(ReturnData);
+        //        float roll_float = (float) ReturnData.euler.Roll;
+        //        float pitch_float = (float) ReturnData.euler.Pitch;
+        //        float heading_float = (float) ReturnData.euler.Heading;
+        //
+
+        Delayms(500);
+
+        //UINT8 rcvData1[6] = {2, 2, 2, 2, 2, 2}; // clear each loop to be sure it is new
+
         //        while (!BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 2, &rcvData1[0])) {
         //            printf("Error: in Write to OPR MODE \n");
         //        }
@@ -108,17 +139,19 @@ int main()
         //
         //        }
 
-        printf(" after read multi \n");
-        int i;
-        for (i = 0; i < 6; i++) {
-            while (!BB_I2C_Read(SLAVE_ADDR, dataLocation++, &rcvData1[i])) {
-                printf("Error: in Write to OPR MODE \n");
-            }
-            printf("euler angle %d : %x\n", i, rcvData1[i]);
-            //rcvData1[i] = i;
+        //
+        //        printf(" after read multi \n");
+        //        int i;
+        //        for (i = 0; i < 6; i++) {
+        //            while (!BB_I2C_Read(SLAVE_ADDR, dataLocation++, &rcvData1[i])) {
+        //                printf("Error: in Write to OPR MODE \n");
+        //            }
+        //            printf("euler angle %d : %x\n", i, rcvData1[i]);
+        //            //rcvData1[i] = i;
+        //
+        //        }
+        //        printf("End of loop\n\n");
 
-        }
-        printf("End of loop\n\n");
         //        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
         //            printf("Error: in Write to OPR MODE \n");
         //        }
@@ -141,7 +174,8 @@ int main()
         //            printf("Error: in Write to OPR MODE \n");
         //        }
         //        printf("rcvData: %x\n End of loop\n\n", rcvData);
-        Delayms(5000);
+
+
 
         //sndData++;
     }
@@ -252,8 +286,9 @@ void Delayms(unsigned t)
  *						    *
  * Returns: nothing				    *
  ***************************************************/
-void SendData(int data, unsigned int address)
-{
+
+void SendData(int data, unsigned int address) {
+
     StartI2C1(); //Send the Start Bit
     IdleI2C1(); //Wait to complete
 
