@@ -97,6 +97,7 @@ int main() {
     IMU_Data ReturnData;
     UINT8 data;
     IMU_Data TestStruct;
+    Calibration_IMU CaiStat;
     while (1) {
 
         // sanity check    
@@ -105,12 +106,14 @@ int main() {
         //        printf(" EUL PITCH LSB = %d \n", data);
         //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_MSB, &data);
         //        printf(" EUL PITCH MSB = %d \n", data);
+        CaiStat = IMU_Get_Calibration();
+        printf(" The Calibratin Status of the IMU: %d \n", CaiStat.SYS_Cal);
         printf(" Before the function call \n");
-        TestStruct = IMU_Get_Euler_Angles();
+        TestStruct = IMU_Get_GYR_Angles();
         printf("\n\n");
-        printf("heading = %d \n", TestStruct.euler.Heading);
-        printf("roll    = %d \n", TestStruct.euler.Roll);
-        printf("pitch   = %d \n", TestStruct.euler.Pitch);
+        printf("heading = %f \n", TestStruct.GYR.Heading);
+        printf("roll    = %f \n", TestStruct.GYR.Roll);
+        printf("pitch   = %f \n", TestStruct.GYR.Pitch);
 
         //        IMU_Read_Euler_Angles(ReturnData);
         //        float roll_float = (float) ReturnData.euler.Roll;

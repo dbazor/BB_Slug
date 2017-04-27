@@ -20,9 +20,9 @@
  * PRIVATE variables                                                             *
  ******************************************************************************/
 static IMU_Data returnData;
-static  ACC_Calibration ACC_Offset;
-static  GYR_Calibration GYR_Offset;
-static  MAG_Calibration MAG_Offset;
+static Calibration_IMU Calibration_Data;
+static int CalibrationStat;
+
 
 /*******************************************************************************
  * FUNCTION DEFINITIONS                                                        *
@@ -93,7 +93,7 @@ BOOL IMU_Init() {
     //    printf(" PAGE ID \n"); 
 
     // Select BNO055 sensor units (temperature in degrees F, rate in rps, accel in m/s^2)
-    dat = 0x12;// 16 radians 12 degrees
+    dat = 0x16; // 16 radians 12 degrees
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
@@ -131,7 +131,22 @@ BOOL IMU_Init() {
         }
         if (dat == NDOF_CON) {
             printf("Configured\n");
-            return TRUE;
+            while (SystemCalibration() <4) {
+                printf(" waiting till calibrated \n");
+                if (SystemCalibration() ==1){
+                    Turn_On_LED(IOPORT_G,BIT_12);
+                }
+                else if (SystemCalibration()==2){
+                        Turn_Off_LED(IOPORT_G,BIT_12);
+                        Turn_On_LED(IOPORT_G,BIT_13);
+                }
+                else if (SystemCalibration() == 3){
+                        Turn_Off_LED(IOPORT_G,BIT_12);
+                        Turn_Off_LED(IOPORT_G,BIT_13);
+                        Turn_On_LED(IOPORT_G,BIT_14);
+                    return TRUE;
+                }
+            }
         }
     }
 
@@ -139,6 +154,33 @@ BOOL IMU_Init() {
     return FALSE;
 }
 
+/*******************************************************************************
+  Function:
+    BOOL IMU_Read_Euler_Angles()
+
+  Summary:
+  This Function populates a local strut with the euler angle coordinates
+  Roll, Pitch, and Heading
+
+  Description:
+
+
+  Precondition:
+
+  Parameters:
+
+
+  Returns:
+    TRUE    - If successful
+    FALSE   - Otherwise
+
+  Example:
+    <code>
+
+    </code>
+
+  Remarks:
+ *****************************************************************************/
 static BOOL IMU_Read_Euler_Angles() {
     UINT8 eulerData[6] = {2, 2, 2, 2, 2, 2};
     int i;
@@ -149,41 +191,152 @@ static BOOL IMU_Read_Euler_Angles() {
             return FALSE;
         }
     }
-        // store all euler data in a global struct
-        returnData.euler.Heading    = (float)((eulerData[1] << 8) | eulerData[0]) / 16.0;
-        returnData.euler.Roll       = (float)((eulerData[3] << 8) | eulerData[2]) / 16.0;
-        returnData.euler.Pitch      = (float)((eulerData[5] << 8) | eulerData[4]) / 16.0;
+    // store all euler data in a global struct
+    returnData.euler.Heading = (float) ((eulerData[1] << 8) | eulerData[0]) / 16.0;
+    returnData.euler.Roll = (float) ((eulerData[3] << 8) | eulerData[2]) / 16.0;
+    returnData.euler.Pitch = (float) ((eulerData[5] << 8) | eulerData[4]) / 16.0;
 
     return TRUE; // Add success check
 }
 
-IMU_Data IMU_Get_Euler_Angles(){
+/*******************************************************************************
+  Function:
+    BOOL IMU_Read_GYR_Angles()
+
+  Summary:
+  This Function populates a local strut with the Magnotometer angle coordinates
+  Roll, Pitch, and Heading
+
+  Description:
+
+
+  Precondition:
+
+  Parameters:
+
+
+  Returns:
+    TRUE    - If successful
+    FALSE   - Otherwise
+
+  Example:
+    <code>
+
+    </code>
+
+  Remarks:
+ *****************************************************************************/
+
+static BOOL IMU_Read_GYR_Angles() {
+    UINT8 GYRData[6] = {2, 2, 2, 2, 2, 2};
+    int i;
+    UINT8 dataLocation = BNO055_GYR_DATA_X_LSB;
+    for (i = 0; i < 6; i++) {
+        if (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &GYRData[i])) {
+            printf("Error: in Write to OPR MODE \n");
+            return FALSE;
+        }
+    }
+    // store all Gyroscope data in a global struct
+    returnData.GYR.Heading = (float) ((GYRData[1] << 8) | GYRData[0]) / 16.0;
+    returnData.GYR.Roll = (float) ((GYRData[3] << 8) | GYRData[2]) / 16.0;
+    returnData.GYR.Pitch = (float) ((GYRData[5] << 8) | GYRData[4]) / 16.0;
+
+    return TRUE; // Add success check
+}
+
+/*******************************************************************************
+  Function:
+    BOOL IMU_Get_GYR_Angles()
+
+  Summary:
+  This Function returns a struct of type IMU data with the Gyroscope values
+
+  Description:
+
+
+  Precondition:
+
+  Parameters:
+
+
+  Returns:
+ A struct of tupe IMU data with the Gyroscope angles
+
+  Example:
+    <code>
+
+    </code>
+
+  Remarks:
+ *****************************************************************************/
+
+
+IMU_Data IMU_Get_GYR_Angles() {
+    if (IMU_Read_GYR_Angles()) {
+        return returnData;
+    }
+    //printf(" could not read GYR data \n");
+}
+
+/*******************************************************************************
+  Function:
+    BOOL IMU_Get_Euler_Angles()
+
+  Summary:
+  This Function returns a struct of type IMU data with the euler angle values
+
+  Description:
+
+
+  Precondition:
+
+  Parameters:
+
+
+  Returns:
+ A struct of tupe IMU data with the euler angles
+
+  Example:
+    <code>
+
+    </code>
+
+  Remarks:
+ *****************************************************************************/
+
+IMU_Data IMU_Get_Euler_Angles() {
     if (IMU_Read_Euler_Angles()) {
         return returnData;
     }
 }
 
-static BOOL IMU_Read_Calibration(){
-    UINT8 OffSetData[18] = {0};
-    int i;
-    UINT8 dataLocation = BNO055_ACC_OFFSET_X_LSB;
-    for (i=0;i<18;i++){
-        if(!BB_I2C_Read(BNO55_I2C_ADDR,dataLocation++,&OffSetData[i])){
-            printf(" failed to get offset data \n");
-            return FALSE;
-        }
+static BOOL IMU_Read_Calibration() {
+
+    UINT8 dataLocation = BNO055_CALIB_STAT;
+    // fills private variable with all the calibration status data
+    if (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &CalibrationStat)) {
+        printf(" failed to get offset data \n");
+        return FALSE;
     }
-        ACC_Offset.angle.x = (float)((OffSetData[1] << 8) | OffSetData[0]) / 16.0;
-        ACC_Offset.angle.y = (float)((OffSetData[3] << 8) | OffSetData[2]) / 16.0;
-        ACC_Offset.angle.z = (float)((OffSetData[5] << 8) | OffSetData[4]) / 16.0;
-
-
-
+    return TRUE;
 
 }
 
-BOOL IMU_Get_Calibration(){
-
+Calibration_IMU IMU_Get_Calibration() {
+    if (IMU_Read_Calibration()) {
+        // parse out each calibration status
+        Calibration_Data.SYS_Cal = (CalibrationStat >> 6)&(0b11);
+        Calibration_Data.GYR_Cal = (CalibrationStat >> 4)&(0b11);
+        Calibration_Data.ACC_Cal = (CalibrationStat >> 2)&(0b11);
+        Calibration_Data.MAG_Cal = (CalibrationStat & 0b11);
+        return (Calibration_Data);
+    }
+}
+int SystemCalibration(){
+        if (IMU_Read_Calibration()) {
+        return ((CalibrationStat >> 6)&(0b11));
+    }
 }
 
 BOOL IMU_Set_Calibration();
