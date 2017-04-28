@@ -50,7 +50,7 @@ Calibration_IMU IMU_Get_Calibration();
 BOOL IMU_Set_Calibration();
 IMU_Data IMU_Get_Euler_Angles();
 IMU_Data IMU_Get_GYR_Angles();
-int SystemCalibration();
+int GetSystemCalibration();
 
 
 #endif

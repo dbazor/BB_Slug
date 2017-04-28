@@ -131,19 +131,17 @@ BOOL IMU_Init() {
         }
         if (dat == NDOF_CON) {
             printf("Configured\n");
-            while (SystemCalibration() <4) {
+            while (GetSystemCalibration() < 4) {
                 printf(" waiting till calibrated \n");
-                if (SystemCalibration() ==1){
-                    Turn_On_LED(IOPORT_G,BIT_12);
-                }
-                else if (SystemCalibration()==2){
-                        Turn_Off_LED(IOPORT_G,BIT_12);
-                        Turn_On_LED(IOPORT_G,BIT_13);
-                }
-                else if (SystemCalibration() == 3){
-                        Turn_Off_LED(IOPORT_G,BIT_12);
-                        Turn_Off_LED(IOPORT_G,BIT_13);
-                        Turn_On_LED(IOPORT_G,BIT_14);
+                if (GetSystemCalibration() == 1) {
+                    Turn_On_LED(IOPORT_G, BIT_12);
+                } else if (GetSystemCalibration() == 2) {
+                    Turn_Off_LED(IOPORT_G, BIT_12);
+                    Turn_On_LED(IOPORT_G, BIT_13);
+                } else if (GetSystemCalibration() == 3) {
+                    Turn_Off_LED(IOPORT_G, BIT_12);
+                    Turn_Off_LED(IOPORT_G, BIT_13);
+                    Turn_On_LED(IOPORT_G, BIT_14);
                     return TRUE;
                 }
             }
@@ -333,8 +331,9 @@ Calibration_IMU IMU_Get_Calibration() {
         return (Calibration_Data);
     }
 }
-int SystemCalibration(){
-        if (IMU_Read_Calibration()) {
+
+int GetSystemCalibration() {
+    if (IMU_Read_Calibration()) {
         return ((CalibrationStat >> 6)&(0b11));
     }
 }
