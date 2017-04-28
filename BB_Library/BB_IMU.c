@@ -15,15 +15,44 @@
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
 
-
-
 /*******************************************************************************
  * PRIVATE variables                                                             *
  ******************************************************************************/
-static IMU_Data returnData;
-static Calibration_IMU Calibration_Data;
-static int CalibrationStat;
+typedef struct eulerAxis {
+    float roll;
+    float pitch;
+    float yaw; // yaw, but z points up
+} eulerAxis;
 
+typedef struct gyroAxis {
+    float x;
+    float y;
+    float z;
+} gyroAxis;
+
+typedef struct quatAxis {
+    float scalar;
+    float x;
+    float y;
+    float z;
+} quatAxis;
+
+typedef struct Calibration_IMU {
+    int ACC_Cal;
+    int GYR_Cal;
+    int MAG_Cal;
+    int SYS_Cal;
+} Calibration_IMU;
+
+typedef struct IMU_Data {
+    gyroAxis gyro;
+    eulerAxis euler;
+    short temp;
+    quatAxis quaternion;
+    Calibration_IMU Calibration_Data;
+} IMU_Data;
+
+static IMU_Data imuData;
 
 /*******************************************************************************
  * FUNCTION DEFINITIONS                                                        *
@@ -57,29 +86,18 @@ BOOL IMU_Init()
 
     //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
     DelayMs(100);
-  
+
     printf(" OPR MODE \n");
 
-    //    // Select page 1 to configure sensors
-    //    dat = 0x01;
-    //    BB_I2C_Write(BNO55_I2C_ADDR, BNO055_PAGE_ID, &dat);
-    //    // MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_PAGE_ID, 1, &dat);
-    //    printf(" Page ID \n");
-    //    
-
-    // Select page 0 to read sensors
-    //    dat = 0x00;
-    //    BB_I2C_Write(BNO55_I2C_ADDR, BNO055_PAGE_ID, &dat);
-    //    // MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_PAGE_ID, 1, &dat);
-    //    printf(" PAGE ID \n"); 
-
     // Select BNO055 sensor units (temperature in degrees F, rate in rps, accel in m/s^2)
-    dat = 0x16; // 16 radians 12 degrees
-
+    if (IN_RADIANS) {
+        dat = 0x16; // radians
+    } else {
+        dat = 0x10; // degrees
+    }
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
-    //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, 1, &dat);
     printf(" UNIT SEL \n");
 
     // Select BNO055 gyro temperature source
@@ -87,7 +105,6 @@ BOOL IMU_Init()
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
-    //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, 1, &dat);
     printf(" TEMP SOURCE \n");
     //    
     // Select BNO055 system power mode
@@ -95,7 +112,6 @@ BOOL IMU_Init()
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
-    //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, 1, &dat);
     printf(" PWR MODE \n");
 
     // Write Configuration to BNO55 Registers
@@ -112,198 +128,313 @@ BOOL IMU_Init()
             printf("Error: in Write to OPR MODE \n");
         }
         if (dat == NDOF_CON) {
-            printf("Configured\n");
-
-            while (SystemCalibration() <3) {
-                printf(" waiting till calibrated \n");
-                if (SystemCalibration() ==1){
-                    Turn_On_LED(IOPORT_G,BIT_12);
-                }
-                else if (SystemCalibration()==2){
-                        Turn_Off_LED(IOPORT_G,BIT_12);
-                        Turn_On_LED(IOPORT_G,BIT_13);
-                }
-                else if (SystemCalibration() == 3){
-                        Turn_Off_LED(IOPORT_G,BIT_12);
-                        Turn_Off_LED(IOPORT_G,BIT_13);
-                        Turn_On_LED(IOPORT_G,BIT_14);
-                    return TRUE;
-                }
-            }
+            printf("Configured\n"); 
         }
+        
+        do {
+                IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
+                UINT8 sysCal = IMU_Get_Sys_Cal();
+                switch (sysCal) {
+                case 0:
+                    Turn_Off_All_LED();
+                    Turn_On_LED(BB_LED_1);
+                    printf("sysCal: %d\n", sysCal);
+                    break;
+                case 1:
+                    Turn_Off_All_LED();
+                    Turn_On_LED(BB_LED_1);
+                    Turn_On_LED(BB_LED_2);
+                    printf("sysCal: %d\n", sysCal);
+                    break;
+                case 2:
+                    Turn_Off_All_LED();
+                    Turn_On_LED(BB_LED_1);
+                    Turn_On_LED(BB_LED_2);
+                    Turn_On_LED(BB_LED_3);
+                    printf("sysCal: %d\n", sysCal);
+                    break;
+                case 3:
+                    Turn_Off_All_LED();
+                    Turn_On_LED(BB_LED_1);
+                    Turn_On_LED(BB_LED_2);
+                    Turn_On_LED(BB_LED_3);
+                    Turn_On_LED(BB_LED_4);
+                    printf("sysCal: %d\n", sysCal);
+                    break;
+                }
+            } while (IMU_Get_Sys_Cal() < 3);
+        return TRUE;
     }
-
     printf("Error: Failed to configure\n");
     return FALSE;
 }
 
- /**
+/**
  * Function: IMU_Read_Euler_Angles()
  * @param None
  * @return TRUE    - If successful
  *         FALSE   - Otherwise
  * @brief 
  **/
-static BOOL IMU_Read_Euler_Angles() {
-    UINT8 eulerData[6] = {2, 2, 2, 2, 2, 2};
+BOOL IMU_Read_Euler_Angles()
+{
+    UINT8 eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
     int i;
     UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
-    for (i = 0; i < 6; i++) {
-        if (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &eulerData[i])) {
+    for (i = 0; i < MEASURE_LENGTH; i++) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &eulerData[i])) {
             printf("Error: in Write to OPR MODE \n");
-            return FALSE;
+        }
+    }
+
+    if (IN_RADIANS) {
+        // store all euler data in a global struct
+        imuData.euler.yaw = (float) (((eulerData[1] << 8) | eulerData[0]) / RADIANS_FACTOR);
+        imuData.euler.roll = (float) (((eulerData[3] << 8) | eulerData[2]) / RADIANS_FACTOR);
+        imuData.euler.pitch = (float) (((eulerData[5] << 8) | eulerData[4]) / RADIANS_FACTOR);
+    } else {
+        imuData.euler.yaw = (float) (((eulerData[1] << 8) | eulerData[0]) / DEGREE_FACTOR);
+        imuData.euler.roll = (float) (((eulerData[3] << 8) | eulerData[2]) / DEGREE_FACTOR);
+        imuData.euler.pitch = (float) (((eulerData[5] << 8) | eulerData[4]) / DEGREE_FACTOR);
+    }
+    return TRUE; // Add success check
+}
+
+/**
+ * Function: IMU_Get_Euler_Roll()
+ * @param   
+ * @return  Roll
+ * @brief 
+ **/
+float IMU_Get_Euler_Roll()
+{
+    return imuData.euler.roll;
+}
+
+/**
+ * Function: IMU_Get_Euler_Pitch()
+ * @param   
+ * @return  Pitch
+ * @brief 
+ **/
+float IMU_Get_Euler_Pitch()
+{
+    return imuData.euler.pitch;
+}
+
+/**
+ * Function: IMU_Get_Euler_Yaw()
+ * @param   
+ * @return  Yaw
+ * @brief 
+ **/
+float IMU_Get_Euler_Yaw()
+{
+    return imuData.euler.yaw;
+}
+
+/**
+ * Function: IMU_Read_Gyro_Angles()
+ * @param   None
+ * @return  TRUE    - If successful
+ *          FALSE   - Otherwise
+ * @brief Updates the struct
+ **/
+BOOL IMU_Read_Gyro_Angles()
+{
+    UINT8 GYRData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    int i;
+    UINT8 dataLocation = BNO055_GYR_DATA_X_LSB;
+    for (i = 0; i < MEASURE_LENGTH; i++) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &GYRData[i])) {
+            printf("Error: in Write to OPR MODE \n");
+        }
+    }
+
+    if (IN_RADIANS) {
+        // store all Gyroscope data in a global struct
+        imuData.gyro.x = (float) (((GYRData[1] << 8) | GYRData[0]) / RADIANS_FACTOR);
+        imuData.gyro.y = (float) (((GYRData[3] << 8) | GYRData[2]) / RADIANS_FACTOR);
+        imuData.gyro.z = (float) (((GYRData[5] << 8) | GYRData[4]) / RADIANS_FACTOR);
+    } else {
+        imuData.gyro.x = (float) (((GYRData[1] << 8) | GYRData[0]) / DEGREE_FACTOR);
+        imuData.gyro.y = (float) (((GYRData[3] << 8) | GYRData[2]) / DEGREE_FACTOR);
+        imuData.gyro.z = (float) (((GYRData[5] << 8) | GYRData[4]) / DEGREE_FACTOR);
+    }
+    return TRUE; // Add success check
+}
+
+/**
+ * Function: IMU_Get_Gyro_Roll()
+ * @param   
+ * @return  x
+ * @brief 
+ **/
+float IMU_Get_Gyro_Roll()
+{
+    return imuData.gyro.x;
+}
+
+/**
+ * Function: IMU_Get_Gyro_Pitch()
+ * @param   
+ * @return  y
+ * @brief 
+ **/
+float IMU_Get_Gyro_Pitch()
+{
+    return imuData.gyro.y;
+}
+
+/**
+ * Function: IMU_Get_Gyro_Yaw()
+ * @param   
+ * @return  z
+ * @brief 
+ **/
+float IMU_Get_Gyro_Yaw()
+{
+    return imuData.gyro.z;
+}
+
+/**
+ * Function: IMU_Read_Quaternion()
+ * @param None
+ * @return TRUE    - If successful
+ *         FALSE   - Otherwise
+ * @brief 
+ **/
+BOOL IMU_Read_Quaternion()
+{
+    UINT8 quatData[8] = {2, 2, 2, 2, 2, 2, 2, 2}; // registers init to zero - checks to see if read
+    int i;
+    UINT8 dataLocation = BNO055_QUA_DATA_W_LSB;
+    for (i = 0; i < 8; i++) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &quatData[i])) {
+            printf("Error: in Write to OPR MODE \n");
         }
     }
     // store all euler data in a global struct
-    returnData.euler.Heading = (float) ((eulerData[1] << 8) | eulerData[0]) / 16.0;
-    returnData.euler.Roll = (float) ((eulerData[3] << 8) | eulerData[2]) / 16.0;
-    returnData.euler.Pitch = (float) ((eulerData[5] << 8) | eulerData[4]) / 16.0;
+    imuData.quaternion.scalar = (float) (((quatData[1] << 8) | quatData[0]) / QUAT_SCAL_FACTOR);
+    imuData.quaternion.x = (float) (((quatData[3] << 8) | quatData[2]) / QUAT_SCAL_FACTOR);
+    imuData.quaternion.y = (float) (((quatData[5] << 8) | quatData[4]) / QUAT_SCAL_FACTOR);
+    imuData.quaternion.z = (float) (((quatData[7] << 8) | quatData[6]) / QUAT_SCAL_FACTOR);
 
     return TRUE; // Add success check
 }
 
-/*******************************************************************************
-  Function:
-    BOOL IMU_Read_GYR_Angles()
-
-  Summary:
-  This Function populates a local strut with the Magnotometer angle coordinates
-  Roll, Pitch, and Heading
-
-  Description:
-
-
-  Precondition:
-
-  Parameters:
-
-
-  Returns:
-    TRUE    - If successful
-    FALSE   - Otherwise
-
-  Example:
-    <code>
-
-    </code>
-
-  Remarks:
- *****************************************************************************/
-
-static BOOL IMU_Read_GYR_Angles() {
-    UINT8 GYRData[6] = {2, 2, 2, 2, 2, 2};
-    int i;
-    UINT8 dataLocation = BNO055_GYR_DATA_X_LSB;
-    for (i = 0; i < 6; i++) {
-        if (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &GYRData[i])) {
-            printf("Error: in Write to OPR MODE \n");
-            return FALSE;
-        }
-    }
-    // store all Gyroscope data in a global struct
-    returnData.GYR.Heading = (float) ((GYRData[1] << 8) | GYRData[0]) / 16.0;
-    returnData.GYR.Roll = (float) ((GYRData[3] << 8) | GYRData[2]) / 16.0;
-    returnData.GYR.Pitch = (float) ((GYRData[5] << 8) | GYRData[4]) / 16.0;
-
-    return TRUE; // Add success check
+/**
+ * Function: IMU_Get_Quat_Scalar()
+ * @param   
+ * @return  x
+ * @brief 
+ **/
+float IMU_Get_Quat_Scalar()
+{
+    return imuData.quaternion.scalar;
 }
 
-/*******************************************************************************
-  Function:
-    BOOL IMU_Get_GYR_Angles()
-
-  Summary:
-  This Function returns a struct of type IMU data with the Gyroscope values
-
-  Description:
-
-
-  Precondition:
-
-  Parameters:
-
-
-  Returns:
- A struct of tupe IMU data with the Gyroscope angles
-
-  Example:
-    <code>
-
-    </code>
-
-  Remarks:
- *****************************************************************************/
-
-
-IMU_Data IMU_Get_GYR_Angles() {
-    if (IMU_Read_GYR_Angles()) {
-        return returnData;
-    }
-    //printf(" could not read GYR data \n");
+/**
+ * Function: IMU_Get_Gyro_Roll()
+ * @param   
+ * @return  x
+ * @brief 
+ **/
+float IMU_Get_Quat_X()
+{
+    return imuData.quaternion.x;
 }
 
-/*******************************************************************************
-  Function:
-    BOOL IMU_Get_Euler_Angles()
-
-  Summary:
-  This Function returns a struct of type IMU data with the euler angle values
-
-  Description:
-
-
-  Precondition:
-
-  Parameters:
-
-
-  Returns:
- A struct of tupe IMU data with the euler angles
-
-  Example:
-    <code>
-
-    </code>
-
-  Remarks:
- *****************************************************************************/
-
-IMU_Data IMU_Get_Euler_Angles() {
-    if (IMU_Read_Euler_Angles()) {
-        return returnData;
-    }
+/**
+ * Function: IMU_Get_Gyro_Y()
+ * @param   
+ * @return  y
+ * @brief 
+ **/
+float IMU_Get_Gyro_Y()
+{
+    return imuData.quaternion.y;
 }
 
-static BOOL IMU_Read_Calibration() {
+/**
+ * Function: IMU_Get_Gyro_Z()
+ * @param   
+ * @return  z
+ * @brief 
+ **/
+float IMU_Get_Gyro_Z()
+{
+    return imuData.quaternion.z;
+}
 
-    UINT8 dataLocation = BNO055_CALIB_STAT;
+/**
+ * Function: IMU_Read_Calibration()
+ * @param   
+ * @return  TRUE    - obtained offset data
+ *          FALSE  - failed to get offset data
+ * @brief 
+ **/
+BOOL IMU_Read_Calibration()
+{
+    UINT8 calibrationData;
     // fills private variable with all the calibration status data
-    if (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &CalibrationStat)) {
+    while (!BB_I2C_Read(BNO55_I2C_ADDR, BNO055_CALIB_STAT, &calibrationData)) {
         printf(" failed to get offset data \n");
-        return FALSE;
     }
+
+    // bit shifting to get the four different calibration data
+    imuData.Calibration_Data.SYS_Cal = (calibrationData >> 6)&(0b11);
+    imuData.Calibration_Data.GYR_Cal = (calibrationData >> 4)&(0b11);
+    imuData.Calibration_Data.ACC_Cal = (calibrationData >> 2)&(0b11);
+    imuData.Calibration_Data.MAG_Cal = (calibrationData & 0b11);
+
     return TRUE;
 
 }
 
-Calibration_IMU IMU_Get_Calibration() {
-    if (IMU_Read_Calibration()) {
-        // parse out each calibration status
-        Calibration_Data.SYS_Cal = (CalibrationStat >> 6)&(0b11);
-        Calibration_Data.GYR_Cal = (CalibrationStat >> 4)&(0b11);
-        Calibration_Data.ACC_Cal = (CalibrationStat >> 2)&(0b11);
-        Calibration_Data.MAG_Cal = (CalibrationStat & 0b11);
-        return (Calibration_Data);
-    }
-}
-int SystemCalibration(){
-        if (IMU_Read_Calibration()) {
-        return ((CalibrationStat >> 6)&(0b11));
-    }
+/**
+ * Function: IMU_Get_Sys_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Sys_Cal()
+{
+    return imuData.Calibration_Data.SYS_Cal;
 }
 
-BOOL IMU_Set_Calibration();
+/**
+ * Function: IMU_Get_Gyro_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Gyro_Cal()
+{
+    return imuData.Calibration_Data.GYR_Cal;
+}
 
+/**
+ * Function: IMU_Get_Acc_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Acc_Cal()
+{
+    return imuData.Calibration_Data.ACC_Cal;
+}
+
+/**
+ * Function: IMU_Get_Mag_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Mag_Cal()
+{
+    return imuData.Calibration_Data.MAG_Cal;
+}
 /*******************************************************************************
  * Private Support Functions                                                   *
  ******************************************************************************/

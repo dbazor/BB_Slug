@@ -6,88 +6,170 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
- 
-
-/******************************************************************************/ 
-
+#define RADIANS_FACTOR      900.0
+#define DEGREE_FACTOR       16.0
+#define MEASURE_LENGTH      6
+#define QUAT_SCAL_FACTOR    16384.0 
+#define QUAT_LENGTH         8
+#define IN_RADIANS          TRUE // True for radians, False for degrees
 
 /*******************************************************************************
- * PUBLIC FUNCTION Typdefs                                                 *
- ******************************************************************************/ 
-typedef struct {
-  float Heading;
-  float Roll;
-  float Pitch;
-} eAxis;
-
-
-typedef struct {
-   eAxis GYR;
-   eAxis euler;
-   short temp;            
-} IMU_Data;
-
-typedef struct {
- int x;
- int y;
- int z;
-} CoordAxis;
-
-
-typedef struct {
-    int ACC_Cal;
-    int GYR_Cal;
-    int MAG_Cal;
-    int SYS_Cal;
-} Calibration_IMU;
-
-
-
-/******************************************************************************/
+ * PUBLIC FUNCTION PROTOTYPES                                                  *
+ ******************************************************************************/
 /**
  * Function: IMU_Init()
  * @param None
  * @return None
  * @brief 
  **/
-BOOL IMU_Init(); 
+BOOL IMU_Init();
 
 /**
  * Function: IMU_Read_Euler_Angles()
- * @param None
- * @return TRUE    - If successful
- *         FALSE   - Otherwise
- * @brief 
+ * @param   None
+ * @return  TRUE    - If successful
+ *          FALSE   - Otherwise
+ * @brief Updates the struct
  **/
 BOOL IMU_Read_Euler_Angles();
 
 /**
- * Function: IMU_Get_Calibration()
- * @param None
- * @return TRUE    - If successful
- *         FALSE   - Otherwise
+ * Function: IMU_Get_Euler_Roll()
+ * @param   
+ * @return  Roll
  * @brief 
  **/
-BOOL IMU_Get_Calibration(); 
+float IMU_Get_Euler_Roll();
 
 /**
- * Function: IMU_Set_Calibration()
+ * Function: IMU_Get_Euler_Pitch()
+ * @param   
+ * @return  Pitch
+ * @brief 
+ **/
+float IMU_Get_Euler_Pitch();
+
+/**
+ * Function: IMU_Get_Euler_Yaw()
+ * @param   
+ * @return  Yaw
+ * @brief 
+ **/
+float IMU_Get_Euler_Yaw();
+
+/**
+ * Function: IMU_Read_Gyro_Angles()
+ * @param   None
+ * @return  TRUE    - If successful
+ *          FALSE   - Otherwise
+ * @brief Updates the struct
+ **/
+BOOL IMU_Read_Gyro_Angles();
+
+/**
+ * Function: IMU_Get_Gyro_Roll()
+ * @param   
+ * @return  Roll
+ * @brief 
+ **/
+float IMU_Get_Gyro_Roll();
+
+/**
+ * Function: IMU_Get_Gyro_Pitch()
+ * @param   
+ * @return  Pitch
+ * @brief 
+ **/
+float IMU_Get_Gyro_Pitch();
+
+/**
+ * Function: IMU_Get_Gyro_Yaw()
+ * @param   
+ * @return  Yaw
+ * @brief 
+ **/
+float IMU_Get_Gyro_Yaw();
+
+
+/**
+ * Function: IMU_Read_Quaternion()
  * @param None
  * @return TRUE    - If successful
  *         FALSE   - Otherwise
  * @brief 
  **/
-BOOL IMU_Set_Calibration();
+BOOL IMU_Read_Quaternion();
 
-/*******************************************************************************
- * PUBLIC FUNCTION PROTOTYPES                                                  *
- ******************************************************************************/
-BOOL IMU_Init();
-Calibration_IMU IMU_Get_Calibration();
-BOOL IMU_Set_Calibration();
-IMU_Data IMU_Get_Euler_Angles();
-IMU_Data IMU_Get_GYR_Angles();
-int SystemCalibration();
+/**
+ * Function: IMU_Get_Quat_Scalar()
+ * @param   
+ * @return  x
+ * @brief 
+ **/
+float IMU_Get_Quat_Scalar();
 
+/**
+ * Function: IMU_Get_Gyro_Roll()
+ * @param   
+ * @return  x
+ * @brief 
+ **/
+float IMU_Get_Quat_X();
 
+/**
+ * Function: IMU_Get_Gyro_Y()
+ * @param   
+ * @return  y
+ * @brief 
+ **/
+float IMU_Get_Gyro_Y();
+
+/**
+ * Function: IMU_Get_Gyro_Z()
+ * @param   
+ * @return  z
+ * @brief 
+ **/
+float IMU_Get_Gyro_Z();
+
+/**
+ * Function: IMU_Read_Calibration()
+ * @param   
+ * @return  TRUE    - obtained offset data
+ *          FALSE  - failed to get offset data
+ * @brief 
+ **/
+BOOL IMU_Read_Calibration();
+
+/**
+ * Function: IMU_Get_Sys_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Sys_Cal();
+
+/**
+ * Function: IMU_Get_Gyro_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Gyro_Cal();
+
+/**
+ * Function: IMU_Get_Acc_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Acc_Cal();
+
+/**
+ * Function: IMU_Get_Mag_Cal()
+ * @param   
+ * @return  
+ * @brief 
+ **/
+UINT8 IMU_Get_Mag_Cal();
 #endif
