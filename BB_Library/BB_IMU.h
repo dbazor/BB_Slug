@@ -109,7 +109,7 @@ BOOL IMU_Read_Quaternion();
 float IMU_Get_Quat_Scalar();
 
 /**
- * Function: IMU_Get_Gyro_Roll()
+ * Function: IMU_Get_Quat_x()
  * @param   
  * @return  x
  * @brief 
@@ -117,20 +117,20 @@ float IMU_Get_Quat_Scalar();
 float IMU_Get_Quat_X();
 
 /**
- * Function: IMU_Get_Gyro_Y()
+ * Function: IMU_Quaat_Gyro_Y()
  * @param   
  * @return  y
  * @brief 
  **/
-float IMU_Get_Gyro_Y();
+float IMU_Get_Quat_Y();
 
 /**
- * Function: IMU_Get_Gyro_Z()
+ * Function: IMU_Quat_Gyro_Z()
  * @param   
  * @return  z
  * @brief 
  **/
-float IMU_Get_Gyro_Z();
+float IMU_Get_Quat_Z();
 
 /**
  * Function: IMU_Read_Calibration()

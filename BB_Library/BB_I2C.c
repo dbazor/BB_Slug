@@ -193,7 +193,7 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     int DataSz;
     UINT8 i2cData[2];
     I2C_7_BIT_ADDRESS SlaveAddress;
-    printf(" read address is %x \n", r_addr);
+   // printf(" read address is %x \n", r_addr);
     I2C_FORMAT_7_BIT_ADDRESS(SlaveAddress, s_addr, I2C_WRITE);
 
     i2cData[0] = SlaveAddress.byte;
@@ -264,7 +264,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
     i2cData[0] = SlaveAddress.byte;
     i2cData[1] = r_addr; // location to be read from
     DataSz = 2;
-    printf(" read address is %x \n", r_addr);
+   // printf(" read address is %x \n", r_addr);
 
     // Start the transfer to read the EEPROM.
     if (!StartTransfer(FALSE)) {

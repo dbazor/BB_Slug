@@ -351,7 +351,7 @@ float IMU_Get_Quat_X()
  * @return  y
  * @brief 
  **/
-float IMU_Get_Gyro_Y()
+float IMU_Get_Quat_Y()
 {
     return imuData.quaternion.y;
 }
@@ -362,7 +362,7 @@ float IMU_Get_Gyro_Y()
  * @return  z
  * @brief 
  **/
-float IMU_Get_Gyro_Z()
+float IMU_Get_Quat_Z()
 {
     return imuData.quaternion.z;
 }
