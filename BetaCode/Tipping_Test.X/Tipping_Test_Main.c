@@ -66,16 +66,16 @@ int main()
         Quat_X = IMU_Get_Quat_X();
         Quat_Y = IMU_Get_Quat_Y();
         Quat_Z = IMU_Get_Quat_Z();
-        printf(" Quaternion X       :  %e \n",Quat_X);
-        printf(" Quaternion Y       :  %e  \n"  ,Quat_Y);
-        printf(" Quaternion Z       :  %e \n",Quat_Z);
-        printf(" Quaternion Scaler :   %e \n\n",Scaler);
+        printf(" Quaternion X      :  %f \n"  ,Quat_X);
+        printf(" Quaternion Y      :  %f  \n" ,Quat_Y);
+        printf(" Quaternion Z      :  %f \n"  ,Quat_Z);
+        printf(" Quaternion Scaler :  %f \n\n",Scaler);
         euler_Pitch = IMU_Get_Euler_Pitch();
         euler_Roll  = IMU_Get_Euler_Roll();
         euler_Yaw = IMU_Get_Euler_Yaw();
-        printf(" Euler Pitch        :  %e \n",euler_Pitch);
-        printf(" Euler Roll         :  %e  \n",euler_Roll);
-        printf(" Euler Yaw       :  %e \n",euler_Yaw);
+        printf(" Euler Pitch        :  %f \n",euler_Pitch);
+        printf(" Euler Roll         :  %f  \n",euler_Roll);
+        printf(" Euler Yaw          :  %f \n",euler_Yaw);
         DelayMs(2000);
     }
     while (1); // sit and spin

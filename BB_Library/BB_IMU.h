@@ -11,7 +11,7 @@
 #define MEASURE_LENGTH      6
 #define QUAT_SCAL_FACTOR    16384.0 
 #define QUAT_LENGTH         8
-#define IN_RADIANS          TRUE // True for radians, False for degrees
+#define IN_RADIANS          FALSE // True for radians, False for degrees
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *

@@ -130,28 +130,31 @@ BOOL IMU_Init()
         if (dat == NDOF_CON) {
             printf("Configured\n"); 
         }
-        
+        UINT8 OldsysCal=-1;
         do {
                 IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
-                UINT8 sysCal = IMU_Get_Sys_Cal();
+                UINT8 sysCal = IMU_Get_Sys_Cal();  
+                
+                if (OldsysCal != sysCal){
+                    printf("sysCal: %d\n", sysCal);
+                }
+                OldsysCal = sysCal;
                 switch (sysCal) {
                 case 0:
                     Turn_Off_All_LED();
                     Turn_On_LED(BB_LED_1);
-                    printf("sysCal: %d\n", sysCal);
+                    
                     break;
                 case 1:
                     Turn_Off_All_LED();
                     Turn_On_LED(BB_LED_1);
                     Turn_On_LED(BB_LED_2);
-                    printf("sysCal: %d\n", sysCal);
                     break;
                 case 2:
                     Turn_Off_All_LED();
                     Turn_On_LED(BB_LED_1);
                     Turn_On_LED(BB_LED_2);
                     Turn_On_LED(BB_LED_3);
-                    printf("sysCal: %d\n", sysCal);
                     break;
                 case 3:
                     Turn_Off_All_LED();
@@ -159,7 +162,6 @@ BOOL IMU_Init()
                     Turn_On_LED(BB_LED_2);
                     Turn_On_LED(BB_LED_3);
                     Turn_On_LED(BB_LED_4);
-                    printf("sysCal: %d\n", sysCal);
                     break;
                 }
             } while (IMU_Get_Sys_Cal() < 3);
@@ -178,7 +180,7 @@ BOOL IMU_Init()
  **/
 BOOL IMU_Read_Euler_Angles()
 {
-    UINT8 eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    int eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
     int i;
     UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
     for (i = 0; i < MEASURE_LENGTH; i++) {
@@ -186,16 +188,18 @@ BOOL IMU_Read_Euler_Angles()
             printf("Error: in Write to OPR MODE \n");
         }
     }
+    printf("%x %x %x\n",eulerData[1], eulerData[0],((eulerData[1] << 8) | eulerData[0]));
 
     if (IN_RADIANS) {
         // store all euler data in a global struct
-        imuData.euler.yaw = (float) (((eulerData[1] << 8) | eulerData[0]) / RADIANS_FACTOR);
-        imuData.euler.roll = (float) (((eulerData[3] << 8) | eulerData[2]) / RADIANS_FACTOR);
-        imuData.euler.pitch = (float) (((eulerData[5] << 8) | eulerData[4]) / RADIANS_FACTOR);
+
+        imuData.euler.yaw   = ((float)((eulerData[1] << 8) | eulerData[0]) / RADIANS_FACTOR);
+        imuData.euler.roll  = ((float)((eulerData[3] << 8) | eulerData[2]) / RADIANS_FACTOR);
+        imuData.euler.pitch = ((float)((eulerData[5] << 8) | eulerData[4]) / RADIANS_FACTOR);
     } else {
-        imuData.euler.yaw = (float) (((eulerData[1] << 8) | eulerData[0]) / DEGREE_FACTOR);
-        imuData.euler.roll = (float) (((eulerData[3] << 8) | eulerData[2]) / DEGREE_FACTOR);
-        imuData.euler.pitch = (float) (((eulerData[5] << 8) | eulerData[4]) / DEGREE_FACTOR);
+        imuData.euler.yaw   = ((float)((eulerData[1] << 8) | eulerData[0]) / DEGREE_FACTOR);
+        imuData.euler.roll  = ((float)((eulerData[3] << 8) | eulerData[2]) / DEGREE_FACTOR);
+        imuData.euler.pitch = ((float)((eulerData[5] << 8) | eulerData[4]) / DEGREE_FACTOR);
     }
     return TRUE; // Add success check
 }
@@ -315,6 +319,7 @@ BOOL IMU_Read_Quaternion()
         }
     }
     // store all euler data in a global struct
+
     imuData.quaternion.scalar = (float) (((quatData[1] << 8) | quatData[0]) / QUAT_SCAL_FACTOR);
     imuData.quaternion.x = (float) (((quatData[3] << 8) | quatData[2]) / QUAT_SCAL_FACTOR);
     imuData.quaternion.y = (float) (((quatData[5] << 8) | quatData[4]) / QUAT_SCAL_FACTOR);
