@@ -6,12 +6,19 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
+#define IN_RADIANS          FALSE // True for radians, False for degrees
 #define RADIANS_FACTOR      900.0
 #define DEGREE_FACTOR       16.0
+
+#if IN_RADIANS
+#define SCALE_FACTOR RADIANS_FACTOR       
+#else
+#define SCALE_FACTOR DEGREE_FACTOR
+#endif
+
 #define MEASURE_LENGTH      6
 #define QUAT_SCAL_FACTOR    16384.0 
 #define QUAT_LENGTH         8
-#define IN_RADIANS          FALSE // True for radians, False for degrees
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
@@ -106,7 +113,7 @@ BOOL IMU_Read_Quaternion();
  * @return  x
  * @brief 
  **/
-float IMU_Get_Quat_Scalar();
+float IMU_Get_Quat_W();
 
 /**
  * Function: IMU_Get_Quat_x()

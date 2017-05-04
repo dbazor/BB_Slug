@@ -62,34 +62,6 @@ BOOL StartTransfer(BOOL restart)
     } while (!(status & I2C_START));
 
     return TRUE;
-    //    I2C_STATUS status;
-    //    //    printf("Start Transfer function\n");
-    //    // Send the Start (or Restart) signal
-    //    if (restart) {
-    //
-    //        //            printf("1bus not idle!\n");
-    //
-    //        I2CRepeatStart(BNO55_I2C_BUS);
-    //    } else {
-    //        // Wait for the bus to be idle, then start the transfer
-    //        while (!I2CBusIsIdle(BNO55_I2C_BUS)) {
-    //            //printf("2bus not idle!\n");
-    //        }
-    //
-    //        while (I2CStart(BNO55_I2C_BUS) != I2C_SUCCESS) {
-    //            printf("Error: Bus collision during transfer Start\n");
-    //            return FALSE;
-    //        }
-    //    }
-    //
-    //    // Wait for the signal to complete
-    //    do {
-    //        status = I2CGetStatus(BNO55_I2C_BUS);
-    //        //printf("do while in start \n");
-    //    } while (!(status & I2C_START));
-    //
-    //    //printf("out of do while\n");
-    //    return TRUE;
 }
 
 /**
@@ -117,7 +89,6 @@ BOOL TransmitOneByte(UINT8 data)
 
     return TRUE;
 }
-
 
 /**
  * Function: StopTransfer(void)
@@ -148,7 +119,6 @@ void StopTransfer(void)
  * Public Functions                                                           *
  ******************************************************************************/
 
-
 /**
  * Function: BB_I2C_Init()
  * @param None
@@ -163,7 +133,7 @@ void BB_I2C_Init()
     // Set the I2C baudrate
 
     UINT32 actualClock = I2CSetFrequency(BNO55_I2C_BUS, GetPeripheralClock(), I2C_CLOCK_FREQ);
-  
+
     if (abs(actualClock - I2C_CLOCK_FREQ) > I2C_CLOCK_FREQ / 10) {
 
         printf("Error: I2C1 clock frequency (%u) error exceeds 10%%.\n", (unsigned) actualClock);
@@ -193,14 +163,14 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     int DataSz;
     UINT8 i2cData[2];
     I2C_7_BIT_ADDRESS SlaveAddress;
-   // printf(" read address is %x \n", r_addr);
+    // printf(" read address is %x \n", r_addr);
     I2C_FORMAT_7_BIT_ADDRESS(SlaveAddress, s_addr, I2C_WRITE);
 
     i2cData[0] = SlaveAddress.byte;
     i2cData[1] = r_addr; // location to be read from
     i2cData[2] = *dat; // data to be sent
     DataSz = 3;
-    printf("Starting Write\n");
+    //printf("Starting Write\n");
 
     // Start the transfer to read the EEPROM.
     while (!StartTransfer(FALSE)) {
@@ -237,7 +207,6 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     StopTransfer();
 }
 
-
 /**
  * Function: BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
  * @param   s_addr  - Slave address
@@ -264,7 +233,7 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
     i2cData[0] = SlaveAddress.byte;
     i2cData[1] = r_addr; // location to be read from
     DataSz = 2;
-   // printf(" read address is %x \n", r_addr);
+    // printf(" read address is %x \n", r_addr);
 
     // Start the transfer to read the EEPROM.
     if (!StartTransfer(FALSE)) {
@@ -338,7 +307,6 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 * dat)
     StopTransfer();
 }
 
-
 /**
  * Function: BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
  * @param   s_addr  - Slave address
@@ -366,7 +334,7 @@ BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 * dat)
     i2cData[0] = SlaveAddress.byte;
     i2cData[1] = r_addr; // location to be read from
     DataSz = 2;
-    printf(" read address is %x \n", r_addr);
+    //printf(" read address is %x \n", r_addr);
 
     // Start the transfer to read the EEPROM.
     if (!StartTransfer(FALSE)) {

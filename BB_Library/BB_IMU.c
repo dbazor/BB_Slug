@@ -31,7 +31,7 @@ typedef struct gyroAxis {
 } gyroAxis;
 
 typedef struct quatAxis {
-    float scalar;
+    float w;
     float x;
     float y;
     float z;
@@ -47,7 +47,7 @@ typedef struct Calibration_IMU {
 typedef struct IMU_Data {
     gyroAxis gyro;
     eulerAxis euler;
-    short temp;
+    int temp;
     quatAxis quaternion;
     Calibration_IMU Calibration_Data;
 } IMU_Data;
@@ -128,22 +128,34 @@ BOOL IMU_Init()
             printf("Error: in Write to OPR MODE \n");
         }
         if (dat == NDOF_CON) {
-            printf("Configured\n"); 
-        }
-        UINT8 OldsysCal=-1;
-        do {
+            printf("Configured\n");
+            // stay in loop till calibrated
+            UINT8 oldSysCal = -1;
+            UINT8 oldGyroCal = -1;
+            UINT8 oldAccCal = -1;
+            UINT8 oldMagCal = -1;
+            do {
                 IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
-                UINT8 sysCal = IMU_Get_Sys_Cal();  
-                
-                if (OldsysCal != sysCal){
-                    printf("sysCal: %d\n", sysCal);
+                UINT8 sysCal  = IMU_Get_Sys_Cal();
+                UINT8 gyroCal = IMU_Get_Gyro_Cal();
+                UINT8 accCal  = IMU_Get_Acc_Cal();
+                UINT8 magCal  = IMU_Get_Mag_Cal();
+                if (oldSysCal != sysCal || oldGyroCal != gyroCal || oldAccCal != accCal || oldMagCal != magCal) {
+                    printf("Sys_Cal :  %d \n", sysCal);
+                    printf("Gyro_Cal:  %d \n", gyroCal);
+                    printf("Acc_Cal :  %d \n", accCal);
+                    printf("Mag_Cal :  %d \n", magCal);
                 }
-                OldsysCal = sysCal;
+                oldSysCal  = sysCal;
+                oldGyroCal = gyroCal;
+                oldAccCal  = accCal;
+                oldMagCal  = magCal;
+
                 switch (sysCal) {
                 case 0:
                     Turn_Off_All_LED();
                     Turn_On_LED(BB_LED_1);
-                    
+
                     break;
                 case 1:
                     Turn_Off_All_LED();
@@ -165,7 +177,8 @@ BOOL IMU_Init()
                     break;
                 }
             } while (IMU_Get_Sys_Cal() < 3);
-        return TRUE;
+            return TRUE;
+        }
     }
     printf("Error: Failed to configure\n");
     return FALSE;
@@ -180,27 +193,22 @@ BOOL IMU_Init()
  **/
 BOOL IMU_Read_Euler_Angles()
 {
-    int eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
-    int i;
+    INT8 eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    UINT8 i;
     UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
+    const double scale = SCALE_FACTOR;
     for (i = 0; i < MEASURE_LENGTH; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &eulerData[i])) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &eulerData[i])) {
             printf("Error: in Write to OPR MODE \n");
         }
+        dataLocation++;
     }
-    printf("%x %x %x\n",eulerData[1], eulerData[0],((eulerData[1] << 8) | eulerData[0]));
 
-    if (IN_RADIANS) {
-        // store all euler data in a global struct
+    // store all euler data in a global struct   
+    imuData.euler.yaw = ((((INT16) eulerData[1] << 8) | ((INT16) eulerData[0])) / scale);
+    imuData.euler.roll = ((((INT16) eulerData[3] << 8) | ((INT16) eulerData[2])) / scale);
+    imuData.euler.pitch = ((((INT16) eulerData[5] << 8) | ((INT16) eulerData[4])) / scale);
 
-        imuData.euler.yaw   = ((float)((eulerData[1] << 8) | eulerData[0]) / RADIANS_FACTOR);
-        imuData.euler.roll  = ((float)((eulerData[3] << 8) | eulerData[2]) / RADIANS_FACTOR);
-        imuData.euler.pitch = ((float)((eulerData[5] << 8) | eulerData[4]) / RADIANS_FACTOR);
-    } else {
-        imuData.euler.yaw   = ((float)((eulerData[1] << 8) | eulerData[0]) / DEGREE_FACTOR);
-        imuData.euler.roll  = ((float)((eulerData[3] << 8) | eulerData[2]) / DEGREE_FACTOR);
-        imuData.euler.pitch = ((float)((eulerData[5] << 8) | eulerData[4]) / DEGREE_FACTOR);
-    }
     return TRUE; // Add success check
 }
 
@@ -247,24 +255,21 @@ float IMU_Get_Euler_Yaw()
 BOOL IMU_Read_Gyro_Angles()
 {
     UINT8 GYRData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
-    int i;
+    UINT8 i;
     UINT8 dataLocation = BNO055_GYR_DATA_X_LSB;
+    const double scale = SCALE_FACTOR;
     for (i = 0; i < MEASURE_LENGTH; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &GYRData[i])) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &GYRData[i])) {
             printf("Error: in Write to OPR MODE \n");
         }
+        dataLocation++;
     }
 
-    if (IN_RADIANS) {
-        // store all Gyroscope data in a global struct
-        imuData.gyro.x = (float) (((GYRData[1] << 8) | GYRData[0]) / RADIANS_FACTOR);
-        imuData.gyro.y = (float) (((GYRData[3] << 8) | GYRData[2]) / RADIANS_FACTOR);
-        imuData.gyro.z = (float) (((GYRData[5] << 8) | GYRData[4]) / RADIANS_FACTOR);
-    } else {
-        imuData.gyro.x = (float) (((GYRData[1] << 8) | GYRData[0]) / DEGREE_FACTOR);
-        imuData.gyro.y = (float) (((GYRData[3] << 8) | GYRData[2]) / DEGREE_FACTOR);
-        imuData.gyro.z = (float) (((GYRData[5] << 8) | GYRData[4]) / DEGREE_FACTOR);
-    }
+    // store all Gyroscope data in a global struct
+    imuData.gyro.x = ((((INT16) GYRData[1] << 8) | ((INT16) GYRData[0])) / scale);
+    imuData.gyro.y = ((((INT16) GYRData[3] << 8) | ((INT16) GYRData[2])) / scale);
+    imuData.gyro.z = ((((INT16) GYRData[5] << 8) | ((INT16) GYRData[4])) / scale);
+
     return TRUE; // Add success check
 }
 
@@ -310,20 +315,31 @@ float IMU_Get_Gyro_Yaw()
  **/
 BOOL IMU_Read_Quaternion()
 {
-    UINT8 quatData[8] = {2, 2, 2, 2, 2, 2, 2, 2}; // registers init to zero - checks to see if read
+    INT8 quatData[8] = {2, 2, 2, 2, 2, 2, 2, 2}; // registers init to zero - checks to see if read
     int i;
+    const double scale = (1.0 / (1 << 14));
+    INT16 x, y, z, w;
+    x = y = z = w = 0;
+
+    // TODO replace this with multiread
     UINT8 dataLocation = BNO055_QUA_DATA_W_LSB;
     for (i = 0; i < 8; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation++, &quatData[i])) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &quatData[i])) {
             printf("Error: in Write to OPR MODE \n");
         }
+        dataLocation++;
     }
-    // store all euler data in a global struct
 
-    imuData.quaternion.scalar = (float) (((quatData[1] << 8) | quatData[0]) / QUAT_SCAL_FACTOR);
-    imuData.quaternion.x = (float) (((quatData[3] << 8) | quatData[2]) / QUAT_SCAL_FACTOR);
-    imuData.quaternion.y = (float) (((quatData[5] << 8) | quatData[4]) / QUAT_SCAL_FACTOR);
-    imuData.quaternion.z = (float) (((quatData[7] << 8) | quatData[6]) / QUAT_SCAL_FACTOR);
+    w = (((INT16) quatData[1]) << 8) | ((INT16) quatData[0]);
+    x = (((INT16) quatData[3]) << 8) | ((INT16) quatData[2]);
+    y = (((INT16) quatData[5]) << 8) | ((INT16) quatData[4]);
+    z = (((INT16) quatData[7]) << 8) | ((INT16) quatData[6]);
+
+    // store scaled all euler data in a global struct
+    imuData.quaternion.w = w * scale;
+    imuData.quaternion.x = x * scale;
+    imuData.quaternion.y = y * scale;
+    imuData.quaternion.z = z * scale;
 
     return TRUE; // Add success check
 }
@@ -334,9 +350,9 @@ BOOL IMU_Read_Quaternion()
  * @return  x
  * @brief 
  **/
-float IMU_Get_Quat_Scalar()
+float IMU_Get_Quat_W()
 {
-    return imuData.quaternion.scalar;
+    return imuData.quaternion.w;
 }
 
 /**

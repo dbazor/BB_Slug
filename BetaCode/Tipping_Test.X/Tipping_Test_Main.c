@@ -52,33 +52,40 @@ int main()
     //PID_Init(&motor1_pid, TRUE, MOTOR_1, MOTOR1_KP, MOTOR1_KI, MOTOR1_KD);
     //    PIDControl printArray[10];
 
-    float Scaler;
-    float Quat_X;
-    float Quat_Y;
-    float Quat_Z;
+    float quat_w;
+    float quat_x;
+    float quat_y;
+    float quat_z;
     float euler_Pitch;
     float euler_Roll;
     float euler_Yaw;
     while (1) {
         IMU_Read_Euler_Angles();
         IMU_Read_Quaternion();
-        Scaler = IMU_Get_Quat_Scalar();
-        Quat_X = IMU_Get_Quat_X();
-        Quat_Y = IMU_Get_Quat_Y();
-        Quat_Z = IMU_Get_Quat_Z();
-        printf(" Quaternion X      :  %f \n"  ,Quat_X);
-        printf(" Quaternion Y      :  %f  \n" ,Quat_Y);
-        printf(" Quaternion Z      :  %f \n"  ,Quat_Z);
-        printf(" Quaternion Scaler :  %f \n\n",Scaler);
+        IMU_Read_Calibration();
+        
+        quat_w = IMU_Get_Quat_W();
+        quat_x = IMU_Get_Quat_X();
+        quat_y = IMU_Get_Quat_Y();
+        quat_z = IMU_Get_Quat_Z();
+        printf("Quaternion W :  %f \n"  ,quat_w);
+        printf("Quaternion X :  %f \n"  ,quat_x);
+        printf("Quaternion Y :  %f \n"  ,quat_y);
+        printf("Quaternion Z :  %f \n\n",quat_z);
+        
+        euler_Yaw = IMU_Get_Euler_Yaw();
         euler_Pitch = IMU_Get_Euler_Pitch();
         euler_Roll  = IMU_Get_Euler_Roll();
-        euler_Yaw = IMU_Get_Euler_Yaw();
-        printf(" Euler Pitch        :  %f \n",euler_Pitch);
-        printf(" Euler Roll         :  %f  \n",euler_Roll);
-        printf(" Euler Yaw          :  %f \n",euler_Yaw);
-        DelayMs(2000);
+        printf("Euler Yaw  :  %f \n",euler_Yaw);
+        printf("Euler Pitch:  %f \n",euler_Pitch);
+        printf("Euler Roll :  %f \n",euler_Roll);
+        
+        printf("Sys_Cal :  %d \n",IMU_Get_Sys_Cal());
+        printf("Gyro_Cal:  %d \n",IMU_Get_Gyro_Cal());
+        printf("Acc_Cal :  %d \n",IMU_Get_Acc_Cal());
+        printf("Mag_Cal :  %d \n",IMU_Get_Mag_Cal());
+        DelayMs(1000);
     }
-    while (1); // sit and spin
 
     return 0;
 
