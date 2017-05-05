@@ -25,6 +25,14 @@
 #define MOTOR_2_DIR IOPORT_E, BIT_2
 #define MOTOR_3_DIR IOPORT_E, BIT_3
 
+// For matrix inverseA
+#define ONE_HALF    (float)(1/2)
+#define ONE_THIRD   (float)(2/3)
+#define TWO_THIRDS  (float)(2/3)
+#define ROOT3OVER3  (float)(0.577350269)
+#define HEIGHT      3
+#define WIDTH       3
+
 /*******************************************************************************
  * PROTOTYEPS                                                   *
  ******************************************************************************/
@@ -67,12 +75,22 @@ int GetMotorSpeed(int motorNum);
 int GetMotorDirection(int motorNum);
 
 /**
- * Function: GetMotorDirection()
- * @param   motorNum    - MOTOR_x, where x is 1, 2, 3
+ * Function: MotorsStop()
+ * @param
  * @return  
  * @brief   
  * @notes   
  **/
 void MotorsStop(void);
+
+/**
+ * Function: SetMotor_XYZ()
+ * @param   x, y, z
+ * @return  
+ * @brief   Virtual wheel translation for individual motor contribution. 
+ *          Parameter z is rotation, which we pass a zero to for now.
+ *          This function vector multiplies by inv(A) and then sets each motor.
+ **/
+void SetMotor_XYZ(INT32 x, INT32 y, INT32 z);
 
 #endif	/* BB_MOTOR_H */
