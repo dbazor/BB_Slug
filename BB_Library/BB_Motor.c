@@ -32,6 +32,14 @@ volatile static int motor3Speed;
 volatile static int motor1Direction;
 volatile static int motor2Direction;
 volatile static int motor3Direction;
+static float L = 0.0;
+
+float inverseA[HEIGHT][WIDTH] = {
+    {0, TWO_THIRDS, (L / 3)},
+    {ROOT3OVER3, -ONE_THIRD, (L / 3)},
+    {-ROOT3OVER3, -ONE_THIRD, (L / 3)}
+};
+
 #define SPEED(x) (90 + (x))
 #define DRIVE(x,y,z)   SetMotorSpeed(90 + (x),MOTOR_1); SetMotorSpeed(90 + (y),MOTOR_2); SetMotorSpeed(90 + (z),MOTOR_3)
 
@@ -90,7 +98,7 @@ void MotorsInit(void)
     PORTSetPinsDigitalOut(IOPORT_E, BIT_0 | BIT_1 | BIT_2 | BIT_3);
 
     // Set all pins high initially (or forward)
-    PORTSetBits(IOPORT_E, BIT_0 | BIT_1 | BIT_2| BIT_3);
+    PORTSetBits(IOPORT_E, BIT_0 | BIT_1 | BIT_2 | BIT_3);
 }
 
 /*  SetDrive(int angle, int rotation)
@@ -113,7 +121,7 @@ void SetDrive(int angle, int rotation)
     float x = cos(M_PI * (float) angle / 180);
     float y = sin(M_PI * (float) angle / 180);
 
-    DRIVE((int)(x*MAXSPEED),(int)((-0.5*x + 0.866*y)*MAXSPEED),(int)((-0.5*x-0.866*y)*MAXSPEED));
+    DRIVE((int) (x * MAXSPEED), (int) ((-0.5 * x + 0.866 * y) * MAXSPEED), (int) ((-0.5 * x - 0.866 * y) * MAXSPEED));
 }
 
 /*  SetMotorSpeed(int PWM, int motorNum)
@@ -343,4 +351,32 @@ void MotorsStop(void)
     motor1Direction = FORWARD;
     motor2Direction = FORWARD;
     motor3Direction = FORWARD;
+}
+
+/**
+ * Function: SetMotor_XYZ()
+ * @param   x, y, z
+ * @return  
+ * @brief   Virtual wheel translation for individual motor contribution. 
+ *          Parameter z is rotation, which we pass a zero to for now.
+ *          This function vector multiplies by inv(A) and then sets each motor.
+ * @precon  x, y, and z are to be scaled properly
+ **/
+void SetMotor_XYZ(INT32 x, INT32 y, INT32 z)
+{
+    INT32 v[HEIGHT] = {x, y, z};
+    INT32 pwm[HEIGHT] = {0, 0, 0};
+    int row;
+    int col;
+
+    // Matrix 'inverseA' multiplied by motor frame vector 'y'
+    for (row = 0; row < HEIGHT; row++) {
+        for (col = 0; col < WIDTH; col++) {
+            pwm[row] += v[col] * inverseA[row][col];
+        }
+    }
+
+    SetMotorSpeed(pwm[1], MOTOR_1);
+    SetMotorSpeed(pwm[2], MOTOR_2);
+    SetMotorSpeed(pwm[3], MOTOR_3);
 }
