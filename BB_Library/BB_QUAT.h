@@ -27,7 +27,7 @@ typedef struct Quat {
  * @return 
  * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_QUAT_FILL(float w, float x, float y, float z, Quat *q);
+void BB_Quat_Fill(float w, float x, float y, float z, Quat *q);
 
 
 /**
@@ -36,7 +36,7 @@ void BB_QUAT_FILL(float w, float x, float y, float z, Quat *q);
  * @return 
  * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_QUAT_INV(const Quat *q, Quat *qInv);
+void BB_Quat_Inv(const Quat *q, Quat *qInv);
 
 /**
  * Function: BB_QUAT_MULT()
@@ -44,7 +44,7 @@ void BB_QUAT_INV(const Quat *q, Quat *qInv);
  * @return  None
  * @brief 
  * @author Daniel Bazor */
-void BB_QUAT_MULT(const Quat *p, const Quat *q, Quat *result);
+void BB_Quat_Mult(const Quat *p, const Quat *q, Quat *result);
 
 /**
  * Function: BB_QUAT_ROTATE()
@@ -52,7 +52,7 @@ void BB_QUAT_MULT(const Quat *p, const Quat *q, Quat *result);
  * @return  
  * @brief   
  * @author Daniel Bazor */
-void BB_QUAT_ROTATE(const Quat *q, const Quat *vector, Quat *result);
+void BB_Quat_Rotate(const Quat *q, const Quat *vector, Quat *result);
 
 /**
  * Function: BB_QUAT_TIP_VECTOR()
@@ -60,7 +60,7 @@ void BB_QUAT_ROTATE(const Quat *q, const Quat *vector, Quat *result);
  * @return  
  * @brief   
  * @author Daniel Bazor */
-void BB_QUAT_TIP_VECTOR(const Quat *q, Quat *result);
+void BB_Quat_Tip_Vector(const Quat *q, Quat *result);
 
 /**
  * Function: BB_QUAT_FIND_TIP_ANGLE_X()
@@ -69,7 +69,7 @@ void BB_QUAT_TIP_VECTOR(const Quat *q, Quat *result);
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_QUAT_FIND_TIP_ANGLE_X(const Quat *tipVect);
+float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect);
 
 /**
  * Function: BB_QUAT_FIND_TIP_ANGLE_Y()
@@ -78,6 +78,13 @@ float BB_QUAT_FIND_TIP_ANGLE_X(const Quat *tipVect);
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_QUAT_FIND_TIP_ANGLE_Y(const Quat *tipVect);
+float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect);
 
+/**
+ * Function: BB_QUAT_Print()
+ * @param   q
+ * @return  
+ * @brief   Prints the quaternion passed by reference   
+ * @author Daniel Bazor */
+float BB_Quat_Print(const Quat *q);
 #endif

@@ -34,7 +34,7 @@
  * @return 
  * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_QUAT_FILL(float w, float x, float y, float z, Quat *q)
+void BB_Quat_Fill(float w, float x, float y, float z, Quat *q)
 {
     q->w = w;
     q->x = x;
@@ -48,7 +48,7 @@ void BB_QUAT_FILL(float w, float x, float y, float z, Quat *q)
  * @return 
  * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_QUAT_INV(const Quat *q, Quat *qInv)
+void BB_Quat_Inv(const Quat *q, Quat *qInv)
 {
     qInv->w = q->w;
     qInv->x = -q->x;
@@ -62,7 +62,7 @@ void BB_QUAT_INV(const Quat *q, Quat *qInv)
  * @return  None
  * @brief 
  * @author Daniel Bazor */
-void BB_QUAT_MULT(const Quat *q, const Quat *r, Quat *result)
+void BB_Quat_Mult(const Quat *q, const Quat *r, Quat *result)
 {
     result->w = r->w * q->w - r->x * q->x - r->y * q->y - r->z * q->z;
     result->x = r->w * q->x + r->x * q->w - r->y * q->z + r->z * q->y;
@@ -76,13 +76,13 @@ void BB_QUAT_MULT(const Quat *q, const Quat *r, Quat *result)
  * @return  
  * @brief   
  * @author Daniel Bazor */
-void BB_QUAT_ROTATE(const Quat *q, const Quat *vector, Quat *result)
+void BB_Quat_Rotate(const Quat *q, const Quat *vector, Quat *result)
 {
     Quat qInv, temp;
-    BB_QUAT_INV(q, &qInv);
+    BB_Quat_Inv(q, &qInv);
 
-    BB_QUAT_MULT(q, vector, &temp);
-    BB_QUAT_MULT(&temp, &qInv, result);
+    BB_Quat_Mult(q, vector, &temp);
+    BB_Quat_Mult(&temp, &qInv, result);
 }
 
 /**
@@ -92,15 +92,15 @@ void BB_QUAT_ROTATE(const Quat *q, const Quat *vector, Quat *result)
  * @brief   Does quaternion rotation for special case of up-vector
  * @precond q must be a unit quaternion     
  * @author Daniel Bazor */
-void BB_QUAT_TIP_VECTOR(const Quat *q, Quat *result)
+void BB_Quat_Tip_Vector(const Quat *q, Quat *result)
 {
     Quat qInv, temp, upVec;
-    BB_QUAT_INV(q, &qInv); // fills q-inverse
+    BB_Quat_Inv(q, &qInv); // fills q-inverse
 
-    BB_QUAT_FILL(0, 0, 0, 1, &upVec); // fills up-vector
-    BB_QUAT_FILL(-q->z, q->y, -q->x, q->w, &temp); // acts as first quat mult
+    BB_Quat_Fill(0, 0, 0, 1, &upVec); // fills up-vector
+    BB_Quat_Fill(-q->z, q->y, -q->x, q->w, &temp); // acts as first quat mult
 
-    BB_QUAT_MULT(&temp, &qInv, result); // the normalizing quat mult
+    BB_Quat_Mult(&temp, &qInv, result); // the normalizing quat mult
 }
 
 /**
@@ -110,7 +110,7 @@ void BB_QUAT_TIP_VECTOR(const Quat *q, Quat *result)
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_QUAT_FIND_TIP_ANGLE_X(const Quat *tipVect)
+float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 {
     return atan2(tipVect->x, tipVect->z);
 }
@@ -122,7 +122,21 @@ float BB_QUAT_FIND_TIP_ANGLE_X(const Quat *tipVect)
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_QUAT_FIND_TIP_ANGLE_Y(const Quat *tipVect)
+float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
 {
     return atan2(tipVect->y, tipVect->z);
+}
+
+/**
+ * Function: BB_QUAT_Print()
+ * @param   q
+ * @return  
+ * @brief   Prints the quaternion passed by reference followed by a newLine in format [w x y z]'
+ * @author Daniel Bazor */
+float BB_Quat_Print(const Quat *q){
+        printf("[%.4f %.4f %.4f %.4f]'\n",
+            q->w,
+            q->x,
+            q->y,
+            q->z);
 }

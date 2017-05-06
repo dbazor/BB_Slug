@@ -64,26 +64,54 @@ int main()
 
     // START UNIT TEST
     //
-    
+
     // Below are the MATLAB dummy valued quaternions
-    // q = [ 1 0 2 3 ]'
-    // r = [ 0 1 4 1 ]'
+
+    Quat q, r, result, qInv;
     
-    Quat q, r, qInverse;
-    BB_QUAT_FILL(1, 0, 2, 3, &q);
-    BB_QUAT_FILL(0, 1, 4, 1, &r);
-    BB_QUAT_INV(q, &qInverse);
-    printf("qInverse: [%f %f %f %f]'", 
-            qInverse->w, 
-            qInverse->x, 
-            qInverse->y, 
-            qInverse->z);
-    printf("q: [%f %f %f %f]'", 
-            qInverse->w, 
-            qInverse->x, 
-            qInverse->y, 
-            qInverse->z);
+    /* Test Quat fill*/
+    // fill a q the slow way
+    q.w = 1;
+    q.x = 2;
+    q.y = 3;
+    q.z = 4;
+    // fill r with quat fill
+    BB_Quat_Fill(1, 2, 3, 4, &r);
+    // print both which should be the same
+    printf("\nThe quaternion q should be the same as r.\n")
+    printf("q: ");
+    BB_Quat_Print(&q);
+    printf(" r: ");
+    BB_Quat_Print(&r);
     
+    /* Test Quat Inv */
+    BB_Quat_Inv(q, &qInv); // fill qInv with the inverse of q
+    printf("\nThe quaternion qInv should have negated vector x y z values.\n")
+    printf("q: ");
+    BB_Quat_Print(&q);
+    printf(" qInv: ");
+    BB_Quat_Print(&qInv);
+    
+    /* Test Quat mult */
+    BB_Quat_Fill(1, 0, 2, 3, &q); // q = [ 1 0 2 3 ]'
+    BB_Quat_Fill(0, 1, 3, 1, &r); // r = [ 0 1 4 1 ]'
+    BB_Quat_Mult(&q, &r, &result); // Multiply the two. Order matters.
+    
+    printf("\nThe quat mult result should be  .\n")
+    printf("q: ");
+    BB_Quat_Print(&q);
+    printf(" qInv: ");
+    BB_Quat_Print(&qInv);
+    // Test Quat rotate
+    // Test Quat tip vector
+    // Test BB_QUAT_FIND_TIP_ANGLE_X
+    // Test BB_QUAT_FIND_TIP_ANGLE_Y
+
+    BB_Quat_Fill(1, 0, 2, 3, &q);
+    BB_Quat_Fill(0, 1, 4, 1, &r);
+    
+    
+
     //
     // END OF UNIT TEST
 
