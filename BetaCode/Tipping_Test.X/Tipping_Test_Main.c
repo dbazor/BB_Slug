@@ -20,6 +20,7 @@
 #include <math.h>
 #include "BB_IMU.h"
 #include "BB_MOTOR_CONTROLLER.h"
+#include "BB_QUAT.h"
 
 /* ------------------------------------------------------------ */
 /*				Definitions			*/
@@ -45,7 +46,7 @@ volatile float eCountRadians = 0;
 int main()
 {
     BB_BOARD_Init();
-    IMU_Init();
+    // IMU_Init();
     PORTSetPinsDigitalOut(JC03); // PMOD Pin JC 03
     PORTClearBits(JC03);
 
@@ -59,31 +60,58 @@ int main()
     float euler_Pitch;
     float euler_Roll;
     float euler_Yaw;
+
+
+    // START UNIT TEST
+    //
+    
+    // Below are the MATLAB dummy valued quaternions
+    // q = [ 1 0 2 3 ]'
+    // r = [ 0 1 4 1 ]'
+    
+    Quat q, r, qInverse;
+    BB_QUAT_FILL(1, 0, 2, 3, &q);
+    BB_QUAT_FILL(0, 1, 4, 1, &r);
+    BB_QUAT_INV(q, &qInverse);
+    printf("qInverse: [%f %f %f %f]'", 
+            qInverse->w, 
+            qInverse->x, 
+            qInverse->y, 
+            qInverse->z);
+    printf("q: [%f %f %f %f]'", 
+            qInverse->w, 
+            qInverse->x, 
+            qInverse->y, 
+            qInverse->z);
+    
+    //
+    // END OF UNIT TEST
+
     while (1) {
-        IMU_Read_Euler_Angles();
-        IMU_Read_Quaternion();
-        IMU_Read_Calibration();
-        
-        quat_w = IMU_Get_Quat_W();
-        quat_x = IMU_Get_Quat_X();
-        quat_y = IMU_Get_Quat_Y();
-        quat_z = IMU_Get_Quat_Z();
-        printf("Quaternion W :  %f \n"  ,quat_w);
-        printf("Quaternion X :  %f \n"  ,quat_x);
-        printf("Quaternion Y :  %f \n"  ,quat_y);
-        printf("Quaternion Z :  %f \n\n",quat_z);
-        
-        euler_Yaw = IMU_Get_Euler_Yaw();
-        euler_Pitch = IMU_Get_Euler_Pitch();
-        euler_Roll  = IMU_Get_Euler_Roll();
-        printf("Euler Yaw  :  %f \n",euler_Yaw);
-        printf("Euler Pitch:  %f \n",euler_Pitch);
-        printf("Euler Roll :  %f \n",euler_Roll);
-        
-        printf("Sys_Cal :  %d \n",IMU_Get_Sys_Cal());
-        printf("Gyro_Cal:  %d \n",IMU_Get_Gyro_Cal());
-        printf("Acc_Cal :  %d \n",IMU_Get_Acc_Cal());
-        printf("Mag_Cal :  %d \n",IMU_Get_Mag_Cal());
+        //        IMU_Read_Euler_Angles();
+        //        IMU_Read_Quaternion();
+        //        IMU_Read_Calibration();
+
+        //        quat_w = IMU_Get_Quat_W();
+        //        quat_x = IMU_Get_Quat_X();
+        //        quat_y = IMU_Get_Quat_Y();
+        //        quat_z = IMU_Get_Quat_Z();
+        //        printf("Quaternion W :  %f \n"  ,quat_w);
+        //        printf("Quaternion X :  %f \n"  ,quat_x);
+        //        printf("Quaternion Y :  %f \n"  ,quat_y);
+        //        printf("Quaternion Z :  %f \n\n",quat_z);
+        //        
+        //        euler_Yaw = IMU_Get_Euler_Yaw();
+        //        euler_Pitch = IMU_Get_Euler_Pitch();
+        //        euler_Roll  = IMU_Get_Euler_Roll();
+        //        printf("Euler Yaw  :  %f \n",euler_Yaw);
+        //        printf("Euler Pitch:  %f \n",euler_Pitch);
+        //        printf("Euler Roll :  %f \n",euler_Roll);
+        //        
+        //        printf("Sys_Cal :  %d \n",IMU_Get_Sys_Cal());
+        //        printf("Gyro_Cal:  %d \n",IMU_Get_Gyro_Cal());
+        //        printf("Acc_Cal :  %d \n",IMU_Get_Acc_Cal());
+        //        printf("Mag_Cal :  %d \n",IMU_Get_Mag_Cal());
         DelayMs(1000);
     }
 

@@ -32,12 +32,13 @@ volatile static int motor3Speed;
 volatile static int motor1Direction;
 volatile static int motor2Direction;
 volatile static int motor3Direction;
-static float L = 0.0;
 
-float inverseA[HEIGHT][WIDTH] = {
-    {0, TWO_THIRDS, (L / 3)},
-    {ROOT3OVER3, -ONE_THIRD, (L / 3)},
-    {-ROOT3OVER3, -ONE_THIRD, (L / 3)}
+
+
+const float inverseA[HEIGHT][WIDTH] = {
+    {0, TWO_THIRDS, MOTOR_BRACKET_LENGTH},
+    {ROOT3OVER3, -ONE_THIRD, MOTOR_BRACKET_LENGTH},
+    {-ROOT3OVER3, -ONE_THIRD, MOTOR_BRACKET_LENGTH}
 };
 
 #define SPEED(x) (90 + (x))

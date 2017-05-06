@@ -9,7 +9,7 @@
 #include <plib.h>
 #include "BNO55_Register_Map.h"
 #include "BB_BOARD.h"
-
+#include "BB_QUAT.h"
 
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -30,13 +30,6 @@ typedef struct gyroAxis {
     float z;
 } gyroAxis;
 
-typedef struct quatAxis {
-    float w;
-    float x;
-    float y;
-    float z;
-} quatAxis;
-
 typedef struct Calibration_IMU {
     int ACC_Cal;
     int GYR_Cal;
@@ -48,7 +41,7 @@ typedef struct IMU_Data {
     gyroAxis gyro;
     eulerAxis euler;
     int temp;
-    quatAxis quaternion;
+    Quat quaternion;
     Calibration_IMU Calibration_Data;
 } IMU_Data;
 
@@ -342,6 +335,21 @@ BOOL IMU_Read_Quaternion()
     imuData.quaternion.z = z * scale;
 
     return TRUE; // Add success check
+}
+
+/**
+ * Function: IMU_Get_Quat()
+ * @param   
+ * @return  
+ * @brief 
+ * @precond Must call IMU_Read_Quaternion() before to get most recent data
+ **/
+void IMU_Get_Quat(Quat *q)
+{
+    q->w = imuData.quaternion.w;
+    q->x = imuData.quaternion.x;
+    q->y = imuData.quaternion.y;
+    q->z = imuData.quaternion.z;
 }
 
 /**

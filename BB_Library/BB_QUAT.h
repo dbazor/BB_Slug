@@ -10,7 +10,7 @@
 /*******************************************************************************
  * PUBLIC Variables                                                            *
  ******************************************************************************/
-typedef struct Quaternion {
+typedef struct Quat {
     float w;
     float x;
     float y;
@@ -22,57 +22,62 @@ typedef struct Quaternion {
  ******************************************************************************/
 
 /**
+ * Function: BB_QUAT_FILL()
+ * @param   float w, float x, float y, float z, Quat *q
+ * @return 
+ * @brief   Fills r with the inverse of q.
+ * @author Daniel Bazor */
+void BB_QUAT_FILL(float w, float x, float y, float z, Quat *q);
+
+
+/**
  * Function: BB_QUAT_INV()
- * @param None
- * @return None
- * @brief Init function for I2C1. Sets clock and enables I2C1
+ * @param   q, qInv
+ * @return 
+ * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_QUAT_INV();
+void BB_QUAT_INV(const Quat *q, Quat *qInv);
 
 /**
- * Function: BB_I2C_Write()
- * @param   s_addr  - Slave address
- *          r_addr  - Data address
- * @return  TRUE    - Data was sent successfully
- *          FALSE   - There was a problem with the transfer
- * @brief   Write one Byte to the I2C1 Bus. Writes to the slave at s_addr at 
- *      the location r_addr the data at *dat
- * @example <code>
- *              success = BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
- *          </code>
+ * Function: BB_QUAT_MULT()
+ * @param    p, q, result
+ * @return  None
+ * @brief 
  * @author Daniel Bazor */
-BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat);
+void BB_QUAT_MULT(const Quat *p, const Quat *q, Quat *result);
 
 /**
- * Function: BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
- * @param   s_addr  - Slave address
- *          r_addr  - Data address
- *          *dat    - where to read data to
- * @return  TRUE    - Data was sent successfully
- *          FALSE   - There was a problem with the transfer
- * @brief   Read one Byte from the I2C1 Bus. Reads from the slave at s_addr 
- *          at the location r_addr the data at *dat
- * @example <code>
- *              success = BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 &dat);
- *          </code>
+ * Function: BB_QUAT_ROTATE()
+ * @param   p, vector, result
+ * @return  
+ * @brief   
  * @author Daniel Bazor */
-BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat);
+void BB_QUAT_ROTATE(const Quat *q, const Quat *vector, Quat *result);
 
 /**
- * Function: BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
- * @param   s_addr  - Slave address
- *          r_addr  - Data address
- *          *dat    - where to read data to
- *          len     - length of data to read
- * @return  TRUE    - Data was sent successfully
- *          FALSE   - There was a problem with the transfer
- * @brief   Read multiple Byte from the I2C1 Bus Reads from the slave at s_addr 
- *          at the location r_addr the data at *dat
- * @example <code>
- *              success = BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, len, UINT8 &dat);
- *          </code>
+ * Function: BB_QUAT_TIP_VECTOR()
+ * @param   q, result
+ * @return  
+ * @brief   
  * @author Daniel Bazor */
+void BB_QUAT_TIP_VECTOR(const Quat *q, Quat *result);
 
-BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat);
+/**
+ * Function: BB_QUAT_FIND_TIP_ANGLE_X()
+ * @param   tipVect
+ * @return  float tip angle in x
+ * @brief   
+ * @precond      
+ * @author Daniel Bazor */
+float BB_QUAT_FIND_TIP_ANGLE_X(const Quat *tipVect);
+
+/**
+ * Function: BB_QUAT_FIND_TIP_ANGLE_Y()
+ * @param   tipVect
+ * @return  float tip angle in y
+ * @brief   
+ * @precond      
+ * @author Daniel Bazor */
+float BB_QUAT_FIND_TIP_ANGLE_Y(const Quat *tipVect);
 
 #endif
