@@ -78,18 +78,18 @@ int main()
     // fill r with quat fill
     BB_Quat_Fill(1, 2, 3, 4, &r);
     // print both which should be the same
-    printf("\nThe quaternion q should be the same as r.\n")
+    printf("\nThe quaternion q should be the same as r.\n");
     printf("q: ");
     BB_Quat_Print(&q);
-    printf(" r: ");
+    printf("r: ");
     BB_Quat_Print(&r);
     
     /* Test Quat Inv */
-    BB_Quat_Inv(q, &qInv); // fill qInv with the inverse of q
-    printf("\nThe quaternion qInv should have negated vector x y z values.\n")
+    BB_Quat_Inv(&q, &qInv); // fill qInv with the inverse of q
+    printf("\nThe quaternion qInv should have negated vector x y z values.\n");
     printf("q: ");
     BB_Quat_Print(&q);
-    printf(" qInv: ");
+    printf("qInv: ");
     BB_Quat_Print(&qInv);
     
     /* Test Quat mult */
@@ -97,12 +97,16 @@ int main()
     BB_Quat_Fill(0, 1, 3, 1, &r); // r = [ 0 1 4 1 ]'
     BB_Quat_Mult(&q, &r, &result); // Multiply the two. Order matters.
     
-    printf("\nThe quat mult result should be  .\n")
+    printf("\nThe quat mult result should be [-11 -9 7 -1]' .\n");
     printf("q: ");
     BB_Quat_Print(&q);
-    printf(" qInv: ");
-    BB_Quat_Print(&qInv);
-    // Test Quat rotate
+    printf("r: ");
+    BB_Quat_Print(&r);    
+    printf("result: ");
+    BB_Quat_Print(&r);
+    
+    /* Test Quat rotate */
+    
     // Test Quat tip vector
     // Test BB_QUAT_FIND_TIP_ANGLE_X
     // Test BB_QUAT_FIND_TIP_ANGLE_Y
