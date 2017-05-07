@@ -1,15 +1,8 @@
 /*
- * File:   BB_I2C.c
+ * File:   BB_QUAT.c
  * Author: BB Team
- *
  * 
  */
-// I2C Master utilities, 100 kHz, using polling rather than interrupts
-// The functions must be callled in the correct order as per the I2C protocol
-// Master will use I2C1 SDA1 (D9) and SCL1 (D10)
-// Connect these through resistors to Vcc (3.3 V). 2.4k resistors recommended,
-// but something close will do.
-// Connect SDA1 to the SDA pin on the slave and SCL1 to the SCL pin on a slave
 
 #include "BB_QUAT.h"
 #include "BB_BOARD.h"

@@ -61,14 +61,14 @@ int main()
     float euler_Roll;
     float euler_Yaw;
 
-
+    
     // START UNIT TEST
     //
 
-    // Below are the MATLAB dummy valued quaternions
+    // @Note    This unit test is, and can be, compared to a MATLAB script in the google drive
 
     Quat q, r, result, qInv;
-    
+
     /* Test Quat fill*/
     // fill a q the slow way
     q.w = 1;
@@ -83,7 +83,7 @@ int main()
     BB_Quat_Print(&q);
     printf("r: ");
     BB_Quat_Print(&r);
-    
+
     /* Test Quat Inv */
     BB_Quat_Inv(&q, &qInv); // fill qInv with the inverse of q
     printf("\nThe quaternion qInv should have negated vector x y z values.\n");
@@ -91,31 +91,52 @@ int main()
     BB_Quat_Print(&q);
     printf("qInv: ");
     BB_Quat_Print(&qInv);
-    
+
     /* Test Quat mult */
     BB_Quat_Fill(1, 0, 2, 3, &q); // q = [ 1 0 2 3 ]'
-    BB_Quat_Fill(0, 1, 3, 1, &r); // r = [ 0 1 4 1 ]'
+    BB_Quat_Fill(0, 1, 3, 1, &r); // r = [ 0 1 3 1 ]'
     BB_Quat_Mult(&q, &r, &result); // Multiply the two. Order matters.
-    
+
     printf("\nThe quat mult result should be [-11 -9 7 -1]' .\n");
     printf("q: ");
     BB_Quat_Print(&q);
     printf("r: ");
-    BB_Quat_Print(&r);    
-    printf("result: ");
     BB_Quat_Print(&r);
-    
+    printf("result: ");
+    BB_Quat_Print(&result);
+
     /* Test Quat rotate */
-    
+    BB_Quat_Fill(0.866, 0.0, 0.25, 0.433, &q); // q = [ 1 0 2 3 ]'
+    BB_Quat_Fill(0, 1, -1, 2, &r); // r = [ 0 1 3 1 ]'
+    BB_Quat_Rotate(&q, &r, &result); // Multiply the two. Order matters.
+
+    printf("\nThe quat rotate result should be [0 2.116 0.558 1.1005]' .\n");
+    printf("q: ");
+    BB_Quat_Print(&q);
+    printf("r: ");
+    BB_Quat_Print(&r);
+    printf("result: ");
+    BB_Quat_Print(&result);
+
     // Test Quat tip vector
+    BB_Quat_Fill(0.866, 0.0, 0.25, 0.433, &q); // q = [ 1 0 2 3 ]'
+    BB_Quat_Fill(0, 0, 0, 1, &r); // r = [ 0 0 0 1 ]'
+    BB_Quat_Tip_Vector(&q, &result);
+
+    printf("\nThe quat tip veclor should be [0.433 0.2165 0.875]' .\n");
+    printf("q: ");
+    BB_Quat_Print(&q);
+    printf("r: ");
+    BB_Quat_Print(&r);
+    printf("tip vector: ");
+    BB_Quat_Print(&result);
+
     // Test BB_QUAT_FIND_TIP_ANGLE_X
+    printf("Tip angle x should be: 0.4595, and currently is: %f", BB_Quat_Find_Tip_Angle_X(&result));
+
     // Test BB_QUAT_FIND_TIP_ANGLE_Y
-
-    BB_Quat_Fill(1, 0, 2, 3, &q);
-    BB_Quat_Fill(0, 1, 4, 1, &r);
+    printf("Tip angle y should be: 0.2426, and currently is: %f", BB_Quat_Find_Tip_Angle_Y(&result));
     
-    
-
     //
     // END OF UNIT TEST
 
