@@ -2,6 +2,7 @@
 #define BB_IMU_H
 
 #include "BB_BOARD.h"
+#include "BB_QUAT.h"
 #include "BNO55_I2C_driver.h"
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
@@ -106,6 +107,15 @@ float IMU_Get_Gyro_Yaw();
  * @brief 
  **/
 BOOL IMU_Read_Quaternion();
+
+/**
+ * Function: IMU_Get_Quat()
+ * @param   
+ * @return  
+ * @brief 
+ * @precond Must call IMU_Read_Quaternion() before to get most recent data
+ **/
+void IMU_Get_Quat(Quat *q);
 
 /**
  * Function: IMU_Get_Quat_Scalar()

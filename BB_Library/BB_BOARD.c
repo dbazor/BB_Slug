@@ -106,6 +106,7 @@ void BB_BOARD_Init()
     MotorsInit();
     Encoder_Init();
     BB_I2C_Init();
+    IMU_Init();
 
     // PID Motor Controller Interrupt
     // *NOTE:

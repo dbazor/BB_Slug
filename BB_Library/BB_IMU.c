@@ -129,20 +129,17 @@ BOOL IMU_Init()
             UINT8 oldMagCal = -1;
             do {
                 IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
-                UINT8 sysCal  = IMU_Get_Sys_Cal();
+                UINT8 sysCal = IMU_Get_Sys_Cal();
                 UINT8 gyroCal = IMU_Get_Gyro_Cal();
-                UINT8 accCal  = IMU_Get_Acc_Cal();
-                UINT8 magCal  = IMU_Get_Mag_Cal();
+                UINT8 accCal = IMU_Get_Acc_Cal();
+                UINT8 magCal = IMU_Get_Mag_Cal();
                 if (oldSysCal != sysCal || oldGyroCal != gyroCal || oldAccCal != accCal || oldMagCal != magCal) {
-                    printf("Sys_Cal :  %d \n", sysCal);
-                    printf("Gyro_Cal:  %d \n", gyroCal);
-                    printf("Acc_Cal :  %d \n", accCal);
-                    printf("Mag_Cal :  %d \n", magCal);
+                    printf("Sys_Cal :  %d Gyro_Cal:  %d Acc_Cal :  %d Mag_Cal :  %d \n", sysCal, gyroCal, accCal, magCal);
                 }
-                oldSysCal  = sysCal;
+                oldSysCal = sysCal;
                 oldGyroCal = gyroCal;
-                oldAccCal  = accCal;
-                oldMagCal  = magCal;
+                oldAccCal = accCal;
+                oldMagCal = magCal;
 
                 switch (sysCal) {
                 case 0:
