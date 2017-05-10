@@ -15,13 +15,17 @@
 #include "BB_LEDS.h"
 #include <peripheral/i2c.h>
 #include "BB_I2C.h"
+
+// Additional Includes (April 7, 2017)
+#include "BNO55_Register_Map.h"
+#include "BNO55_I2C_driver.h"
+
+#include "BB_IMU.h"
+// 
+
 /* ------------------------------------------------------------ */
 /*				Definitions										*/
 /* ------------------------------------------------------------ */
-#define cntMsDelay 10000
-//#define Nop() asm( "nop" )                 //No-operation; asm stands for assembly, using an assembly command in C.  Cool!
-
-
 // KEEP IN MIND THAT THE ADDRESS BYTE IS REALLY 7 BITS, THE ADDRESS IS SHIFTED TO THE LEFT BY 1 BIT
 // FOR READ/WRITE
 #define SLAVE_ADDR 0x28
@@ -29,31 +33,11 @@
 /* ------------------------------------------------------------ */
 /*				Prototypes										*/
 /* ------------------------------------------------------------ */
-void DeviceInit();
-//void DelayInit();
-//void DelayMs(int cms);
-//function declaration from Northwestern
-void SendData(int, unsigned int);
-void Delayms(unsigned t);
-//extern interrupt void InputCapture2(void);
-
 
 /* ------------------------------------------------------------ */
 /*				Private Variables								*/
 
 /* ------------------------------------------------------------ */
-
-
-typedef enum i2c_states {
-    START,
-    WRITE,
-    READ,
-    ACK,
-    RESTART,
-    NACK,
-    STOP,
-    IDLE
-} i2c_states;
 
 /* ------------------------------------------------------------ */
 /*				Main											*/
@@ -62,318 +46,225 @@ typedef enum i2c_states {
 
 int main()
 {
+
+
     BB_BOARD_Init();
-    //    DelayInit();
-    DeviceInit();
-
-    __builtin_disable_interrupts();
-    //    i2c_slave_setup(SLAVE_ADDR); // init I2C5, which we use as a slave
-    //    // (comment out if slave is on another pic)
-    //    i2c_master_setup(); // init I2C2, which we use as a master
-    __builtin_enable_interrupts();
-
-    // Running sample code from Northwestern
-#if 1
-    {
-        // init functions
-        I2CConfigure(I2C1, I2C_ENABLE_SLAVE_CLOCK_STRETCHING | I2C_ENABLE_HIGH_SPEED);
-        I2CSetFrequency(I2C1, BB_BOARD_GetPBClock(), I2C_CLOCK_FREQ);
-        // not setting slave address since the board will only be running in master mode
-        I2CEnable(I2C1, TRUE);
-
-        int rcv = 0xFF; //For received data
-        int dataLocation = BNO055_CHIP_ID_ADDR;
-
-        while (1) {
-            SendData(dataLocation, SLAVE_ADDR); //Sends hex data 0xAA to slave address 0x40
-            rcv = RcvData(SLAVE_ADDR); //Receives data from address 0x40
-            printf("The output of %x is: %8x\n",dataLocation, rcv);
-            Delayms(500);
-            dataLocation++;
+    printf("After init \n");
+    int i;
+    INT8 eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    UINT8 dataLocation = 0;//BNO055_EUL_HEADING_LSB;
+    const double scale = SCALE_FACTOR; 
+    UINT8 rcvData[6]; // clear each loop to be sure it is new
+    for (i = 0; i < MEASURE_LENGTH; i++) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &eulerData[i])) {
+            printf("Error: in Write to OPR MODE \n");
         }
+        dataLocation++;
     }
-#endif 
 
-#if 0
-    {
-        char slave = (SLAVE_ADDR << 1); //
-        i2c_master_start(); // Begin the start sequence
-        i2c_master_send(slave); // send the slave address, left shifted by 1,
+    for (i = 0; i < 6; i++) {
+        printf("euler angle %d : %x\n", i, rcvData[i]);
+
     }
-#endif
 
-
-#if 0
-    {
-        while (1) {
-            UINT16 slave = (SLAVE_ADDR << 1); //
-            I2CEnable(I2C1, TRUE);
-            I2CConfigure(I2C1, 0);
-            I2CSetSlaveAddress(I2C1, slave, 0, I2C_USE_7BIT_ADDRESS);
-            I2CSendByte(I2C1, 0x05);
+    while (! BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 6, &rcvData[0])) {
+            printf("Error: in multiread \n");
         }
+
+    for (i = 0; i < 6; i++) {
+        printf("euler angle %d : %x\n", i, rcvData[i]);
+
     }
-#endif
 
 
-#if 0
-    {
-        typedef volatile unsigned char * volatile buffer_t;
 
-        static buffer_t to_write = NULL; // data to write
-        static buffer_t to_read = NULL; // data to read - not sure if this should be a char or not
+    //    
+    //    UINT8 sndData = 1; // clear each loop to be sure it is new
+    //
+    //    while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //        printf("Error: in Write to OPR MODE \n");
+    //    }
+    //    printf("rcvData: %x\n sndData: %x\n", rcvData, sndData);
+    //    rcvData = 0xFD;
+    //
+    //    while (!BB_I2C_Write(BNO55_I2C_ADDR, dataLocation, &sndData)) {
+    //        printf("Error: in Write to OPR MODE \n");
+    //    }
+    //    //Delayms(50);
+    //    while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //        printf("Error: in Write to OPR MODE \n");
+    //    }
+    //    printf("rcvData: %x\n End of loop\n\n", rcvData);
+    //    Delayms(2000);
+    //    dataLocation = BNO055_EUL_HEADING_LSB;
 
-        static volatile unsigned char address = 0; // the 7-bit address to write to / read from
-        static volatile unsigned int n_write = 0; // number of data bytes to write
-        static volatile unsigned int n_read = 0; // number of data bytes to read
+    //    IMU_Data ReturnData;
+    //    UINT8 data;
+    //    IMU_Data TestStruct;
+    //    Calibration_IMU CaiStat;
+    //    while (1) {
+    //
+    //        // sanity check    
+    //
+    //        //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_LSB, &data);
+    //        //        printf(" EUL PITCH LSB = %d \n", data);
+    //        //        BB_I2C_Read(BNO55_I2C_ADDR, BNO055_EUL_PITCH_MSB, &data);
+    //        //        printf(" EUL PITCH MSB = %d \n", data);
+    //        CaiStat = IMU_Get_Calibration();
+    //        printf(" The Calibratin Status of the IMU: %d \n", CaiStat.SYS_Cal);
+    //        printf(" Before the function call \n");
+    //        TestStruct = IMU_Get_GYR_Angles();
+    //        printf("\n\n");
+    //        printf("heading = %f \n", TestStruct.GYR.Heading);
+    //        printf("roll    = %f \n", TestStruct.GYR.Roll);
+    //        printf("pitch   = %f \n", TestStruct.GYR.Pitch);
+    //
+    //        //        IMU_Read_Euler_Angles(ReturnData);
+    //        //        float roll_float = (float) ReturnData.euler.Roll;
+    //        //        float pitch_float = (float) ReturnData.euler.Pitch;
+    //        //        float heading_float = (float) ReturnData.euler.Heading;
+    //        //
+    //
+    //        Delayms(500);
 
-        i2c_master_start(); // Begin the start sequence
-        i2c_states state = START; // initialize state
+    //UINT8 rcvData1[6] = {2, 2, 2, 2, 2, 2}; // clear each loop to be sure it is new
 
-        int startFlag = 0;
-        int writeFlag = 0;
-        int readFlag = 0;
-        int restartFlag = 0;
-        int readFlag = 0;
-        int ackFlag = 0;
-        int nackFlag = 0;
-        int stopFlag = 0;
+    //        while (!BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 2, &rcvData1[0])) {
+    //            printf("Error: in Write to OPR MODE \n");
+    //        }
+    //        printf(" after read multi \n");
+    //        int i;
+    //        for (i = 0; i < 6; i++) {
+    //            printf("euler angle %d : %x\n", i, rcvData1[i]);
+    //            rcvData1[i] = i;
+    //
+    //        }
 
-        while (1) {
-            //printf("Read byte from I2C1RCV: %8x\n", I2C1RCV);
+    //
+    //        printf(" after read multi \n");
+    //        int i;
+    //        for (i = 0; i < 6; i++) {
+    //            while (!BB_I2C_Read(SLAVE_ADDR, dataLocation++, &rcvData1[i])) {
+    //                printf("Error: in Write to OPR MODE \n");
+    //            }
+    //            printf("euler angle %d : %x\n", i, rcvData1[i]);
+    //            //rcvData1[i] = i;
+    //
+    //        }
+    //        printf("End of loop\n\n");
 
-            static unsigned int write_index = 0, read_index = 0;
+    //        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //            printf("Error: in Write to OPR MODE \n");
+    //        }
+    //        printf("rcvData: %x\n End of loop\n\n", rcvData);
+    //        dataLocation++;
+    //        Delayms(3000);
+    ////        
+    ////
+    //        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //            printf("Error: in Write to OPR MODE \n");
+    //        }
+    //        printf("rcvData: %x\n sndData: %x\n", rcvData, sndData);
+    //        rcvData = 0xFD;
+    //
+    //        while (!BB_I2C_Write(BNO55_I2C_ADDR, dataLocation, &sndData)) {
+    //            printf("Error: in Write to OPR MODE \n");
+    //        }
+    //        //Delayms(50);
+    //        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &rcvData)) {
+    //            printf("Error: in Write to OPR MODE \n");
+    //        }
+    //        printf("rcvData: %x\n End of loop\n\n", rcvData);
 
-            switch (state) {
-            case START: // start bit has been sent
-                startFlag = 1;
-                write_index = 0; // reset indices
-                read_index = 0;
-                if (n_write > 0) { // there are bytes to write
-                    state = WRITE; // transition to write mode
-                    I2C1TRN = address << 1; // send the address, with write mode set
-                } else {
-                    state = ACK; // skip directly to reading
-                    I2C1TRN = (address << 1) & 1;
-                }
-                break;
 
-            case WRITE: // a write has finished
-                writeFlag = 1;
-                if (I2C1STATbits.ACKSTAT) { // error: didn?t receive an ACK from the slave
-                    state = ERROR;
-                } else {
-                    if (write_index < n_write) { // still more data to write
-                        I2C1TRN = to_write[write_index]; // write the data
-                        ++write_index;
-                    } else { // done writing data, time to read or stop
-                        if (n_read > 0) { // we want to read so issue a restart
-                            state = RESTART;
-                            I2C1CONbits.RSEN = 1; // send the restart to begin the read
-                        } else { // no data to read, issue a stop
-                            state = STOP;
-                            I2C1CONbits.PEN = 1;
-                        }
-                    }
-                }
-                break;
 
-            case RESTART: // the restart has completed
-                restartFlag = 1;
-                // now we want to read, send the read address
-                state = ACK; // when interrupted in ACK mode, we will initiate reading a byte
-                I2C1TRN = (address << 1) | 1; // the address is sent with the read bit sent
-                break;
-
-            case READ:
-                readFlag = 1;
-                to_read[read_index] = I2C1RCV;
-                ++read_index;
-                if (read_index == n_read) { // we are done reading, so send a nack
-                    state = NACK;
-                    I2C1CONbits.ACKDT = 1;
-                } else {
-                    state = ACK;
-                    I2C1CONbits.ACKDT = 0;
-                }
-                I2C1CONbits.ACKEN = 1;
-                break;
-
-            case ACK:
-                // just sent an ack meaning we want to read more bytes
-                state = READ;
-                I2C1CONbits.RCEN = 1;
-                break;
-
-            case NACK:
-                //issue a stop
-                state = STOP;
-                I2C1CONbits.PEN = 1;
-                break;
-
-            case STOP:
-                state = IDLE; // we have returned to idle mode, indicating that the data is ready
-                break;
-
-            default:
-                // some error has occurred
-                state = ERROR;
-            }
-            IFS0bits.I2C1MIF = 0; //clear the interrupt flag
-        }
-    }
-#endif
-
-    while (1) {
-        ;
-    }
+    //sndData++;
+    //    }
 
     return 0;
 }
 
+// BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 6, &rcvData[0]);
+//        printf(" after read multi \n");
+//        int i;
+//        for (i = 0; i < 6; i++) {
+//            printf("euler angle %d : %x\n", i, rcvData[i]);
 //
-//
+//        }
 
-/* ------------------------------------------------------------ */
-
-/* ------------------------------------------------------------ */
-
-/*  DeviceInit()
- **
- **	Parameters:
- **		none
- **
- **	Return Value:
- **		none
- **
- **	Errors:
- **		none
- **
- **	Description:
- **		Set LD1 through LD4 as digital output
-/* ------------------------------------------------------------ */
-
-void DeviceInit()
-{
-    //On MX4ck LED1 is on RG12
-    //		   LED2 is on RG13
-    //		   LED3 is on RG14
-    //		   LED4 is on RG15
-    //Set ports for onboard LEDs to outputs
-    PORTSetPinsDigitalOut(IOPORT_G, BIT_12 | BIT_13 | BIT_14 | BIT_15);
-    PORTSetPinsDigitalOut(IOPORT_E, BIT_1);
-    PORTSetPinsDigitalIn(IOPORT_E, BIT_0);
-}
-
-void Delayms(unsigned t)
-// This uses Timer 1, can be changed to another timer. Assumes FPB = SYS_FREQ
-{
-    OpenTimer1(T1_ON | T1_PS_1_256, 0xFFFF);
-    while (t--) { // t x 1ms loop
-        WriteTimer1(0);
-        while (ReadTimer1() < SYS_FREQ / 256 / 1000);
-    }
-    CloseTimer1();
-} // Delayms
-
-/*****************************************************
- * RcvData(unsigned int address)		     *
- *					  	     *
- * Gets a byte of data from I2C slave device at      *
- *  ADDRESS.					     *
- *						     *
- * Returns: Received data			     *
- ****************************************************/
-int RcvData(unsigned int address)
-{
-    StartI2C1(); //Send line start condition
-    IdleI2C1(); //Wait to complete
-    MasterWriteI2C1((address << 1) | 1); //Write out slave address OR 1 (read command)
-    IdleI2C1(); //Wait to complete
-    int rcv = MasterReadI2C1(); //Read in a value
-    StopI2C1(); //Send line stop condition
-    IdleI2C1(); //Wait co complete
-    return rcv; //Return read value
-}
-
-/***************************************************
- * SendData(int data, unsigned int address)        *
- *						    *
- * Sends a byte of data (DATA) over the I2C line   *
- *	to I2C address ADDRESS			    *
- *						    *
- * Returns: nothing				    *
- ***************************************************/
-void SendData(int data, unsigned int address)
-{
-    StartI2C1(); //Send the Start Bit
-    IdleI2C1(); //Wait to complete
-
-    MasterWriteI2C1((address << 1) | 0); //Sends the slave address over the I2C line.  This must happen first so the 
-    //proper slave is selected to receive data.
-    IdleI2C1(); //Wait to complete
-
-    MasterWriteI2C1(data); //Sends data byte over I2C line
-    IdleI2C1(); //Wait to complete
-
-    StopI2C1(); //Send the Stop condition
-    IdleI2C1(); //Wait to complete
-
-} //end function
-
-
-///* ------------------------------------------------------------ */
-//
-///***	DelayInit
-// **
-// **	Parameters:
-// **		none
-// **
-// **	Return Value:
-// **		none
-// **
-// **	Errors:
-// **		none
-// **
-// **	Description:
-// **		Initialized the hardware for use by delay functions. This
-// **		initializes Timer 1 to count at 10Mhz.
-///* ------------------------------------------------------------ */
-//
-//void DelayInit()
+//int main()
 //{
-//    unsigned int tcfg;
+//    BB_BOARD_Init();
 //
-//    /* Configure Timer 1. This sets it up to count a 10Mhz with a period of 0xFFFF
-//     */
-//    tcfg = T1_ON | T1_IDLE_CON | T1_SOURCE_INT | T1_PS_1_8 | T1_GATE_OFF | T1_SYNC_EXT_OFF;
-//    OpenTimer1(tcfg, 0xFFFF);
+//    int rcv = 0xFF; //For received data
+//    int dataLocation = 0; //  UNIT_SEL; // do this later
+//    unsigned char rcvData = 0xF0;
+//    unsigned char sndData = 0x01;
+//    unsigned char dat;
 //
-//}
+//    //    dataLocation = BNO055_ACC_DATA_X_LSB; // this is a read only value!
+//    dataLocation = BNO055_CHIP_ID;
+//    printf("Starting\n");
 //
-///* ------------------------------------------------------------ */
+//    BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
+//    printf("0 Chip id: %x\n", rcvData);
+//    Delayms(1000);
+//    //    RcvData(dataLocation);
+//    //    printf("0 Chip id: %d\n", rcvData);
+//    //    Delayms(1000);
+//    dataLocation = BNO055_GYR_OFFSET_Z_MSB;
+//    while (1) {
+//        //         Read test
+//        UINT8 addr = 0;
+//        for (addr = 0; addr < 6; addr++) {
+//            BB_I2C_Read(SLAVE_ADDR, addr, &rcvData);
+//            printf("0 Chip id: %x\n", rcvData);
+//            Delayms(1000);
+//        }
+//        // TEST: 
+//        // 1) Read register 
+//        // 2) Attempt to write to register
+//        // 3) Read register again
+//        // 4) Attempt to write to register again
+//        // 5) Read register for the last time
 //
-///***	DelayMs
-// **
-// **	Parameters:
-// **		cms			- number of milliseconds to delay
-// **
-// **	Return Value:
-// **		none
-// **
-// **	Errors:
-// **		none
-// **
-// **	Description:
-// **		Delay the requested number of milliseconds. Uses Timer1.
-///* ------------------------------------------------------------ */
+//        // Select BNO055 config mode
 //
-//void DelayMs(int cms)
-//{
-//    int ims;
+//        BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
+//        printf("1 Received byte: %x\n", rcvData);
+//        Delayms(1000);
 //
-//    for (ims = 0; ims < cms; ims++) {
-//        WriteTimer1(0);
-//        while (ReadTimer1() < cntMsDelay);
+//        sndData = 0x01;
+//        BB_I2C_Write(SLAVE_ADDR, dataLocation, &sndData);
+//        printf("2 Transmitted byte: %x\n", sndData);
+//        Delayms(1000);
+//
+//        BB_I2C_Read(SLAVE_ADDR, dataLocation++, &rcvData);
+//        printf("3 Received byte: %x\n", rcvData);
+//        Delayms(1000);
+//        //
+//        //        sndData = 0x23;
+//        //        BB_I2C_Write(SLAVE_ADDR, dataLocation, &sndData);
+//        //        printf("4 Transmitted byte: %x\n", sndData);
+//        //        Delayms(1000);
+//        //
+//        //        BB_I2C_Read(SLAVE_ADDR, dataLocation, &rcvData);
+//        //        printf("5 Received byte: %x\n", rcvData);
+//        //        Delayms(1000);
+//
+//        //        MPU_I2C_Write(BNO55_I2C_ADDR, OPR_MODE, &dat);
+//        //        Delayms(50);
+//        //        MPU_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, dat);
+//        //        if (dat == NDOF_CON) {
+//        //            printf("Configured\n");
+//        //        }
+//
+//        printf("end of loop \n \n");
+//        Delayms(5000);
+//        //        sndData++;
 //    }
+//
+//
+//    return 0;
 //}
+

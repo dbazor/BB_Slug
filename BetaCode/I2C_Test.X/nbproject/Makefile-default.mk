@@ -19,7 +19,7 @@ endif
 endif
 
 # Environment
-MKDIR=mkdir -p
+MKDIR=gnumkdir -p
 RM=rm -f 
 MV=mv 
 CP=cp 
@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=I2C_Main_Test.c ../../BB_Library/BB_BOARD.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_UART.c BB_I2C.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_Motor.c
+SOURCEFILES_QUOTED_IF_SPACED=I2C_Main_Test.c ../../BB_Library/BB_BOARD.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_MOTOR_CONTROLLER.c ../../BB_Library/BB_QUAT.c ../../BB_Library/BB_UART.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/I2C_Main_Test.o ${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/I2C_Main_Test.o.d ${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d ${OBJECTDIR}/_ext/418195140/BB_UART.o.d ${OBJECTDIR}/BB_I2C.o.d ${OBJECTDIR}/_ext/418195140/BB_Encoder.o.d ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/I2C_Main_Test.o ${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ${OBJECTDIR}/_ext/418195140/BB_UART.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/I2C_Main_Test.o.d ${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d ${OBJECTDIR}/_ext/418195140/BB_Encoder.o.d ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d ${OBJECTDIR}/_ext/418195140/BB_UART.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/I2C_Main_Test.o ${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o
+OBJECTFILES=${OBJECTDIR}/I2C_Main_Test.o ${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ${OBJECTDIR}/_ext/418195140/BB_UART.o
 
 # Source Files
-SOURCEFILES=I2C_Main_Test.c ../../BB_Library/BB_BOARD.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_UART.c BB_I2C.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_Motor.c
+SOURCEFILES=I2C_Main_Test.c ../../BB_Library/BB_BOARD.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_MOTOR_CONTROLLER.c ../../BB_Library/BB_QUAT.c ../../BB_Library/BB_UART.c
 
 
 CFLAGS=
@@ -112,23 +112,23 @@ ${OBJECTDIR}/_ext/418195140/BB_BOARD.o: ../../BB_Library/BB_BOARD.c  nbproject/M
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_BOARD.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_BOARD.o ../../BB_Library/BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/_ext/418195140/BB_IMU.o: ../../BB_Library/BB_IMU.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ../../BB_Library/BB_IMU.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_I2C.o: ../../BB_Library/BB_I2C.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ../../BB_Library/BB_I2C.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 ${OBJECTDIR}/_ext/418195140/BB_LEDS.o: ../../BB_Library/BB_LEDS.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d 
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_LEDS.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ../../BB_Library/BB_LEDS.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/_ext/418195140/BB_UART.o: ../../BB_Library/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o.d 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_UART.o ../../BB_Library/BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/BB_I2C.o: BB_I2C.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/BB_I2C.o.d 
-	@${RM} ${OBJECTDIR}/BB_I2C.o 
-	@${FIXDEPS} "${OBJECTDIR}/BB_I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/BB_I2C.o.d" -o ${OBJECTDIR}/BB_I2C.o BB_I2C.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/_ext/418195140/BB_Encoder.o: ../../BB_Library/BB_Encoder.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
@@ -141,6 +141,24 @@ ${OBJECTDIR}/_ext/418195140/BB_Motor.o: ../../BB_Library/BB_Motor.c  nbproject/M
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d 
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_Motor.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_Motor.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ../../BB_Library/BB_Motor.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o: ../../BB_Library/BB_MOTOR_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ../../BB_Library/BB_MOTOR_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_QUAT.o: ../../BB_Library/BB_QUAT.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ../../BB_Library/BB_QUAT.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_UART.o: ../../BB_Library/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_UART.o ../../BB_Library/BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 else
 ${OBJECTDIR}/I2C_Main_Test.o: I2C_Main_Test.c  nbproject/Makefile-${CND_CONF}.mk
@@ -155,23 +173,23 @@ ${OBJECTDIR}/_ext/418195140/BB_BOARD.o: ../../BB_Library/BB_BOARD.c  nbproject/M
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_BOARD.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_BOARD.o ../../BB_Library/BB_BOARD.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/_ext/418195140/BB_IMU.o: ../../BB_Library/BB_IMU.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ../../BB_Library/BB_IMU.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_I2C.o: ../../BB_Library/BB_I2C.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_I2C.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_I2C.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ../../BB_Library/BB_I2C.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 ${OBJECTDIR}/_ext/418195140/BB_LEDS.o: ../../BB_Library/BB_LEDS.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d 
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_LEDS.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ../../BB_Library/BB_LEDS.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/_ext/418195140/BB_UART.o: ../../BB_Library/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o.d 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_UART.o ../../BB_Library/BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
-	
-${OBJECTDIR}/BB_I2C.o: BB_I2C.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/BB_I2C.o.d 
-	@${RM} ${OBJECTDIR}/BB_I2C.o 
-	@${FIXDEPS} "${OBJECTDIR}/BB_I2C.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/BB_I2C.o.d" -o ${OBJECTDIR}/BB_I2C.o BB_I2C.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/_ext/418195140/BB_Encoder.o: ../../BB_Library/BB_Encoder.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
@@ -184,6 +202,24 @@ ${OBJECTDIR}/_ext/418195140/BB_Motor.o: ../../BB_Library/BB_Motor.c  nbproject/M
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d 
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_Motor.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_Motor.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ../../BB_Library/BB_Motor.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o: ../../BB_Library/BB_MOTOR_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ../../BB_Library/BB_MOTOR_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_QUAT.o: ../../BB_Library/BB_QUAT.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ../../BB_Library/BB_QUAT.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/_ext/418195140/BB_UART.o: ../../BB_Library/BB_UART.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_UART.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_UART.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_UART.o ../../BB_Library/BB_UART.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 
@@ -204,7 +240,7 @@ else
 dist/${CND_CONF}/${IMAGE_TYPE}/I2C_Test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}: ${OBJECTFILES}  nbproject/Makefile-${CND_CONF}.mk   
 	@${MKDIR} dist/${CND_CONF}/${IMAGE_TYPE} 
 	${MP_CC} $(MP_EXTRA_LD_PRE)  -mprocessor=$(MP_PROCESSOR_OPTION)  -o dist/${CND_CONF}/${IMAGE_TYPE}/I2C_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} ${OBJECTFILES_QUOTED_IF_SPACED}          -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD)  -Wl,--defsym=__MPLAB_BUILD=1$(MP_EXTRA_LD_POST)$(MP_LINKER_FILE_OPTION),--no-code-in-dinit,--no-dinit-in-serial-mem,-Map="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map",--memorysummary,dist/${CND_CONF}/${IMAGE_TYPE}/memoryfile.xml
-	${MP_CC_DIR}/xc32-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/I2C_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} 
+	${MP_CC_DIR}\\xc32-bin2hex dist/${CND_CONF}/${IMAGE_TYPE}/I2C_Test.X.${IMAGE_TYPE}.${DEBUGGABLE_SUFFIX} 
 endif
 
 
@@ -223,7 +259,7 @@ endif
 # Enable dependency checking
 .dep.inc: .depcheck-impl
 
-DEPFILES=$(shell "${PATH_TO_IDE_BIN}"mplabwildcard ${POSSIBLE_DEPFILES})
+DEPFILES=$(shell mplabwildcard ${POSSIBLE_DEPFILES})
 ifneq (${DEPFILES},)
 include ${DEPFILES}
 endif

@@ -106,71 +106,71 @@ BOOL IMU_Init()
         printf("Error: in Write to OPR MODE \n");
     }
     printf(" PWR MODE \n");
-
-    // Write Configuration to BNO55 Registers
-    // EXIT Config mode and switch to selected Operation mode
-    for (i = 0; i <= 5; i++) { // S 21
-        //       dat = AMG_CON;
-        dat = NDOF_CON;
-        printf(" in loop %d OPR MODE \n", i);
-        while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
-            printf("Error: in Write to OPR MODE \n");
-        }
-        DelayMs(100);
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat)) {
-            printf("Error: in Write to OPR MODE \n");
-        }
-        if (dat == NDOF_CON) {
-            printf("Configured\n");
-            // stay in loop till calibrated
-            UINT8 oldSysCal = -1;
-            UINT8 oldGyroCal = -1;
-            UINT8 oldAccCal = -1;
-            UINT8 oldMagCal = -1;
-            do {
-                IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
-                UINT8 sysCal = IMU_Get_Sys_Cal();
-                UINT8 gyroCal = IMU_Get_Gyro_Cal();
-                UINT8 accCal = IMU_Get_Acc_Cal();
-                UINT8 magCal = IMU_Get_Mag_Cal();
-                if (oldSysCal != sysCal || oldGyroCal != gyroCal || oldAccCal != accCal || oldMagCal != magCal) {
-                    printf("Sys_Cal :  %d Gyro_Cal:  %d Acc_Cal :  %d Mag_Cal :  %d \n", sysCal, gyroCal, accCal, magCal);
-                }
-                oldSysCal = sysCal;
-                oldGyroCal = gyroCal;
-                oldAccCal = accCal;
-                oldMagCal = magCal;
-
-                switch (sysCal) {
-                case 0:
-                    Turn_Off_All_LED();
-                    Turn_On_LED(BB_LED_1);
-
-                    break;
-                case 1:
-                    Turn_Off_All_LED();
-                    Turn_On_LED(BB_LED_1);
-                    Turn_On_LED(BB_LED_2);
-                    break;
-                case 2:
-                    Turn_Off_All_LED();
-                    Turn_On_LED(BB_LED_1);
-                    Turn_On_LED(BB_LED_2);
-                    Turn_On_LED(BB_LED_3);
-                    break;
-                case 3:
-                    Turn_Off_All_LED();
-                    Turn_On_LED(BB_LED_1);
-                    Turn_On_LED(BB_LED_2);
-                    Turn_On_LED(BB_LED_3);
-                    Turn_On_LED(BB_LED_4);
-                    break;
-                }
-            } while (IMU_Get_Sys_Cal() < 3);
-            return TRUE;
-        }
-    }
-    printf("Error: Failed to configure\n");
+// this is commented out temp
+//    // Write Configuration to BNO55 Registers
+//    // EXIT Config mode and switch to selected Operation mode
+//    for (i = 0; i <= 5; i++) { // S 21
+//        //       dat = AMG_CON;
+//        dat = NDOF_CON;
+//        printf(" in loop %d OPR MODE \n", i);
+//        while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
+//            printf("Error: in Write to OPR MODE \n");
+//        }
+//        DelayMs(100);
+//        while (!BB_I2C_Read(BNO55_I2C_ADDR, OPR_MODE, &dat)) {
+//            printf("Error: in Write to OPR MODE \n");
+//        }
+//        if (dat == NDOF_CON) {
+//            printf("Configured\n");
+//            // stay in loop till calibrated
+//            UINT8 oldSysCal = -1;
+//            UINT8 oldGyroCal = -1;
+//            UINT8 oldAccCal = -1;
+//            UINT8 oldMagCal = -1;
+//            do {
+//                IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
+//                UINT8 sysCal = IMU_Get_Sys_Cal();
+//                UINT8 gyroCal = IMU_Get_Gyro_Cal();
+//                UINT8 accCal = IMU_Get_Acc_Cal();
+//                UINT8 magCal = IMU_Get_Mag_Cal();
+//                if (oldSysCal != sysCal || oldGyroCal != gyroCal || oldAccCal != accCal || oldMagCal != magCal) {
+//                    printf("Sys_Cal :  %d Gyro_Cal:  %d Acc_Cal :  %d Mag_Cal :  %d \n", sysCal, gyroCal, accCal, magCal);
+//                }
+//                oldSysCal = sysCal;
+//                oldGyroCal = gyroCal;
+//                oldAccCal = accCal;
+//                oldMagCal = magCal;
+//
+//                switch (sysCal) {
+//                case 0:
+//                    Turn_Off_All_LED();
+//                    Turn_On_LED(BB_LED_1);
+//
+//                    break;
+//                case 1:
+//                    Turn_Off_All_LED();
+//                    Turn_On_LED(BB_LED_1);
+//                    Turn_On_LED(BB_LED_2);
+//                    break;
+//                case 2:
+//                    Turn_Off_All_LED();
+//                    Turn_On_LED(BB_LED_1);
+//                    Turn_On_LED(BB_LED_2);
+//                    Turn_On_LED(BB_LED_3);
+//                    break;
+//                case 3:
+//                    Turn_Off_All_LED();
+//                    Turn_On_LED(BB_LED_1);
+//                    Turn_On_LED(BB_LED_2);
+//                    Turn_On_LED(BB_LED_3);
+//                    Turn_On_LED(BB_LED_4);
+//                    break;
+//                }
+//            } while (IMU_Get_Sys_Cal() < 3);
+//            return TRUE;
+//        }
+//    }
+//    printf("Error: Failed to configure\n");
     return FALSE;
 }
 
