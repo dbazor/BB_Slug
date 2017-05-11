@@ -97,6 +97,6 @@ BOOL BB_I2C_Read(UINT8 s_addr, UINT8 r_addr, UINT8 *dat);
  *          </code>
  * @author Daniel Bazor */
 
-BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 *dat);
+BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, BYTE *dat);
 
 #endif

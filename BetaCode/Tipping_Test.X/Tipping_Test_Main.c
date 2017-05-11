@@ -141,6 +141,7 @@ int main()
         IMU_Read_Euler_Angles();
         IMU_Read_Quaternion();
         IMU_Read_Calibration();
+        IMU_Read_Gyro_Angles();
 
         printf("Sys_Cal :  %d \n", IMU_Get_Sys_Cal());
         printf("Gyro_Cal:  %d \n", IMU_Get_Gyro_Cal());
@@ -171,11 +172,12 @@ int main()
 
         /* Test BB_QUAT_FIND_TIP_ANGLE_X */
         float xAngle = BB_Quat_Find_Tip_Angle_X(&vector);
-        printf("\nTip angle x currently is: %frad and %fdeg\n",xAngle,RadiansToDegrees(xAngle));
+        printf("\nTip angle x currently is: %frad and %fdeg\n", xAngle, RadiansToDegrees(xAngle));
 
         /* Test BB_QUAT_FIND_TIP_ANGLE_Y */
         float yAngle = BB_Quat_Find_Tip_Angle_Y(&vector);
-        printf("\nTip angle y currently is: %frad and %fdeg\n",yAngle,RadiansToDegrees(yAngle));
+        printf("\nTip angle y currently is: %frad and %fdeg\n", yAngle, RadiansToDegrees(yAngle));
+        printf("\n\n\n\n\n");
         DelayMs(500);
     }
 
