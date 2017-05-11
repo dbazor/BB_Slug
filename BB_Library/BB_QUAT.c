@@ -36,6 +36,27 @@ void BB_Quat_Fill(float w, float x, float y, float z, Quat *q)
 }
 
 /**
+ * Function: BB_Quat_Normalize()
+ * @param   q, qInv
+ * @return 
+ * @brief   Fills r with the inverse of q.
+ * @author Daniel Bazor */
+void BB_Quat_Normalize(Quat *q)
+{
+    float w = q->w;
+    float x = q->x;
+    float y = q->y;
+    float z = q->z;
+    
+    float normInv = 1/sqrt(w*w + x*x + y*y + z*z);
+    
+    q->w = w * normInv;
+    q->x = x * normInv;
+    q->y = y * normInv;
+    q->z = z * normInv;
+}
+
+/**
  * Function: BB_QUAT_INV()
  * @param   q, qInv
  * @return 
@@ -105,7 +126,8 @@ void BB_Quat_Tip_Vector(const Quat *q, Quat *result)
  * @author Daniel Bazor */
 float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 {
-    return atan(tipVect->x / tipVect->z);
+    return atan2(tipVect->x, tipVect->z);
+    //return atan(tipVect->x / tipVect->z);
 }
 
 /**
@@ -117,7 +139,8 @@ float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
  * @author Daniel Bazor */
 float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
 {
-    return atan(tipVect->y / tipVect->z);
+    return atan2(tipVect->y, tipVect->z);
+    //return atan(tipVect->y / tipVect->z);
 }
 
 /**
@@ -127,7 +150,7 @@ float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
  * @brief   Prints the quaternion passed by reference followed by a newLine in format [w x y z]'
  * @author Daniel Bazor */
 float BB_Quat_Print(const Quat *q){
-        printf("[%.4f %.4f %.4f %.4f]'\n",
+        printf("[%f %f %f %f]'\n",
             q->w,
             q->x,
             q->y,

@@ -158,7 +158,11 @@ int main()
         IMU_Get_Quat(&q);
         printf("Quaternion : ");
         BB_Quat_Print(&q);
-
+        
+        BB_Quat_Normalize(&q);
+        printf("Quaternion normed: ");  
+        BB_Quat_Print(&q);
+        
         /* Quat tip vector */
         BB_Quat_Tip_Vector(&q, &vector);
 
