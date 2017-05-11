@@ -72,12 +72,17 @@ BOOL IMU_Init()
     /*   */
 
     // Select BNO055 config mode
-    dat = 0x00;
+    dat = CONFIGMODE_CON;
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
         printf("Error: in Write to OPR MODE \n");
     }
+    DelayMs(100);
+    // Reset registers
+    dat = 0x20;
+    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_SYS_TRIGGER, &dat)) {
+        printf("Error: in reset \n");
+    }
 
-    //MPU_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, 1, &dat);
     DelayMs(100);
 
     printf(" OPR MODE \n");
@@ -89,21 +94,21 @@ BOOL IMU_Init()
         dat = 0x10; // degrees
     }
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_UNIT_SEL, &dat)) {
-        printf("Error: in Write to OPR MODE \n");
+        printf("Error: write sensor units\n");
     }
     printf(" UNIT SEL \n");
 
     // Select BNO055 gyro temperature source
     dat = 0x01;
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_TEMP_SOURCE, &dat)) {
-        printf("Error: in Write to OPR MODE \n");
+        printf("Error: write temp source \n");
     }
     printf(" TEMP SOURCE \n");
     //    
     // Select BNO055 system power mode
     dat = 0x00;
     while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_PWR_MODE, &dat)) {
-        printf("Error: in Write to OPR MODE \n");
+        printf("Error: write power mode \n");
     }
     printf(" PWR MODE \n");
 
@@ -122,6 +127,13 @@ BOOL IMU_Init()
         }
         if (dat == NDOF_CON) {
             printf("Configured\n");
+
+            DelayMs(100);
+            // Set to use external crystal
+            dat = 0x80;
+            while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_SYS_TRIGGER, &dat)) {
+                printf("Error: write external clock \n");
+            }
             // stay in loop till calibrated
             UINT8 oldSysCal = -1;
             UINT8 oldGyroCal = -1;
@@ -187,13 +199,9 @@ BOOL IMU_Read_Euler_Angles()
     UINT8 i;
     UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
     const double scale = SCALE_FACTOR;
-    for (i = 0; i < MEASURE_LENGTH; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &eulerData[i])) {
-            printf("Error: in Write to OPR MODE \n");
-        }
-        dataLocation++;
+    while (!BB_I2C_Read_Multi(BNO55_I2C_ADDR, dataLocation, 6, &eulerData[0])) {
+        printf("Error: in Read Euler \n");
     }
-
     // store all euler data in a global struct   
     imuData.euler.yaw = ((((INT16) eulerData[1] << 8) | ((INT16) eulerData[0])) / scale);
     imuData.euler.roll = ((((INT16) eulerData[3] << 8) | ((INT16) eulerData[2])) / scale);
@@ -248,11 +256,8 @@ BOOL IMU_Read_Gyro_Angles()
     UINT8 i;
     UINT8 dataLocation = BNO055_GYR_DATA_X_LSB;
     const double scale = SCALE_FACTOR;
-    for (i = 0; i < MEASURE_LENGTH; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &GYRData[i])) {
-            printf("Error: in Write to OPR MODE \n");
-        }
-        dataLocation++;
+    while (!BB_I2C_Read_Multi(BNO55_I2C_ADDR, dataLocation, 6, &GYRData[0])) {
+        printf("Error: in Read Gryo \n");
     }
 
     // store all Gyroscope data in a global struct
@@ -313,11 +318,8 @@ BOOL IMU_Read_Quaternion()
 
     // TODO replace this with multiread
     UINT8 dataLocation = BNO055_QUA_DATA_W_LSB;
-    for (i = 0; i < 8; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &quatData[i])) {
-            printf("Error: in Write to OPR MODE \n");
-        }
-        dataLocation++;
+    while (!BB_I2C_Read_Multi(BNO55_I2C_ADDR, dataLocation, 8, &quatData[0])) {
+        printf("Error: in Write to OPR MODE \n");
     }
 
     w = (((INT16) quatData[1]) << 8) | ((INT16) quatData[0]);
