@@ -399,17 +399,13 @@ BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 * dat)
         } else {
             // read in all of the date to up to len-1
 
-            while (!I2CReceivedDataIsAvailable(BNO55_I2C_BUS)) {
-                printf("waiting for last Data\n");
-            };
+            while (!I2CReceivedDataIsAvailable(BNO55_I2C_BUS));
             I2CAcknowledgeByte(I2C1, TRUE); // (Acknowledge) 
             *dat = I2CGetByte(I2C1); // Read the data 
             *dat++;
-           
+
         }
-        while (!I2CAcknowledgeHasCompleted(BNO55_I2C_BUS)) {
-            printf("waiting for ack\n");
-        }
+        while (!I2CAcknowledgeHasCompleted(BNO55_I2C_BUS));
     }
     if (I2CReceiverEnable(BNO55_I2C_BUS, TRUE) == I2C_RECEIVE_OVERFLOW) {
         printf("Error: I2C Receive Overflow\n");
@@ -418,14 +414,10 @@ BOOL BB_I2C_Read_Multi(UINT8 s_addr, UINT8 r_addr, UINT8 len, UINT8 * dat)
     } else {
         // read in all of the date to up to len-1
 
-        while (!I2CReceivedDataIsAvailable(BNO55_I2C_BUS)) {
-            printf("waiting for last Data\n");
-        };
+        while (!I2CReceivedDataIsAvailable(BNO55_I2C_BUS));
         I2CAcknowledgeByte(I2C1, FALSE); // (NO acknowledge)
         *dat = I2CGetByte(I2C1); // Read the data 
-        while (!I2CAcknowledgeHasCompleted(BNO55_I2C_BUS)) {
-            printf("waiting for ack\n");
-        }
+        while (!I2CAcknowledgeHasCompleted(BNO55_I2C_BUS));
     }
 
     // End the transfer (stop here if an error occured)
