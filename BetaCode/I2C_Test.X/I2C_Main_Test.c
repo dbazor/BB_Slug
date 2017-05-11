@@ -51,28 +51,27 @@ int main()
     BB_BOARD_Init();
     printf("After init \n");
     int i;
-    INT8 eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
-    UINT8 dataLocation = 0;//BNO055_EUL_HEADING_LSB;
-    const double scale = SCALE_FACTOR; 
-    UINT8 rcvData[6]; // clear each loop to be sure it is new
+    INT8 readData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    UINT8 rcvData[6] = {3, 3, 3, 3, 3, 3}; // clear each loop to be sure it is new
+    UINT8 dataLocation = RM_CHIP_ID;//BNO055_EUL_HEADING_LSB;
     for (i = 0; i < MEASURE_LENGTH; i++) {
-        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &eulerData[i])) {
+        while (!BB_I2C_Read(BNO55_I2C_ADDR, dataLocation, &readData[i])) {
             printf("Error: in Write to OPR MODE \n");
         }
         dataLocation++;
     }
 
     for (i = 0; i < 6; i++) {
-        printf("euler angle %d : %x\n", i, rcvData[i]);
+        printf("read data%d : %d\n", i, readData[i]);
 
     }
 
-    while (! BB_I2C_Read_Multi(SLAVE_ADDR, dataLocation, 6, &rcvData[0])) {
+    while (! BB_I2C_Read_Multi(BNO55_I2C_ADDR, dataLocation, 6, &rcvData[0])) {
             printf("Error: in multiread \n");
         }
 
     for (i = 0; i < 6; i++) {
-        printf("euler angle %d : %x\n", i, rcvData[i]);
+        printf("Multi read : %d\n", rcvData[i]);
 
     }
 
