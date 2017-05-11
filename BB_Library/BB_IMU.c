@@ -116,7 +116,7 @@ BOOL IMU_Init()
     // EXIT Config mode and switch to selected Operation mode
     for (i = 0; i <= 5; i++) { // S 21
         //       dat = AMG_CON;
-        dat = NDOF_CON;
+        dat = IMU_CON; // changed form NDOF_CON
         printf(" in loop %d OPR MODE \n", i);
         while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
@@ -195,17 +195,26 @@ BOOL IMU_Init()
  **/
 BOOL IMU_Read_Euler_Angles()
 {
-    INT8 eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    BYTE eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
     UINT8 i;
     UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
-    const double scale = SCALE_FACTOR;
+    const float scale = SCALE_FACTOR;
     while (!BB_I2C_Read_Multi(BNO55_I2C_ADDR, dataLocation, 6, &eulerData[0])) {
         printf("Error: in Read Euler \n");
     }
-    // store all euler data in a global struct   
-    imuData.euler.yaw = ((((INT16) eulerData[1] << 8) | ((INT16) eulerData[0])) / scale);
-    imuData.euler.roll = ((((INT16) eulerData[3] << 8) | ((INT16) eulerData[2])) / scale);
-    imuData.euler.pitch = ((((INT16) eulerData[5] << 8) | ((INT16) eulerData[4])) / scale);
+
+    // store all euler data in a global struct  
+    SHORT tempx = ((((WORD) eulerData[1]) << 8) | ((WORD) eulerData[0]));
+    SHORT tempy = ((((WORD) eulerData[3]) << 8) | ((WORD) eulerData[2]));
+    SHORT tempz = ((((WORD) eulerData[5]) << 8) | ((WORD) eulerData[4]));
+
+    imuData.euler.yaw = ((float) tempx) / scale;
+    imuData.euler.roll = ((float) tempy) / scale;
+    imuData.euler.pitch = ((float) tempz) / scale;
+
+    //    printf("E1: %d E0: %d  yaw: %f\n", eulerData[1], eulerData[0], imuData.euler.yaw);
+    //    printf("E3: %d E2: %d  roll: %f\n", eulerData[3], eulerData[2], imuData.euler.roll);
+    //    printf("E5: %d E4: %d  pitch: %f\n", eulerData[5], eulerData[4], imuData.euler.pitch);
 
     return TRUE; // Add success check
 }
@@ -252,7 +261,7 @@ float IMU_Get_Euler_Yaw()
  **/
 BOOL IMU_Read_Gyro_Angles()
 {
-    UINT8 GYRData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
+    BYTE GYRData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
     UINT8 i;
     UINT8 dataLocation = BNO055_GYR_DATA_X_LSB;
     const double scale = SCALE_FACTOR;
@@ -261,9 +270,17 @@ BOOL IMU_Read_Gyro_Angles()
     }
 
     // store all Gyroscope data in a global struct
-    imuData.gyro.x = ((((INT16) GYRData[1] << 8) | ((INT16) GYRData[0])) / scale);
-    imuData.gyro.y = ((((INT16) GYRData[3] << 8) | ((INT16) GYRData[2])) / scale);
-    imuData.gyro.z = ((((INT16) GYRData[5] << 8) | ((INT16) GYRData[4])) / scale);
+    SHORT tempx = ((((WORD) GYRData[1]) << 8) | ((WORD) GYRData[0]));
+    SHORT tempy = ((((WORD) GYRData[3]) << 8) | ((WORD) GYRData[2]));
+    SHORT tempz = ((((WORD) GYRData[5]) << 8) | ((WORD) GYRData[4]));
+
+    imuData.gyro.x = ((float) tempx) / scale;
+    imuData.gyro.y = ((float) tempy) / scale;
+    imuData.gyro.z = ((float) tempz) / scale;
+
+    //    printf("E1: %d E0: %d  x: %f\n", GYRData[1], GYRData[0], imuData.gyro.x);
+    //    printf("E3: %d E2: %d  y: %f\n", GYRData[3], GYRData[2], imuData.gyro.y);
+    //    printf("E5: %d E4: %d  z: %f\n", GYRData[5], GYRData[4], imuData.gyro.z);
 
     return TRUE; // Add success check
 }
@@ -310,10 +327,10 @@ float IMU_Get_Gyro_Yaw()
  **/
 BOOL IMU_Read_Quaternion()
 {
-    INT8 quatData[8] = {2, 2, 2, 2, 2, 2, 2, 2}; // registers init to zero - checks to see if read
+    BYTE quatData[8] = {2, 2, 2, 2, 2, 2, 2, 2}; // registers init to zero - checks to see if read
     int i;
     const double scale = (1.0 / (1 << 14));
-    INT16 x, y, z, w;
+    SHORT x, y, z, w;
     x = y = z = w = 0;
 
     // TODO replace this with multiread
@@ -322,10 +339,10 @@ BOOL IMU_Read_Quaternion()
         printf("Error: in Write to OPR MODE \n");
     }
 
-    w = (((INT16) quatData[1]) << 8) | ((INT16) quatData[0]);
-    x = (((INT16) quatData[3]) << 8) | ((INT16) quatData[2]);
-    y = (((INT16) quatData[5]) << 8) | ((INT16) quatData[4]);
-    z = (((INT16) quatData[7]) << 8) | ((INT16) quatData[6]);
+    w = (((WORD) quatData[1]) << 8) | ((WORD) quatData[0]);
+    x = (((WORD) quatData[3]) << 8) | ((WORD) quatData[2]);
+    y = (((WORD) quatData[5]) << 8) | ((WORD) quatData[4]);
+    z = (((WORD) quatData[7]) << 8) | ((WORD) quatData[6]);
 
     // store scaled all euler data in a global struct
     imuData.quaternion.w = w * scale;
@@ -333,6 +350,11 @@ BOOL IMU_Read_Quaternion()
     imuData.quaternion.y = y * scale;
     imuData.quaternion.z = z * scale;
 
+    printf("Q1: %d Q0: %d temp w: %d w: %f\n", quatData[1], quatData[0], w, imuData.quaternion.w);
+    printf("Q3: %d Q2: %d temp x: %d x: %f\n", quatData[3], quatData[2], x, imuData.quaternion.x);
+    printf("Q5: %d Q4: %d temp y: %d y: %f\n", quatData[5], quatData[4], y, imuData.quaternion.y);
+    printf("Q5: %d Q4: %d temp z: %d z: %f\n", quatData[7], quatData[6], z, imuData.quaternion.z);
+    
     return TRUE; // Add success check
 }
 
