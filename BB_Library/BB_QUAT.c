@@ -126,7 +126,7 @@ void BB_Quat_Tip_Vector(const Quat *q, Quat *result)
  * @author Daniel Bazor */
 float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 {
-    return atan2(tipVect->x, tipVect->z);
+    return RadiansToDegrees(atan2(tipVect->x, tipVect->z));
     //return atan(tipVect->x / tipVect->z);
 }
 
@@ -139,7 +139,7 @@ float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
  * @author Daniel Bazor */
 float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
 {
-    return atan2(tipVect->y, tipVect->z);
+    return RadiansToDegrees(-atan2(tipVect->y, tipVect->z)); // negative to match our coordinate convention
     //return atan(tipVect->y / tipVect->z);
 }
 

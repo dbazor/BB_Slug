@@ -72,7 +72,7 @@ float IMU_Get_Euler_Yaw();
  *          FALSE   - Otherwise
  * @brief Updates the struct
  **/
-BOOL IMU_Read_Gyro_Angles();
+BOOL IMU_Read_Gyro();
 
 /**
  * Function: IMU_Get_Gyro_Roll()
@@ -80,7 +80,7 @@ BOOL IMU_Read_Gyro_Angles();
  * @return  Roll
  * @brief 
  **/
-float IMU_Get_Gyro_Roll();
+float IMU_Get_Gyro_X();
 
 /**
  * Function: IMU_Get_Gyro_Pitch()
@@ -88,7 +88,7 @@ float IMU_Get_Gyro_Roll();
  * @return  Pitch
  * @brief 
  **/
-float IMU_Get_Gyro_Pitch();
+float IMU_Get_Gyro_Y();
 
 /**
  * Function: IMU_Get_Gyro_Yaw()
@@ -96,7 +96,7 @@ float IMU_Get_Gyro_Pitch();
  * @return  Yaw
  * @brief 
  **/
-float IMU_Get_Gyro_Yaw();
+float IMU_Get_Gyro_Z();
 
 
 /**
@@ -106,7 +106,7 @@ float IMU_Get_Gyro_Yaw();
  *         FALSE   - Otherwise
  * @brief 
  **/
-BOOL IMU_Read_Quaternion();
+BOOL IMU_Read_Quat();
 
 /**
  * Function: IMU_Get_Quat()
@@ -189,4 +189,6 @@ UINT8 IMU_Get_Acc_Cal();
  * @brief 
  **/
 UINT8 IMU_Get_Mag_Cal();
+
+
 #endif

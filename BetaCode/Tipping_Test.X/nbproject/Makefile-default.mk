@@ -51,17 +51,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_MOTOR_CONTROLLER.c Tipping_Test_Main.c ../../BB_Library/BB_QUAT.c
+SOURCEFILES_QUOTED_IF_SPACED=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_QUAT.c Tipping_Test_Main.c ../../BB_Library/BB_CONTROLLER.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ${OBJECTDIR}/Tipping_Test_Main.o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d ${OBJECTDIR}/_ext/418195140/BB_Encoder.o.d ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d ${OBJECTDIR}/_ext/418195140/BB_UART.o.d ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d ${OBJECTDIR}/Tipping_Test_Main.o.d ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ${OBJECTDIR}/Tipping_Test_Main.o ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o.d ${OBJECTDIR}/_ext/418195140/BB_Encoder.o.d ${OBJECTDIR}/_ext/418195140/BB_LEDS.o.d ${OBJECTDIR}/_ext/418195140/BB_Motor.o.d ${OBJECTDIR}/_ext/418195140/BB_UART.o.d ${OBJECTDIR}/_ext/418195140/BB_I2C.o.d ${OBJECTDIR}/_ext/418195140/BB_IMU.o.d ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d ${OBJECTDIR}/Tipping_Test_Main.o.d ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ${OBJECTDIR}/Tipping_Test_Main.o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o
+OBJECTFILES=${OBJECTDIR}/_ext/418195140/BB_BOARD.o ${OBJECTDIR}/_ext/418195140/BB_Encoder.o ${OBJECTDIR}/_ext/418195140/BB_LEDS.o ${OBJECTDIR}/_ext/418195140/BB_Motor.o ${OBJECTDIR}/_ext/418195140/BB_UART.o ${OBJECTDIR}/_ext/418195140/BB_I2C.o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ${OBJECTDIR}/Tipping_Test_Main.o ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o
 
 # Source Files
-SOURCEFILES=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_MOTOR_CONTROLLER.c Tipping_Test_Main.c ../../BB_Library/BB_QUAT.c
+SOURCEFILES=../../BB_Library/BB_BOARD.c ../../BB_Library/BB_Encoder.c ../../BB_Library/BB_LEDS.c ../../BB_Library/BB_Motor.c ../../BB_Library/BB_UART.c ../../BB_Library/BB_I2C.c ../../BB_Library/BB_IMU.c ../../BB_Library/BB_QUAT.c Tipping_Test_Main.c ../../BB_Library/BB_CONTROLLER.c
 
 
 CFLAGS=
@@ -142,11 +142,11 @@ ${OBJECTDIR}/_ext/418195140/BB_IMU.o: ../../BB_Library/BB_IMU.c  nbproject/Makef
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ../../BB_Library/BB_IMU.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o: ../../BB_Library/BB_MOTOR_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/_ext/418195140/BB_QUAT.o: ../../BB_Library/BB_QUAT.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ../../BB_Library/BB_MOTOR_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ../../BB_Library/BB_QUAT.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/Tipping_Test_Main.o: Tipping_Test_Main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -154,11 +154,11 @@ ${OBJECTDIR}/Tipping_Test_Main.o: Tipping_Test_Main.c  nbproject/Makefile-${CND_
 	@${RM} ${OBJECTDIR}/Tipping_Test_Main.o 
 	@${FIXDEPS} "${OBJECTDIR}/Tipping_Test_Main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/Tipping_Test_Main.o.d" -o ${OBJECTDIR}/Tipping_Test_Main.o Tipping_Test_Main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/418195140/BB_QUAT.o: ../../BB_Library/BB_QUAT.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o: ../../BB_Library/BB_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ../../BB_Library/BB_QUAT.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1 -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o ../../BB_Library/BB_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 else
 ${OBJECTDIR}/_ext/418195140/BB_BOARD.o: ../../BB_Library/BB_BOARD.c  nbproject/Makefile-${CND_CONF}.mk
@@ -203,11 +203,11 @@ ${OBJECTDIR}/_ext/418195140/BB_IMU.o: ../../BB_Library/BB_IMU.c  nbproject/Makef
 	@${RM} ${OBJECTDIR}/_ext/418195140/BB_IMU.o 
 	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_IMU.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_IMU.o ../../BB_Library/BB_IMU.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o: ../../BB_Library/BB_MOTOR_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/_ext/418195140/BB_QUAT.o: ../../BB_Library/BB_QUAT.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_MOTOR_CONTROLLER.o ../../BB_Library/BB_MOTOR_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ../../BB_Library/BB_QUAT.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 ${OBJECTDIR}/Tipping_Test_Main.o: Tipping_Test_Main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -215,11 +215,11 @@ ${OBJECTDIR}/Tipping_Test_Main.o: Tipping_Test_Main.c  nbproject/Makefile-${CND_
 	@${RM} ${OBJECTDIR}/Tipping_Test_Main.o 
 	@${FIXDEPS} "${OBJECTDIR}/Tipping_Test_Main.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/Tipping_Test_Main.o.d" -o ${OBJECTDIR}/Tipping_Test_Main.o Tipping_Test_Main.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
-${OBJECTDIR}/_ext/418195140/BB_QUAT.o: ../../BB_Library/BB_QUAT.c  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o: ../../BB_Library/BB_CONTROLLER.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}/_ext/418195140" 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d 
-	@${RM} ${OBJECTDIR}/_ext/418195140/BB_QUAT.o 
-	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_QUAT.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_QUAT.o ../../BB_Library/BB_QUAT.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d 
+	@${RM} ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -I"../../BB_Library" -MMD -MF "${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o.d" -o ${OBJECTDIR}/_ext/418195140/BB_CONTROLLER.o ../../BB_Library/BB_CONTROLLER.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

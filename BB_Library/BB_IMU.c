@@ -116,7 +116,7 @@ BOOL IMU_Init()
     // EXIT Config mode and switch to selected Operation mode
     for (i = 0; i <= 5; i++) { // S 21
         //       dat = AMG_CON;
-        dat = IMU_CON; // changed form NDOF_CON
+        dat = NDOF_CON; // changed form NDOF_CON
         printf(" in loop %d OPR MODE \n", i);
         while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_OPR_MODE, &dat)) {
             printf("Error: in Write to OPR MODE \n");
@@ -259,7 +259,7 @@ float IMU_Get_Euler_Yaw()
  *          FALSE   - Otherwise
  * @brief Updates the struct
  **/
-BOOL IMU_Read_Gyro_Angles()
+BOOL IMU_Read_Gyro()
 {
     BYTE GYRData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
     UINT8 i;
@@ -291,7 +291,7 @@ BOOL IMU_Read_Gyro_Angles()
  * @return  x
  * @brief 
  **/
-float IMU_Get_Gyro_Roll()
+float IMU_Get_Gyro_X()
 {
     return imuData.gyro.x;
 }
@@ -302,7 +302,7 @@ float IMU_Get_Gyro_Roll()
  * @return  y
  * @brief 
  **/
-float IMU_Get_Gyro_Pitch()
+float IMU_Get_Gyro_Y()
 {
     return imuData.gyro.y;
 }
@@ -313,7 +313,7 @@ float IMU_Get_Gyro_Pitch()
  * @return  z
  * @brief 
  **/
-float IMU_Get_Gyro_Yaw()
+float IMU_Get_Gyro_Z()
 {
     return imuData.gyro.z;
 }
@@ -325,7 +325,7 @@ float IMU_Get_Gyro_Yaw()
  *         FALSE   - Otherwise
  * @brief 
  **/
-BOOL IMU_Read_Quaternion()
+BOOL IMU_Read_Quat()
 {
     BYTE quatData[8] = {2, 2, 2, 2, 2, 2, 2, 2}; // registers init to zero - checks to see if read
     int i;

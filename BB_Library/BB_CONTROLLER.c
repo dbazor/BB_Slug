@@ -1,5 +1,5 @@
 /*
- * File:   BB_MOTOR_CONTROLLER.c
+ * File:   BB_CONTROLLER.c
  * Author: BB Team
  *
  * Inspired by https://www.embeddedrelated.com/showcode/346.php
@@ -28,12 +28,13 @@
 /*******************************************************************************
  * PRIVATE #includes                                                           *
  ******************************************************************************/
-#include "BB_MOTOR_CONTROLLER.h"
+#include "BB_CONTROLLER.h"
 #include <stdbool.h>
 #include "BB_BOARD.h"
 #include <plib.h>
 #include "BB_Motor.h"
 #include "BB_Encoder.h"
+#include "BB_QUAT.h"
 
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -47,13 +48,12 @@
 
 /*******************************************************************************
  * PUBLIC VARIABLES                                                            *
- ******************************************************************************/
-// see extern declaration in BB_MOTOR_CONTROLLER.h
-volatile PIDControl motor1_pid;
-volatile PIDControl motor2_pid;
-volatile PIDControl motor3_pid;
-
+ ******************************************************************************/ 
 volatile BOOL loopFlag = FALSE;
+volatile PIDControl thetaX;
+volatile PIDControl thetaY;
+volatile PIDControl omegaX;
+volatile PIDControl omegaY;
 
 /*******************************************************************************
  * Interrupts                                                                  *
@@ -80,9 +80,31 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
 {
     // clear the interrupt flag always
     mT4ClearIntFlag();
+    
+    static Quat q, result;
 
-    PID_Update(&motor1_pid);
-    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
+    // 1) Get most recent data from IMU
+    IMU_Read_Quat();
+    IMU_Get_Quat(&q);
+    BB_Quat_Tip_Vector(&q, &result);
+    float xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
+    float yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
+    
+    // 2) Run outer controller
+    PID_Update(&thetaX,xAngle, 0);
+    PID_Update(&thetaY,yAngle, 0);
+    
+    // 3) Run inner controller
+    IMU_Read_Gyro();
+    PID_Update(&omegaX,IMU_Get_Gyro_Y(), thetaX.uPWM);
+    PID_Update(&omegaY,IMU_Get_Gyro_X(), thetaY.uPWM);
+    
+    // 4) Set motors
+    SetMotor_XYZ(omegaX.uPWM, omegaX.uPWM, 0);
+    
+    //    PID_Update(&motor1_pid);
+    //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
+    
     loopFlag = TRUE;
 
     // these are just to check the frequency
@@ -106,16 +128,17 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
  * 
  * @return              control output <code>u</code>
  */
-void PID_Update(volatile PIDControl *p)
+void PID_Update(volatile PIDControl *p, float sensorInput, float reference)
 {
     //printf("Starting update\n");
-    // has reference changed sign
+    p->reference = reference;
+    // Reset integral state if reference changes sign
     if (((p->reference > 0) && (p->lastRef < 0)) || ((p->reference < 0) && (p->lastRef > 0))) {
         p->eIntegral = 0;
     }
 
     // Get the current sensor reading
-    p->input = GetEncoderCount(p->motorNum);
+    p->input = sensorInput;
     //printf("input found\n");
     
     /*Compute all the working error variables*/
@@ -125,16 +148,15 @@ void PID_Update(volatile PIDControl *p)
     
     double uP = p->kp * p->error;
     double uI = (p->ki * p->eIntegral); // temp u integral
-    double uD = (p->kd * (p->input - p->lastInput)) / SAMPLE_TIME;
+    double uD = (p->kd * (p->lastInput - p->input)) / SAMPLE_TIME; //
     //printf("U Calculated\n");
     
     /*Compute PID Output*/
-    p->uPWM = uP + uI - uD; // sets output to motor but doesn't set motor
+    p->uPWM = uP + uI + uD; // sets output to motor but doesn't set motor
 
     if ((p->uPWM > MAX_PWM) || (p->uPWM < MIN_PWM)) {
         p->eIntegral -= (SAMPLE_TIME * p->error); // undo integration 
-        uI = 0;
-        p->uPWM = uP + uI - uD; // reset output to motor
+        p->uPWM = uP + uD; // reset output to motor
     }
     //printf("Output normalized\n");
     
@@ -164,7 +186,7 @@ void PID_SetReference(volatile PIDControl *p, double refDesired) {
  * @brief
  * @note 
  * @author  */
-void SetTunings(volatile PIDControl *p, double Kp, double Ki, double Kd)
+void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd)
 {
     //    float SampleTimeInSec = (SAMPLE_TIME * 1000.0);
     p->kp = Kp;
@@ -179,24 +201,23 @@ void SetTunings(volatile PIDControl *p, double Kp, double Ki, double Kd)
  *
  * @param[in,out]  p  control parameter structure
  */
-void PID_Init(volatile PIDControl *p, BOOL firstInit, UINT8 motorNum, double kp, double ki, double kd)
+void PID_Init(volatile PIDControl *p, BOOL firstInit, float sensorInput, double kp, double ki, double kd)
 {
     DisableIntT4;
     if (firstInit) { // first init
 
-        SetTunings(p, kp, ki, kd);
+        PID_SetTune(p, kp, ki, kd);
         p->error = 0.0;
-        p->input = GetEncoderCount(motorNum); // encoder reading
+        p->input = sensorInput; 
         p->uPWM = 0; // control effort
         p->reference = 0; // setpoint, must be written to
         p->lastRef = 0;
         p->eIntegral = 0;
         p->lastInput = 0;
-        p->motorNum = motorNum;
 
 
     } else { // not first init
-        p->lastInput = GetEncoderCount(p->motorNum);
+        p->lastInput = sensorInput;
         p->eIntegral = p->uPWM;
         // Normalize output to + or - MAX_PWM
         if (p->eIntegral > MAX_PWM) {

@@ -12,8 +12,8 @@
       <itemPath>../../BB_Library/BB_I2C.h</itemPath>
       <itemPath>../../BB_Library/BB_IMU.h</itemPath>
       <itemPath>../../BB_Library/BNO55_Register_Map.h</itemPath>
-      <itemPath>../../BB_Library/BB_MOTOR_CONTROLLER.h</itemPath>
       <itemPath>../../BB_Library/BB_QUAT.h</itemPath>
+      <itemPath>../../BB_Library/BB_CONTROLLER.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -29,9 +29,9 @@
       <itemPath>../../BB_Library/BB_UART.c</itemPath>
       <itemPath>../../BB_Library/BB_I2C.c</itemPath>
       <itemPath>../../BB_Library/BB_IMU.c</itemPath>
-      <itemPath>../../BB_Library/BB_MOTOR_CONTROLLER.c</itemPath>
-      <itemPath>Tipping_Test_Main.c</itemPath>
       <itemPath>../../BB_Library/BB_QUAT.c</itemPath>
+      <itemPath>Tipping_Test_Main.c</itemPath>
+      <itemPath>../../BB_Library/BB_CONTROLLER.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -54,7 +54,7 @@
         <platformTool>PK3OBPlatformTool</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>1.42</languageToolchainVersion>
-        <platform>3</platform>
+        <platform>4</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
@@ -208,6 +208,7 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
+        <property key="firmware.download.all" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
         <property key="memories.dataflash" value="true"/>

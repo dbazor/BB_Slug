@@ -1,5 +1,5 @@
-#ifndef BB_MOTOR_CONTROLLER_H
-#define BB_MOTOR_CONTROLLER_H
+#ifndef BB_CONTROLLER_H
+#define BB_CONTROLLER_H
 
 /* 
  * File:   BB_BOARD.h
@@ -46,13 +46,13 @@ typedef struct PIDControler {
     double lastRef; // last reference
     double eIntegral;
     double lastInput;
-    UINT8 motorNum;
 
 } PIDControl;
 
-extern volatile PIDControl motor1_pid;
-extern volatile PIDControl motor2_pid;
-extern volatile PIDControl motor3_pid;
+extern volatile PIDControl thetaX;
+extern volatile PIDControl thetaY;
+extern volatile PIDControl omegaX;
+extern volatile PIDControl omegaY;
 
 extern volatile BOOL loopFlag;
 
@@ -66,7 +66,7 @@ extern volatile BOOL loopFlag;
  * @return int
  * @brief  
  * @author M*/
-void PID_Update(volatile PIDControl *p);
+void PID_Update(volatile PIDControl *p, float sensorInput, float reference);
 
 /**
  * @Function int PID_SetReference (struct PIControl *p);
@@ -86,7 +86,7 @@ void PID_SetReference(volatile PIDControl *p, double refDesired);
  * @brief
  * @note 
  * @author  */
-void SetTunings(volatile PIDControl *p, double Kp, double Ki, double Kd);
+void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd);
 
 /**
  * @Function int pid_control_init (struct PIControl *p, int e);
@@ -94,7 +94,7 @@ void SetTunings(volatile PIDControl *p, double Kp, double Ki, double Kd);
  * @return int
  * @brief  
  * @author M*/
-void PID_Init(volatile PIDControl *p, BOOL firstInit, UINT8 motorNum, double kp, double ki, double kd);
+void PID_Init(volatile PIDControl *p, BOOL firstInit, float sensorInput, double kp, double ki, double kd);
 
 #endif /* _PI_CONTROL_H */
 
