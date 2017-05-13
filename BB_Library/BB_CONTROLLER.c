@@ -81,8 +81,11 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     // clear the interrupt flag always
     mT4ClearIntFlag();
     
+    // Set pin high
+    PORTSetBits(JC03);
+    
     static Quat q, result;
-
+    
     // 1) Get most recent data from IMU
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
@@ -108,9 +111,13 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     loopFlag = TRUE;
 
     // these are just to check the frequency
-    Turn_On_LED(BB_LED_4);
-    PORTToggleBits(JC03); // for oscilloscope frequency check
-
+    //    Turn_On_LED(BB_LED_4);
+    //    PORTToggleBits(JC03); // for oscilloscope frequency check
+    //    
+    
+    // Set pin low
+    PORTClearBits(JC03);
+    
     // Now to test the controller
     //eCountRadians = GetEncoderRadians(MOTOR_1);
 }

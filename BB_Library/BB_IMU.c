@@ -178,7 +178,7 @@ BOOL IMU_Init()
                     Turn_On_LED(BB_LED_4);
                     break;
                 }
-            } while (IMU_Get_Sys_Cal() < 3);
+            } while (IMU_Get_Sys_Cal() < 3 && CALIBRATION_FLAG);
             return TRUE;
         }
     }

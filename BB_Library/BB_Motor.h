@@ -26,7 +26,7 @@
 #define MOTOR_3_DIR IOPORT_E, BIT_3
 
 // For matrix inverseA
-#define MOTOR_BRACKET_LENGTH (0.0/3) //needs to be the motor bracket length divded by three
+#define MOTOR_BRACKET_LENGTH (0.18/3) //needs to be the motor bracket length divded by three
 #define ONE_THIRD   (1.0/3.0)
 #define TWO_THIRDS  (2.0/3.0)
 #define ROOT3OVER3  (0.577350269)

@@ -365,19 +365,27 @@ void MotorsStop(void)
  **/
 void SetMotor_XYZ(INT32 x, INT32 y, INT32 z)
 {
-    INT32 v[HEIGHT] = {x, y, z};
     INT32 pwm[HEIGHT] = {0, 0, 0};
     int row;
     int col;
 
-    // Matrix 'inverseA' multiplied by motor frame vector 'y'
-    for (row = 0; row < HEIGHT; row++) {
-        for (col = 0; col < WIDTH; col++) {
-            pwm[row] += v[col] * inverseA[row][col];
-        }
-    }
+    const float mbl = MOTOR_BRACKET_LENGTH; 
+    const float oneThird = (1.0/3.0);
+    const float twoThird = (2.0/3.0);
+    const float root3over3 = (0.577350269);
 
-    SetMotorSpeed(pwm[1], MOTOR_1);
-    SetMotorSpeed(pwm[2], MOTOR_2);
-    SetMotorSpeed(pwm[3], MOTOR_3);
+    //    // Matrix 'inverseA' multiplied by motor frame vector 'y'
+    //    for (row = 0; row < HEIGHT; row++) {
+    //        for (col = 0; col < WIDTH; col++) {
+    //            pwm[row] += v[col] * inverseA[row][col];
+    //        }
+    //    }
+
+    pwm[0] = 0                  + twoThird * y + mbl * z;
+    pwm[1] = root3over3 * x     - oneThird * y + mbl * z;
+    pwm[2] = -root3over3 * x    - oneThird * y + mbl * z;
+
+    SetMotorSpeed(pwm[0], MOTOR_1);
+    SetMotorSpeed(pwm[1], MOTOR_2);
+    SetMotorSpeed(pwm[2], MOTOR_3);
 }

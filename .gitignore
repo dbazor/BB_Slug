@@ -54,3 +54,4 @@ nbproject/Makefile-*
 disassembly/
 *.map
 /BetaCode/Encoder_Test.X/nbproject/private/
+/BetaCode/Motor_Test_V2.X/nbproject/private/
