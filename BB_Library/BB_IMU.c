@@ -344,17 +344,17 @@ BOOL IMU_Read_Quat()
     y = (((WORD) quatData[5]) << 8) | ((WORD) quatData[4]);
     z = (((WORD) quatData[7]) << 8) | ((WORD) quatData[6]);
 
-    // store scaled all euler data in a global struct
+    // store scaled all Quat data in a global struct
     imuData.quaternion.w = w * scale;
     imuData.quaternion.x = x * scale;
     imuData.quaternion.y = y * scale;
     imuData.quaternion.z = z * scale;
 
-    printf("Q1: %d Q0: %d temp w: %d w: %f\n", quatData[1], quatData[0], w, imuData.quaternion.w);
-    printf("Q3: %d Q2: %d temp x: %d x: %f\n", quatData[3], quatData[2], x, imuData.quaternion.x);
-    printf("Q5: %d Q4: %d temp y: %d y: %f\n", quatData[5], quatData[4], y, imuData.quaternion.y);
-    printf("Q5: %d Q4: %d temp z: %d z: %f\n", quatData[7], quatData[6], z, imuData.quaternion.z);
-    
+    //    printf("Q1: %d Q0: %d temp w: %d w: %f\n", quatData[1], quatData[0], w, imuData.quaternion.w);
+    //    printf("Q3: %d Q2: %d temp x: %d x: %f\n", quatData[3], quatData[2], x, imuData.quaternion.x);
+    //    printf("Q5: %d Q4: %d temp y: %d y: %f\n", quatData[5], quatData[4], y, imuData.quaternion.y);
+    //    printf("Q5: %d Q4: %d temp z: %d z: %f\n", quatData[7], quatData[6], z, imuData.quaternion.z);
+
     return TRUE; // Add success check
 }
 

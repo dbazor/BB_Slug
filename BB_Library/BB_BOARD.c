@@ -114,9 +114,9 @@ void BB_BOARD_Init()
     //      Make sure to change both T4_PS_1_64 and the PRESCALE #define
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // STEP 2. configure Timer 1 using internal clock, 1:64 pre-scaler
-//    OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
-//    // set up the timer interrupt with a priority of 2
-//    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
+    OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
+    // set up the timer interrupt with a priority of 2
+    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
     // enable multi-vector interrupts
     INTEnableSystemMultiVectoredInt();
      

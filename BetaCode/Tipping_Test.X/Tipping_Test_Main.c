@@ -51,7 +51,7 @@ volatile PIDControl omegaY;
 /* ------------------------------------------------------------ */
 int main()
 {
-   BB_BOARD_Init();
+    BB_BOARD_Init();
     // IMU_Init();
     PORTSetPinsDigitalOut(JC03); // PMOD Pin JC 03
     PORTClearBits(JC03);
@@ -71,9 +71,9 @@ int main()
     PID_Init(&thetaY, TRUE, yAngle, 1, 0, 0);
     PID_Init(&omegaX, TRUE, IMU_Get_Gyro_Y(), 1, 0, 0);
     PID_Init(&omegaY, TRUE, IMU_Get_Gyro_X(), 1, 0, 0);
-    
-    while(1) {
-        
+
+    while (1) {
+
     }
 
     return 0;

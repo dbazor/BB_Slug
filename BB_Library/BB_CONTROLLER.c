@@ -48,7 +48,7 @@
 
 /*******************************************************************************
  * PUBLIC VARIABLES                                                            *
- ******************************************************************************/ 
+ ******************************************************************************/
 volatile BOOL loopFlag = FALSE;
 volatile PIDControl thetaX;
 volatile PIDControl thetaY;
@@ -80,44 +80,47 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
 {
     // clear the interrupt flag always
     mT4ClearIntFlag();
-    
+
     // Set pin high
     PORTSetBits(JC03);
-    
+
     static Quat q, result;
-    
+
     // 1) Get most recent data from IMU
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
     float xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
     float yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
+    printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
     
     // 2) Run outer controller
-    PID_Update(&thetaX,xAngle, 0);
-    PID_Update(&thetaY,yAngle, 0);
-    
+    PID_Update(&thetaX, xAngle, 0);
+    PID_Update(&thetaY, yAngle, 0);
+
     // 3) Run inner controller
-    IMU_Read_Gyro();
-    PID_Update(&omegaX,IMU_Get_Gyro_Y(), thetaX.uPWM);
-    PID_Update(&omegaY,IMU_Get_Gyro_X(), thetaY.uPWM);
-    
+    //    IMU_Read_Gyro();
+    //    PID_Update(&omegaX,IMU_Get_Gyro_Y(), thetaX.uPWM);
+    //    PID_Update(&omegaY,IMU_Get_Gyro_X(), thetaY.uPWM);
+
     // 4) Set motors
-    SetMotor_XYZ(omegaX.uPWM, omegaX.uPWM, 0);
-    
+    //    SetMotor_XYZ(omegaX.uPWM, omegaY.uPWM, 0);
+    SetMotor_XYZ(thetaX.uPWM, thetaY.uPWM, 0);
+    printf("thetaX.uPWM = %f, thetaY.uPWM = %f", thetaX.uPWM, thetaY.uPWM);
+
     //    PID_Update(&motor1_pid);
     //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
-    
+
     loopFlag = TRUE;
 
     // these are just to check the frequency
     //    Turn_On_LED(BB_LED_4);
     //    PORTToggleBits(JC03); // for oscilloscope frequency check
     //    
-    
+
     // Set pin low
     PORTClearBits(JC03);
-    
+
     // Now to test the controller
     //eCountRadians = GetEncoderRadians(MOTOR_1);
 }
@@ -147,17 +150,17 @@ void PID_Update(volatile PIDControl *p, float sensorInput, float reference)
     // Get the current sensor reading
     p->input = sensorInput;
     //printf("input found\n");
-    
+
     /*Compute all the working error variables*/
     p->error = p->reference - p->input; // Error = r - senor
     p->eIntegral += (SAMPLE_TIME * p->error); // Calculate the i-term
     //printf("Error Calculated\n");
-    
+
     double uP = p->kp * p->error;
     double uI = (p->ki * p->eIntegral); // temp u integral
     double uD = (p->kd * (p->lastInput - p->input)) / SAMPLE_TIME; //
     //printf("U Calculated\n");
-    
+
     /*Compute PID Output*/
     p->uPWM = uP + uI + uD; // sets output to motor but doesn't set motor
 
@@ -166,11 +169,11 @@ void PID_Update(volatile PIDControl *p, float sensorInput, float reference)
         p->uPWM = uP + uD; // reset output to motor
     }
     //printf("Output normalized\n");
-    
+
     /*Remember some variables for next time*/
     p->lastInput = p->input;
     p->lastRef = p->reference;
-    
+
 }
 
 /**
@@ -179,7 +182,8 @@ void PID_Update(volatile PIDControl *p, float sensorInput, float reference)
  * @return int
  * @brief  
  * @author M*/
-void PID_SetReference(volatile PIDControl *p, double refDesired) {
+void PID_SetReference(volatile PIDControl *p, double refDesired)
+{
     p->reference = refDesired;
 }
 
@@ -215,7 +219,7 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, float sensorInput, double 
 
         PID_SetTune(p, kp, ki, kd);
         p->error = 0.0;
-        p->input = sensorInput; 
+        p->input = sensorInput;
         p->uPWM = 0; // control effort
         p->reference = 0; // setpoint, must be written to
         p->lastRef = 0;
