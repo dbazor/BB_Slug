@@ -91,6 +91,6 @@ void MotorsStop(void);
  *          Parameter z is rotation, which we pass a zero to for now.
  *          This function vector multiplies by inv(A) and then sets each motor.
  **/
-void SetMotor_XYZ(INT32 x, INT32 y, INT32 z);
+void SetMotor_XYZ(double x, double y, double z);
 
 #endif	/* BB_MOTOR_H */

@@ -25,6 +25,21 @@
 #define CALIBRATION_FLAG 0
 
 /*******************************************************************************
+ * PUBLIC TYPEDEFS                                                             *
+ ******************************************************************************/
+typedef struct eulerAxis {
+    double roll;
+    double pitch;
+    double yaw; // yaw, but z points up
+} eulerAxis;
+
+typedef struct gyroAxis {
+    double x;
+    double y;
+    double z;
+} gyroAxis;
+
+/*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
 /**
@@ -50,7 +65,7 @@ BOOL IMU_Read_Euler_Angles();
  * @return  Roll
  * @brief 
  **/
-float IMU_Get_Euler_Roll();
+double IMU_Get_Euler_Roll();
 
 /**
  * Function: IMU_Get_Euler_Pitch()
@@ -58,7 +73,7 @@ float IMU_Get_Euler_Roll();
  * @return  Pitch
  * @brief 
  **/
-float IMU_Get_Euler_Pitch();
+double IMU_Get_Euler_Pitch();
 
 /**
  * Function: IMU_Get_Euler_Yaw()
@@ -66,7 +81,7 @@ float IMU_Get_Euler_Pitch();
  * @return  Yaw
  * @brief 
  **/
-float IMU_Get_Euler_Yaw();
+double IMU_Get_Euler_Yaw();
 
 /**
  * Function: IMU_Read_Gyro_Angles()
@@ -83,7 +98,7 @@ BOOL IMU_Read_Gyro();
  * @return  Roll
  * @brief 
  **/
-float IMU_Get_Gyro_X();
+double IMU_Get_Gyro_X();
 
 /**
  * Function: IMU_Get_Gyro_Pitch()
@@ -91,7 +106,7 @@ float IMU_Get_Gyro_X();
  * @return  Pitch
  * @brief 
  **/
-float IMU_Get_Gyro_Y();
+double IMU_Get_Gyro_Y();
 
 /**
  * Function: IMU_Get_Gyro_Yaw()
@@ -99,7 +114,7 @@ float IMU_Get_Gyro_Y();
  * @return  Yaw
  * @brief 
  **/
-float IMU_Get_Gyro_Z();
+double IMU_Get_Gyro_Z();
 
 
 /**
@@ -126,7 +141,7 @@ void IMU_Get_Quat(Quat *q);
  * @return  x
  * @brief 
  **/
-float IMU_Get_Quat_W();
+double IMU_Get_Quat_W();
 
 /**
  * Function: IMU_Get_Quat_x()
@@ -134,7 +149,7 @@ float IMU_Get_Quat_W();
  * @return  x
  * @brief 
  **/
-float IMU_Get_Quat_X();
+double IMU_Get_Quat_X();
 
 /**
  * Function: IMU_Quaat_Gyro_Y()
@@ -142,7 +157,7 @@ float IMU_Get_Quat_X();
  * @return  y
  * @brief 
  **/
-float IMU_Get_Quat_Y();
+double IMU_Get_Quat_Y();
 
 /**
  * Function: IMU_Quat_Gyro_Z()
@@ -150,7 +165,7 @@ float IMU_Get_Quat_Y();
  * @return  z
  * @brief 
  **/
-float IMU_Get_Quat_Z();
+double IMU_Get_Quat_Z();
 
 /**
  * Function: IMU_Read_Calibration()

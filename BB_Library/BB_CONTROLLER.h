@@ -23,7 +23,7 @@
 #define PRESCALE        64
 #define TIMER4_FREQ     100    // this is the frequency the motor controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
-#define SAMPLE_TIME     (1.0/(float)TIMER4_FREQ)
+#define SAMPLE_TIME     (1.0/(double)TIMER4_FREQ)
 #define MOTOR1_KP       40   // Kp - proportional constant, range: (1 - 4e6)     // fix
 #define MOTOR1_KI       0   // Ki - integral constant,     range: (2 - 858e6)   // fix
 #define MOTOR1_KD       1   // Kd - derivative constant,   range: (5 - 2147)    // fix
@@ -41,7 +41,7 @@ typedef struct PIDControler {
     double kd; /**< Derivative gain constant */
     double error;
     double input; // encoder reading
-    INT32 uPWM; // control effort
+    double uPWM; // control effort
     double reference; // setpoint, must be written to
     double lastRef; // last reference
     double eIntegral;
@@ -66,7 +66,7 @@ extern volatile BOOL loopFlag;
  * @return int
  * @brief  
  * @author M*/
-void PID_Update(volatile PIDControl *p, float sensorInput, float reference);
+void PID_Update(volatile PIDControl *p, double sensorInput, double reference);
 
 /**
  * @Function int PID_SetReference (struct PIControl *p);
@@ -94,7 +94,7 @@ void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd);
  * @return int
  * @brief  
  * @author M*/
-void PID_Init(volatile PIDControl *p, BOOL firstInit, float sensorInput, double kp, double ki, double kd);
+void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double kp, double ki, double kd);
 
 #endif /* _PI_CONTROL_H */
 

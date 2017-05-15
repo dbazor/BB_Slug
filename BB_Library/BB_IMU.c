@@ -18,18 +18,6 @@
 /*******************************************************************************
  * PRIVATE variables                                                             *
  ******************************************************************************/
-typedef struct eulerAxis {
-    float roll;
-    float pitch;
-    float yaw; // yaw, but z points up
-} eulerAxis;
-
-typedef struct gyroAxis {
-    float x;
-    float y;
-    float z;
-} gyroAxis;
-
 typedef struct Calibration_IMU {
     int ACC_Cal;
     int GYR_Cal;
@@ -198,7 +186,7 @@ BOOL IMU_Read_Euler_Angles()
     BYTE eulerData[MEASURE_LENGTH] = {2, 2, 2, 2, 2, 2};
     UINT8 i;
     UINT8 dataLocation = BNO055_EUL_HEADING_LSB;
-    const float scale = SCALE_FACTOR;
+    const double scale = SCALE_FACTOR;
     while (!BB_I2C_Read_Multi(BNO55_I2C_ADDR, dataLocation, 6, &eulerData[0])) {
         printf("Error: in Read Euler \n");
     }
@@ -208,9 +196,9 @@ BOOL IMU_Read_Euler_Angles()
     SHORT tempy = ((((WORD) eulerData[3]) << 8) | ((WORD) eulerData[2]));
     SHORT tempz = ((((WORD) eulerData[5]) << 8) | ((WORD) eulerData[4]));
 
-    imuData.euler.yaw = ((float) tempx) / scale;
-    imuData.euler.roll = ((float) tempy) / scale;
-    imuData.euler.pitch = ((float) tempz) / scale;
+    imuData.euler.yaw = ((double) tempx) / scale;
+    imuData.euler.roll = ((double) tempy) / scale;
+    imuData.euler.pitch = ((double) tempz) / scale;
 
     //    printf("E1: %d E0: %d  yaw: %f\n", eulerData[1], eulerData[0], imuData.euler.yaw);
     //    printf("E3: %d E2: %d  roll: %f\n", eulerData[3], eulerData[2], imuData.euler.roll);
@@ -225,7 +213,7 @@ BOOL IMU_Read_Euler_Angles()
  * @return  Roll
  * @brief 
  **/
-float IMU_Get_Euler_Roll()
+double IMU_Get_Euler_Roll()
 {
     return imuData.euler.roll;
 }
@@ -236,7 +224,7 @@ float IMU_Get_Euler_Roll()
  * @return  Pitch
  * @brief 
  **/
-float IMU_Get_Euler_Pitch()
+double IMU_Get_Euler_Pitch()
 {
     return imuData.euler.pitch;
 }
@@ -247,7 +235,7 @@ float IMU_Get_Euler_Pitch()
  * @return  Yaw
  * @brief 
  **/
-float IMU_Get_Euler_Yaw()
+double IMU_Get_Euler_Yaw()
 {
     return imuData.euler.yaw;
 }
@@ -274,9 +262,9 @@ BOOL IMU_Read_Gyro()
     SHORT tempy = ((((WORD) GYRData[3]) << 8) | ((WORD) GYRData[2]));
     SHORT tempz = ((((WORD) GYRData[5]) << 8) | ((WORD) GYRData[4]));
 
-    imuData.gyro.x = ((float) tempx) / scale;
-    imuData.gyro.y = ((float) tempy) / scale;
-    imuData.gyro.z = ((float) tempz) / scale;
+    imuData.gyro.x = ((double) tempx) / scale;
+    imuData.gyro.y = ((double) tempy) / scale;
+    imuData.gyro.z = ((double) tempz) / scale;
 
     //    printf("E1: %d E0: %d  x: %f\n", GYRData[1], GYRData[0], imuData.gyro.x);
     //    printf("E3: %d E2: %d  y: %f\n", GYRData[3], GYRData[2], imuData.gyro.y);
@@ -286,13 +274,28 @@ BOOL IMU_Read_Gyro()
 }
 
 /**
+ * Function: IMU_Get_Gyro()
+ * @param   
+ * @return  
+ * @brief 
+ * @precond Must call IMU_Read_Quaternion() before to get most recent data
+ **/
+void IMU_Get_Gyro(gyroAxis *g)
+{
+    g->x = imuData.gyro.x;
+    g->y = imuData.gyro.y;
+    g->z = imuData.gyro.z;
+}
+
+/**
  * Function: IMU_Get_Gyro_Roll()
  * @param   
  * @return  x
  * @brief 
  **/
-float IMU_Get_Gyro_X()
+double IMU_Get_Gyro_X()
 {
+    //printf("imuData.gyro.x: %f\n", imuData.gyro.x);
     return imuData.gyro.x;
 }
 
@@ -302,7 +305,7 @@ float IMU_Get_Gyro_X()
  * @return  y
  * @brief 
  **/
-float IMU_Get_Gyro_Y()
+double IMU_Get_Gyro_Y()
 {
     return imuData.gyro.y;
 }
@@ -313,7 +316,7 @@ float IMU_Get_Gyro_Y()
  * @return  z
  * @brief 
  **/
-float IMU_Get_Gyro_Z()
+double IMU_Get_Gyro_Z()
 {
     return imuData.gyro.z;
 }
@@ -379,7 +382,7 @@ void IMU_Get_Quat(Quat *q)
  * @return  x
  * @brief 
  **/
-float IMU_Get_Quat_W()
+double IMU_Get_Quat_W()
 {
     return imuData.quaternion.w;
 }
@@ -390,7 +393,7 @@ float IMU_Get_Quat_W()
  * @return  x
  * @brief 
  **/
-float IMU_Get_Quat_X()
+double IMU_Get_Quat_X()
 {
     return imuData.quaternion.x;
 }
@@ -401,7 +404,7 @@ float IMU_Get_Quat_X()
  * @return  y
  * @brief 
  **/
-float IMU_Get_Quat_Y()
+double IMU_Get_Quat_Y()
 {
     return imuData.quaternion.y;
 }
@@ -412,7 +415,7 @@ float IMU_Get_Quat_Y()
  * @return  z
  * @brief 
  **/
-float IMU_Get_Quat_Z()
+double IMU_Get_Quat_Z()
 {
     return imuData.quaternion.z;
 }

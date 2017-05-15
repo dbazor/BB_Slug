@@ -23,11 +23,11 @@
 
 /**
  * Function: BB_QUAT_FILL()
- * @param   float w, float x, float y, float z, Quat *q
+ * @param   double w, double x, double y, double z, Quat *q
  * @return 
  * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_Quat_Fill(float w, float x, float y, float z, Quat *q)
+void BB_Quat_Fill(double w, double x, double y, double z, Quat *q)
 {
     q->w = w;
     q->x = x;
@@ -43,12 +43,12 @@ void BB_Quat_Fill(float w, float x, float y, float z, Quat *q)
  * @author Daniel Bazor */
 void BB_Quat_Normalize(Quat *q)
 {
-    float w = q->w;
-    float x = q->x;
-    float y = q->y;
-    float z = q->z;
+    double w = q->w;
+    double x = q->x;
+    double y = q->y;
+    double z = q->z;
     
-    float normInv = 1/sqrt(w*w + x*x + y*y + z*z);
+    double normInv = 1/sqrt(w*w + x*x + y*y + z*z);
     
     q->w = w * normInv;
     q->x = x * normInv;
@@ -120,11 +120,11 @@ void BB_Quat_Tip_Vector(const Quat *q, Quat *result)
 /**
  * Function: BB_QUAT_FIND_TIP_ANGLE_X()
  * @param   tipVect
- * @return  float tip angle in x
+ * @return  double tip angle in x
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
+double BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 {
     return RadiansToDegrees(atan2(tipVect->x, tipVect->z));
     //return atan(tipVect->x / tipVect->z);
@@ -133,11 +133,11 @@ float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 /**
  * Function: BB_QUAT_FIND_TIP_ANGLE_Y()
  * @param   tipVect
- * @return  float tip angle in y
+ * @return  double tip angle in y
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
+double BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
 {
     return RadiansToDegrees(-atan2(tipVect->y, tipVect->z)); // negative to match our coordinate convention
     //return atan(tipVect->y / tipVect->z);
@@ -149,7 +149,7 @@ float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
  * @return  
  * @brief   Prints the quaternion passed by reference followed by a newLine in format [w x y z]'
  * @author Daniel Bazor */
-float BB_Quat_Print(const Quat *q){
+double BB_Quat_Print(const Quat *q){
         printf("[%f %f %f %f]'\n",
             q->w,
             q->x,

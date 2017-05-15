@@ -35,7 +35,7 @@ volatile static int motor3Direction;
 
 
 
-const float inverseA[HEIGHT][WIDTH] = {
+const double inverseA[HEIGHT][WIDTH] = {
     {0, TWO_THIRDS, MOTOR_BRACKET_LENGTH},
     {ROOT3OVER3, -ONE_THIRD, MOTOR_BRACKET_LENGTH},
     {-ROOT3OVER3, -ONE_THIRD, MOTOR_BRACKET_LENGTH}
@@ -119,8 +119,8 @@ void MotorsInit(void)
 /* ------------------------------------------------------------ */
 void SetDrive(int angle, int rotation)
 {
-    float x = cos(M_PI * (float) angle / 180);
-    float y = sin(M_PI * (float) angle / 180);
+    double x = cos(M_PI * (double) angle / 180);
+    double y = sin(M_PI * (double) angle / 180);
 
     DRIVE((int) (x * MAXSPEED), (int) ((-0.5 * x + 0.866 * y) * MAXSPEED), (int) ((-0.5 * x - 0.866 * y) * MAXSPEED));
 }
@@ -363,16 +363,16 @@ void MotorsStop(void)
  *          This function vector multiplies by inv(A) and then sets each motor.
  * @precon  x, y, and z are to be scaled properly
  **/
-void SetMotor_XYZ(INT32 x, INT32 y, INT32 z)
+void SetMotor_XYZ(double x, double y, double z)
 {
     INT32 pwm[HEIGHT] = {0, 0, 0};
     int row;
     int col;
 
-    const float mbl = MOTOR_BRACKET_LENGTH; 
-    const float oneThird = (1.0/3.0);
-    const float twoThird = (2.0/3.0);
-    const float root3over3 = (0.577350269);
+    const double mbl = MOTOR_BRACKET_LENGTH; 
+    const double oneThird = (1.0/3.0);
+    const double twoThird = (2.0/3.0);
+    const double root3over3 = (0.577350269);
 
     //    // Matrix 'inverseA' multiplied by motor frame vector 'y'
     //    for (row = 0; row < HEIGHT; row++) {
@@ -384,7 +384,9 @@ void SetMotor_XYZ(INT32 x, INT32 y, INT32 z)
     pwm[0] = 0                  + twoThird * y + mbl * z;
     pwm[1] = root3over3 * x     - oneThird * y + mbl * z;
     pwm[2] = -root3over3 * x    - oneThird * y + mbl * z;
-
+    
+    //printf("pwm[0]: %d, pwm[1]: %d, pwm[2]: %d\n", pwm[0], pwm[1], pwm[2]);
+    
     SetMotorSpeed(pwm[0], MOTOR_1);
     SetMotorSpeed(pwm[1], MOTOR_2);
     SetMotorSpeed(pwm[2], MOTOR_3);

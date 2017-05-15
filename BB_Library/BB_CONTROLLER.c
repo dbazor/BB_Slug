@@ -35,6 +35,7 @@
 #include "BB_Motor.h"
 #include "BB_Encoder.h"
 #include "BB_QUAT.h"
+#include "BB_IMU.h"
 
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -84,30 +85,43 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     // Set pin high
     PORTSetBits(JC03);
 
+    static int count = 0;
     static Quat q, result;
+    static gyroAxis g;
 
     // 1) Get most recent data from IMU
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    float xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
-    float yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
-    printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
-    
+    double xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
+    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
+
+
     // 2) Run outer controller
     PID_Update(&thetaX, xAngle, 0);
     PID_Update(&thetaY, yAngle, 0);
 
     // 3) Run inner controller
-    //    IMU_Read_Gyro();
-    //    PID_Update(&omegaX,IMU_Get_Gyro_Y(), thetaX.uPWM);
-    //    PID_Update(&omegaY,IMU_Get_Gyro_X(), thetaY.uPWM);
+    IMU_Read_Gyro();
+    IMU_Get_Gyro(&g);
+    double gyroX = g.x;
+    double gyroY = g.y;
+
+    //
+
+    PID_Update(&omegaX, gyroY, thetaX.uPWM);
+    PID_Update(&omegaY, gyroX, thetaY.uPWM);
 
     // 4) Set motors
     //    SetMotor_XYZ(omegaX.uPWM, omegaY.uPWM, 0);
-    SetMotor_XYZ(thetaX.uPWM, thetaY.uPWM, 0);
-    printf("thetaX.uPWM = %f, thetaY.uPWM = %f", thetaX.uPWM, thetaY.uPWM);
-
+    //SetMotor_XYZ(thetaX.uPWM, thetaY.uPWM, 0);
+    count++;
+    if (count % 50 == 0) {
+        printf("\n\n%d x angle = %f, y angle = %f\n", count, xAngle, yAngle);
+        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.uPWM, thetaY.uPWM);
+        printf("gyroX: %f, gyroY: %f\n", gyroX, gyroY);
+        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.uPWM, omegaY.uPWM);
+    }
     //    PID_Update(&motor1_pid);
     //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
 
@@ -138,7 +152,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
  * 
  * @return              control output <code>u</code>
  */
-void PID_Update(volatile PIDControl *p, float sensorInput, float reference)
+void PID_Update(volatile PIDControl *p, double sensorInput, double reference)
 {
     //printf("Starting update\n");
     p->reference = reference;
@@ -199,7 +213,7 @@ void PID_SetReference(volatile PIDControl *p, double refDesired)
  * @author  */
 void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd)
 {
-    //    float SampleTimeInSec = (SAMPLE_TIME * 1000.0);
+    //    double SampleTimeInSec = (SAMPLE_TIME * 1000.0);
     p->kp = Kp;
     p->ki = Ki;
     p->kd = Kd;
@@ -212,7 +226,7 @@ void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd)
  *
  * @param[in,out]  p  control parameter structure
  */
-void PID_Init(volatile PIDControl *p, BOOL firstInit, float sensorInput, double kp, double ki, double kd)
+void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double kp, double ki, double kd)
 {
     DisableIntT4;
     if (firstInit) { // first init

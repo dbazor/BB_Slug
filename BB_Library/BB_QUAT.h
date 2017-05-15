@@ -17,10 +17,10 @@
  * PUBLIC Variables                                                            *
  ******************************************************************************/
 typedef struct Quat {
-    float w;
-    float x;
-    float y;
-    float z;
+    double w;
+    double x;
+    double y;
+    double z;
 } Quat;
 
 /*******************************************************************************
@@ -29,11 +29,11 @@ typedef struct Quat {
 
 /**
  * Function: BB_QUAT_FILL()
- * @param   float w, float x, float y, float z, Quat *q
+ * @param   double w, double x, double y, double z, Quat *q
  * @return 
  * @brief   Fills r with the inverse of q.
  * @author Daniel Bazor */
-void BB_Quat_Fill(float w, float x, float y, float z, Quat *q);
+void BB_Quat_Fill(double w, double x, double y, double z, Quat *q);
 
 
 /**
@@ -71,20 +71,20 @@ void BB_Quat_Tip_Vector(const Quat *q, Quat *result);
 /**
  * Function: BB_QUAT_FIND_TIP_ANGLE_X()
  * @param   tipVect
- * @return  float tip angle in x
+ * @return  double tip angle in x
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_Quat_Find_Tip_Angle_X(const Quat *tipVect);
+double BB_Quat_Find_Tip_Angle_X(const Quat *tipVect);
 
 /**
  * Function: BB_QUAT_FIND_TIP_ANGLE_Y()
  * @param   tipVect
- * @return  float tip angle in y
+ * @return  double tip angle in y
  * @brief   
  * @precond      
  * @author Daniel Bazor */
-float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect);
+double BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect);
 
 /**
  * Function: BB_QUAT_Print()
@@ -92,5 +92,5 @@ float BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect);
  * @return  
  * @brief   Prints the quaternion passed by reference   
  * @author Daniel Bazor */
-float BB_Quat_Print(const Quat *q);
+double BB_Quat_Print(const Quat *q);
 #endif
