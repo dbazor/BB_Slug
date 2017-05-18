@@ -21,8 +21,7 @@
 #define QUAT_SCAL_FACTOR    16384.0 
 #define QUAT_LENGTH         8
 
-
-#define CALIBRATION_FLAG 0
+#define CALIBRATION_FLAG    1
 
 /*******************************************************************************
  * PUBLIC TYPEDEFS                                                             *

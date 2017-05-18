@@ -109,6 +109,11 @@ void BB_BOARD_Init()
     BB_I2C_Init();
     IMU_Init();
 
+    printf("Press Button 1 again for operation.\n");
+    while (PORTReadBits(IOPORT_G, BIT_6) == 0) {
+        ;
+    }
+
     // PID Motor Controller Interrupt
     // *NOTE:
     //      Make sure to change both T4_PS_1_64 and the PRESCALE #define
@@ -119,7 +124,7 @@ void BB_BOARD_Init()
     ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
     // enable multi-vector interrupts
     INTEnableSystemMultiVectoredInt();
-     
+
     __builtin_enable_interrupts();
 
 }

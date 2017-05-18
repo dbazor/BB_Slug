@@ -55,6 +55,8 @@ volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
 volatile PIDControl omegaY;
+double xAngleOffset;
+double yAngleOffset;
 
 /*******************************************************************************
  * Interrupts                                                                  *
@@ -98,8 +100,8 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
 
 
     // 2) Run outer controller
-    PID_Update(&thetaX, xAngle, 0);
-    PID_Update(&thetaY, yAngle, 0);
+    PID_Update(&thetaX, xAngle, xAngleOffset);
+    PID_Update(&thetaY, yAngle, yAngleOffset);
 
     // 3) Run inner controller
     IMU_Read_Gyro();
@@ -113,8 +115,9 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     PID_Update(&omegaY, gyroX, thetaY.uPWM);
 
     // 4) Set motors
-    //    SetMotor_XYZ(omegaX.uPWM, omegaY.uPWM, 0);
-    //SetMotor_XYZ(thetaX.uPWM, thetaY.uPWM, 0);
+    SetMotor_XYZ(omegaX.uPWM, -omegaY.uPWM, 0);
+    
+    //SetMotor_XYZ(thetaX.uPWM, -thetaY.uPWM, 0);
     count++;
     if (count % 50 == 0) {
         printf("\n\n%d x angle = %f, y angle = %f\n", count, xAngle, yAngle);
@@ -252,6 +255,18 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double
         }
     }
     EnableIntT4;
+}
+
+/**
+ * @Function PID_SetAngleOffset(void)
+ * @param   
+ * @return 
+ * @brief
+ * @note 
+ * @author  */
+void PID_SetAngleOffset(double xOffset, double yOffset) {
+    xAngleOffset = xOffset;
+    yAngleOffset = yOffset;
 }
 
 /**

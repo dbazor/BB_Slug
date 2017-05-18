@@ -65,11 +65,11 @@ BOOL IMU_Init()
         printf("Error: in Write to OPR MODE \n");
     }
     DelayMs(100);
-    // Reset registers
-    dat = 0x20;
-    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_SYS_TRIGGER, &dat)) {
-        printf("Error: in reset \n");
-    }
+    //    // Reset registers
+    //    dat = 0x20;
+    //    while (!BB_I2C_Write(BNO55_I2C_ADDR, BNO055_SYS_TRIGGER, &dat)) {
+    //        printf("Error: in reset \n");
+    //    }
 
     DelayMs(100);
 
@@ -127,12 +127,17 @@ BOOL IMU_Init()
             UINT8 oldGyroCal = -1;
             UINT8 oldAccCal = -1;
             UINT8 oldMagCal = -1;
+            UINT8 sysCal;
+            UINT8 gyroCal;
+            UINT8 accCal;
+            UINT8 magCal;
             do {
+                //printf("In do while\n");
                 IMU_Read_Calibration(); // must be called before IMU_Get_Sys_Cal())
-                UINT8 sysCal = IMU_Get_Sys_Cal();
-                UINT8 gyroCal = IMU_Get_Gyro_Cal();
-                UINT8 accCal = IMU_Get_Acc_Cal();
-                UINT8 magCal = IMU_Get_Mag_Cal();
+                sysCal = IMU_Get_Sys_Cal();
+                gyroCal = IMU_Get_Gyro_Cal();
+                accCal = IMU_Get_Acc_Cal();
+                magCal = IMU_Get_Mag_Cal();
                 if (oldSysCal != sysCal || oldGyroCal != gyroCal || oldAccCal != accCal || oldMagCal != magCal) {
                     printf("Sys_Cal :  %d Gyro_Cal:  %d Acc_Cal :  %d Mag_Cal :  %d \n", sysCal, gyroCal, accCal, magCal);
                 }
@@ -166,7 +171,31 @@ BOOL IMU_Init()
                     Turn_On_LED(BB_LED_4);
                     break;
                 }
-            } while (IMU_Get_Sys_Cal() < 3 && CALIBRATION_FLAG);
+            } while ((sysCal < 3 || gyroCal < 3 || accCal < 3 || magCal < 3) && CALIBRATION_FLAG &&
+                    PORTReadBits(IOPORT_G, BIT_6) == 0);
+
+            DelayMs(500);
+            // Wait for button press
+            printf("Please press button 1 to set the offset.\n");
+            static Quat q, result;
+            double x = 0;
+            double y = 0;
+            static int count = 0;
+            while (PORTReadBits(IOPORT_G, BIT_6) == 0) {
+                IMU_Read_Quat();
+                IMU_Get_Quat(&q);
+                BB_Quat_Tip_Vector(&q, &result);
+                x = BB_Quat_Find_Tip_Angle_X(&result);
+                y = BB_Quat_Find_Tip_Angle_Y(&result);
+                count++;
+                if (count % 1000 == 0) {
+                    printf("xOffset: %f, yOffset:  %f\n", x, y);
+                }
+            }
+            PID_SetAngleOffset(x, y);
+            // Once button has been pressed, get offsets
+            printf("Offset has been set to xOffset: %f, yOffset:  %f\n", x, y);
+            DelayMs(500);
             return TRUE;
         }
     }

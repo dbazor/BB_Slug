@@ -176,7 +176,7 @@ BOOL BB_I2C_Write(UINT8 s_addr, UINT8 r_addr, UINT8 *dat)
     while (!StartTransfer(FALSE)) {
         printf("Error: StartTransfer failed!\n");
         StopTransfer();
-        //return FALSE;
+        return FALSE;
     }
     //printf("StartTransfer successful.\n");
     // Transmit all data

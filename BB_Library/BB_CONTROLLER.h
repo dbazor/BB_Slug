@@ -96,6 +96,15 @@ void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd);
  * @author M*/
 void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double kp, double ki, double kd);
 
+/**
+ * @Function PID_SetAngleOffset(void)
+ * @param   
+ * @return 
+ * @brief
+ * @note 
+ * @author  */
+void PID_SetAngleOffset(double xOffset, double yOffset);
+
 #endif /* _PI_CONTROL_H */
 
 
