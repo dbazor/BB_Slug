@@ -15,7 +15,14 @@
 
 #define VOLT_2_PWM (MAX_PWM / MAX_VOLTAGE)
 
-
+/*******************************************************************************
+ * PUBLIC VARIABLES                                                             *
+ ******************************************************************************/
+typedef struct encodeVal {
+    double x;
+    double y;
+    double rot; // rotation
+} encodeVal;
 
 /*******************************************************************************
  * FUNCTION PROTOYPES                                                          *
@@ -49,11 +56,27 @@ int GetEncoderCount(UINT8 motorNum);
 float GetEncoderRadians(UINT8 motorNum);
 
 /**
+ * Function: GetEncoderXYZ
+ * @param 
+ * @return 
+ * @brief
+ **/
+void GetEncoderXYZ(encodeVal *e);
+
+/**
  * Function: SetEncoderCount(UINT8 motorNum, UINT8 value)
  * @param UINT8 motorNum, UINT8 value
  * @return None
  * @brief Set the encoder count of a specified motor, to a desired value
  **/
 void SetEncoderCount(UINT8 motorNum, UINT8 value);
+
+/**
+ * Function: SetEncoderCounts
+ * @param 
+ * @return None
+ * @brief Set the encoder count of all motors to desired values
+ **/
+void SetEncoderCounts(int count1, int count2, int count3);
 
 #endif	/* BB_ENCODER_H */ 

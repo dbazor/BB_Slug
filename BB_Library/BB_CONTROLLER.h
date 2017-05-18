@@ -24,9 +24,10 @@
 #define TIMER4_FREQ     100    // this is the frequency the motor controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
 #define SAMPLE_TIME     (1.0/(double)TIMER4_FREQ)
-#define MOTOR1_KP       40   // Kp - proportional constant, range: (1 - 4e6)     // fix
+#define MOTOR1_KP       40  // Kp - proportional constant, range: (1 - 4e6)     // fix
 #define MOTOR1_KI       0   // Ki - integral constant,     range: (2 - 858e6)   // fix
 #define MOTOR1_KD       1   // Kd - derivative constant,   range: (5 - 2147)    // fix
+#define MAX_ANGLE       10  // max angle passed into linear (outer) controller
 
 /*******************************************************************************
  * PUBLIC Variables                                                             *
@@ -41,7 +42,7 @@ typedef struct PIDControler {
     double kd; /**< Derivative gain constant */
     double error;
     double input; // encoder reading
-    double uPWM; // control effort
+    double output; 
     double reference; // setpoint, must be written to
     double lastRef; // last reference
     double eIntegral;
@@ -66,7 +67,7 @@ extern volatile BOOL loopFlag;
  * @return int
  * @brief  
  * @author M*/
-void PID_Update(volatile PIDControl *p, double sensorInput, double reference);
+void PID_Update(volatile PIDControl *p, double sensorInput, double reference, int maxOut);
 
 /**
  * @Function int PID_SetReference (struct PIControl *p);

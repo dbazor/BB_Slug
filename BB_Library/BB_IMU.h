@@ -92,6 +92,15 @@ double IMU_Get_Euler_Yaw();
 BOOL IMU_Read_Gyro();
 
 /**
+ * Function: IMU_Get_Gyro()
+ * @param   
+ * @return  
+ * @brief 
+ * @precond Must call IMU_Read_Quaternion() before to get most recent data
+ **/
+void IMU_Get_Gyro(gyroAxis *g);
+
+/**
  * Function: IMU_Get_Gyro_Roll()
  * @param   
  * @return  Roll

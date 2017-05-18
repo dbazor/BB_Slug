@@ -84,10 +84,19 @@ int main()
     PID_Init(&omegaX, TRUE, IMU_Get_Gyro_Y(), OMEGA_X_P, OMEGA_X_I, OMEGA_X_D);
     PID_Init(&omegaY, TRUE, IMU_Get_Gyro_X(), OMEGA_Y_P, OMEGA_Y_I, OMEGA_Y_D);
 
-    // for the button
-    int buttonPushed = 0;
-    int count = 0;
-    PORTSetPinsDigitalIn(IOPORT_G, BIT_6); 
+    encodeVal e;
+    
+    printf("Setting encoder counts to 0, 10, -10. Should see: 17.32\n");
+    SetEncoderCounts(0, 10, -10);
+    GetEncoderXYZ(&e);
+    
+    printf("Setting encoder counts to 0, -10, 10. Should see: -17.32\n");
+    SetEncoderCounts(0, -10, 10);
+    GetEncoderXYZ(&e);
+    
+    printf("Setting encoder counts to 50, -50, -50. Should see: 100\n");
+    SetEncoderCounts(50, -50, -50);
+    GetEncoderXYZ(&e);
     
     while (1) {
         

@@ -28,11 +28,9 @@
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
  ******************************************************************************/
-static volatile int m1E1Count = 0; // motor 1 encoder count 
-static volatile int m2E2Count = 0; // motor 2 encoder count 
-static volatile int m3E3Count = 0; // motor 3 encoder count
-
-
+static volatile int mc1 = 0; // motor 1 encoder count 
+static volatile int mc2 = 0; // motor 2 encoder count 
+static volatile int mc3 = 0; // motor 3 encoder count
 
 /* ------------------------------------------------------------ */
 /*				Interrupt Sub-Routine           */
@@ -51,11 +49,11 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
     // else if A and B are not equal and are both not greater than zero
     //      decrement encoder count
     if (((encoder1A > 0) && (encoder1B > 0)) || (encoder1A == encoder1B)) {
-        m1E1Count++;
+        mc1++;
         // localm1E1Count++;
         // SetEncoder1Count(localm1E1Count);
     } else if (encoder1A != encoder1B) {
-        m1E1Count--;
+        mc1--;
         // localm1E1Count--;
         // SetEncoder1Count(localm1E1Count);
     }
@@ -75,9 +73,9 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
     // else if A and B are not equal and are both not greater than zero
     //      decrement encoder count
     if (((encoder2A > 0) && (encoder2B > 0)) || (encoder2A == encoder2B)) {
-        m2E2Count++;
+        mc2++;
     } else if (encoder2A != encoder2B) {
-        m2E2Count--;
+        mc2--;
     }
 
     IFS0bits.IC3IF = 0; // clear interrupt flag
@@ -92,9 +90,9 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
 
     // see previous ISR for details
     if (((encoder3A > 0) && (encoder3B > 0)) || (encoder3A == encoder3B)) {
-        m3E3Count++;
+        mc3++;
     } else if (encoder3A != encoder3B) {
-        m3E3Count--;
+        mc3--;
     }
     IFS0bits.IC5IF = 0; // clear interrupt flag
 }
@@ -165,13 +163,13 @@ int GetEncoderCount(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
-        return m1E1Count;
+        return mc1;
         break;
     case MOTOR_2:
-        return m2E2Count;
+        return mc2;
         break;
     case MOTOR_3:
-        return m3E3Count;
+        return mc3;
         break;
     }
 }
@@ -186,15 +184,31 @@ float GetEncoderRadians(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
-        return tick2Radian*m1E1Count;
+        return tick2Radian*mc1;
         break;
     case MOTOR_2:
-        return tick2Radian*m2E2Count;
+        return tick2Radian*mc2;
         break;
     case MOTOR_3:
-        return tick2Radian*m3E3Count;
+        return tick2Radian*mc3;
         break;
     }
+}
+
+/**
+ * Function: GetEncoderXY
+ * @param 
+ * @return 
+ * @brief
+ **/
+void GetEncoderXYZ(encodeVal *e) {
+    const double root3over2 = (0.8660254038);
+    const double mblInv = 1 / MOTOR_BRACKET_LENGTH;
+    e->x = (root3over2 * mc2) - (root3over2 * mc3);
+    e->y = (double)mc1 - (0.5 * mc2) - (0.5 * mc3);
+    e->rot = (mblInv * mc1) + (mblInv * mc2) + (mblInv * mc3);
+    printf("m1: %d, m2: %d, m3: %d\n\n", mc1, mc2, mc2);
+    printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
 }
 
 /**
@@ -207,13 +221,25 @@ void SetEncoderCount(UINT8 motorNum, UINT8 value)
 {
     switch (motorNum) {
     case MOTOR_1:
-        m1E1Count = value;
+        mc1 = value;
         break;
     case MOTOR_2:
-        m2E2Count = value;
+        mc2 = value;
         break;
     case MOTOR_3:
-        m3E3Count = value;
+        mc3 = value;
         break;
     }
+}
+
+/**
+ * Function: SetEncoderCounts
+ * @param 
+ * @return None
+ * @brief Set the encoder count of all motors to desired values
+ **/
+void SetEncoderCounts(int count1, int count2, int count3) {
+    mc1 = count1;
+    mc2 = count2;
+    mc3 = count3;
 }

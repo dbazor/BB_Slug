@@ -51,6 +51,8 @@
  * PUBLIC VARIABLES                                                            *
  ******************************************************************************/
 volatile BOOL loopFlag = FALSE;
+volatile PIDControl linearX;
+volatile PIDControl linearY;
 volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
@@ -90,7 +92,13 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     static int count = 0;
     static Quat q, result;
     static gyroAxis g;
+    static encodeVal encoder;
 
+    // 0)
+    GetEncoderXYZ(&encoder);
+    PID_Update(&linearX, encoder.x, 0, MAX_ANGLE);
+    PID_Update(&linearY, encoder.y, 0, MAX_ANGLE);
+    
     // 1) Get most recent data from IMU
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
@@ -98,10 +106,9 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     double xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
     double yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
 
-
-    // 2) Run outer controller
-    PID_Update(&thetaX, xAngle, xAngleOffset);
-    PID_Update(&thetaY, yAngle, yAngleOffset);
+    // 2) Run middle controller
+    PID_Update(&thetaX, xAngle, linearX.output, MAX_PWM);
+    PID_Update(&thetaY, yAngle, linearY.output, MAX_PWM);
 
     // 3) Run inner controller
     IMU_Read_Gyro();
@@ -110,20 +117,19 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     double gyroY = g.y;
 
     //
-
-    PID_Update(&omegaX, gyroY, thetaX.uPWM);
-    PID_Update(&omegaY, gyroX, thetaY.uPWM);
+    PID_Update(&omegaX, gyroY, thetaX.output, MAX_PWM);
+    PID_Update(&omegaY, gyroX, thetaY.output, MAX_PWM);
 
     // 4) Set motors
-    SetMotor_XYZ(omegaX.uPWM, -omegaY.uPWM, 0);
-    
-    //SetMotor_XYZ(thetaX.uPWM, -thetaY.uPWM, 0);
+    SetMotor_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
+
+    //SetMotor_XYZ(thetaX.uPWM, -thetaY.uPWM, 0);   // for testing only middle controller
     count++;
-    if (count % 50 == 0) {
+    if (count % 500 == 0) {
         printf("\n\n%d x angle = %f, y angle = %f\n", count, xAngle, yAngle);
-        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.uPWM, thetaY.uPWM);
+        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
         printf("gyroX: %f, gyroY: %f\n", gyroX, gyroY);
-        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.uPWM, omegaY.uPWM);
+        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
     }
     //    PID_Update(&motor1_pid);
     //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
@@ -155,7 +161,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
  * 
  * @return              control output <code>u</code>
  */
-void PID_Update(volatile PIDControl *p, double sensorInput, double reference)
+void PID_Update(volatile PIDControl *p, double sensorInput, double reference, int maxOut)
 {
     //printf("Starting update\n");
     p->reference = reference;
@@ -179,11 +185,11 @@ void PID_Update(volatile PIDControl *p, double sensorInput, double reference)
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->uPWM = uP + uI + uD; // sets output to motor but doesn't set motor
+    p->output = uP + uI + uD; // sets output to motor but doesn't set motor
 
-    if ((p->uPWM > MAX_PWM) || (p->uPWM < MIN_PWM)) {
+    if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (SAMPLE_TIME * p->error); // undo integration 
-        p->uPWM = uP + uD; // reset output to motor
+        p->output = uP + uD; // reset output to motor
     }
     //printf("Output normalized\n");
 
@@ -237,7 +243,7 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double
         PID_SetTune(p, kp, ki, kd);
         p->error = 0.0;
         p->input = sensorInput;
-        p->uPWM = 0; // control effort
+        p->output = 0; // control effort
         p->reference = 0; // setpoint, must be written to
         p->lastRef = 0;
         p->eIntegral = 0;
@@ -246,7 +252,7 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double
 
     } else { // not first init
         p->lastInput = sensorInput;
-        p->eIntegral = p->uPWM;
+        p->eIntegral = p->output;
         // Normalize output to + or - MAX_PWM
         if (p->eIntegral > MAX_PWM) {
             p->eIntegral = MAX_PWM;
@@ -264,7 +270,8 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double
  * @brief
  * @note 
  * @author  */
-void PID_SetAngleOffset(double xOffset, double yOffset) {
+void PID_SetAngleOffset(double xOffset, double yOffset)
+{
     xAngleOffset = xOffset;
     yAngleOffset = yOffset;
 }
@@ -287,7 +294,7 @@ void PID_Print(volatile PIDControl *p)
     printf("kd:         %e\n", p->kd);
     printf("error:      %e\n", p->error);
     printf("input:      %e\n", p->input);
-    printf("output:     %d\n", p->uPWM);
+    printf("output:     %d\n", p->output);
     printf("reference:  %e\n", p->reference);
     printf("integralOut:%e\n", p->eIntegral);
     printf("lastInput:  %e\n", p->lastInput);

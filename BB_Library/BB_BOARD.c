@@ -99,7 +99,10 @@ void BB_BOARD_Init()
 
     //    // *NOTE: This is in the peripheral library example code init()
     //    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
-
+    
+    // for the button
+    PORTSetPinsDigitalIn(IOPORT_G, BIT_6);
+    
     Leds_Init();
 
     BB_UART_Init();
@@ -109,6 +112,7 @@ void BB_BOARD_Init()
     BB_I2C_Init();
     IMU_Init();
 
+    
     printf("Press Button 1 again for operation.\n");
     while (PORTReadBits(IOPORT_G, BIT_6) == 0) {
         ;

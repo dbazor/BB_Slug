@@ -369,7 +369,7 @@ void SetMotor_XYZ(double x, double y, double z)
     int row;
     int col;
 
-    const double mbl = MOTOR_BRACKET_LENGTH; 
+    const double mbl = MOTOR_BRACKET_LENGTH/3; 
     const double oneThird = (1.0/3.0);
     const double twoThird = (2.0/3.0);
     const double root3over3 = (0.577350269);
