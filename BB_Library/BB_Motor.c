@@ -365,13 +365,13 @@ void MotorsStop(void)
  **/
 void SetMotor_XYZ(double x, double y, double z)
 {
-    INT32 pwm[HEIGHT] = {0, 0, 0};
+    double pwm[HEIGHT] = {0, 0, 0};
     int row;
     int col;
 
-    const double mbl = MOTOR_BRACKET_LENGTH/3; 
-    const double oneThird = (1.0/3.0);
-    const double twoThird = (2.0/3.0);
+    const double mbl = MOTOR_BRACKET_LENGTH / 3;
+    const double oneThird = (1.0 / 3.0);
+    const double twoThird = (2.0 / 3.0);
     const double root3over3 = (0.577350269);
 
     //    // Matrix 'inverseA' multiplied by motor frame vector 'y'
@@ -381,13 +381,46 @@ void SetMotor_XYZ(double x, double y, double z)
     //        }
     //    }
 
-    pwm[0] = 0                  + twoThird * y + mbl * z;
-    pwm[1] = root3over3 * x     - oneThird * y + mbl * z;
-    pwm[2] = -root3over3 * x    - oneThird * y + mbl * z;
-    
-    //printf("pwm[0]: %d, pwm[1]: %d, pwm[2]: %d\n", pwm[0], pwm[1], pwm[2]);
-    
-    SetMotorSpeed(pwm[0], MOTOR_1);
-    SetMotorSpeed(pwm[1], MOTOR_2);
-    SetMotorSpeed(pwm[2], MOTOR_3);
+    pwm[0] = 0 + twoThird * y + mbl * z;
+    pwm[1] = root3over3 * x - oneThird * y + mbl * z;
+    pwm[2] = -root3over3 * x - oneThird * y + mbl * z;
+
+    double m1 = abs(pwm[0]);
+    double m2 = abs(pwm[1]);
+    double m3 = abs(pwm[2]);
+    double max = 0;
+
+    // For scaling by the largest value, if a pwm to a motor is more than the max
+    if ((m1 > MAX_PWM) && (m1 > m2) && (m1 > m3)) {
+        max = m1;
+        //printf("m1 is max\n");
+    }
+
+    if ((m2 > MAX_PWM) && (m2 > m1) && (m2 > m3)) {
+        max = m2;
+        //printf("m2 is max\n");
+    }
+
+    if ((m3 > MAX_PWM) && (m3 > m1) && (m3 > m2)) {
+        max = m3;
+        //printf("m3 is max\n");
+    }
+
+    //    printf("INCOMING x: %f, y: %f, z: %f\n", x, y, z);
+    //    printf("BEFORE pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
+    //    printf("max: %f\n", max);
+
+    // If max was changed
+    if (max != 0) {
+        double scale = 1000 / max;
+        pwm[0] = (pwm[0] * scale);
+        pwm[1] = (pwm[1] * scale);
+        pwm[2] = (pwm[2] * scale);
+    }
+
+    //    printf("AFTER pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
+
+    SetMotorSpeed((int) pwm[0], MOTOR_1);
+    SetMotorSpeed((int) pwm[1], MOTOR_2);
+    SetMotorSpeed((int) pwm[2], MOTOR_3);
 }

@@ -95,20 +95,23 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     static encodeVal encoder;
 
     // 0)
-    GetEncoderXYZ(&encoder);
-    PID_Update(&linearX, encoder.x, 0, MAX_ANGLE);
-    PID_Update(&linearY, encoder.y, 0, MAX_ANGLE);
-    
+    //GetEncoderXYZ(&encoder);
+    //PID_Update(&linearX, encoder.x, 0, MAX_ANGLE);
+    //PID_Update(&linearY, encoder.y, 0, MAX_ANGLE);
+
     // 1) Get most recent data from IMU
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    double xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
-    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
+    double xAngle = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
+    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
 
     // 2) Run middle controller
-    PID_Update(&thetaX, xAngle, linearX.output, MAX_PWM);
-    PID_Update(&thetaY, yAngle, linearY.output, MAX_PWM);
+    //PID_Update(&thetaX, xAngle, linearX.output, MAX_PWM);
+    //PID_Update(&thetaY, yAngle, linearY.output, MAX_PWM);
+
+    PID_Update(&thetaX, xAngle, 0, MAX_PWM);
+    PID_Update(&thetaY, yAngle, 0, MAX_PWM);
 
     // 3) Run inner controller
     IMU_Read_Gyro();
@@ -121,12 +124,14 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     PID_Update(&omegaY, gyroX, thetaY.output, MAX_PWM);
 
     // 4) Set motors
-    SetMotor_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
+    //SetMotor_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
 
-    //SetMotor_XYZ(thetaX.uPWM, -thetaY.uPWM, 0);   // for testing only middle controller
+    SetMotor_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
     count++;
-    if (count % 500 == 0) {
-        printf("\n\n%d x angle = %f, y angle = %f\n", count, xAngle, yAngle);
+    if (count % 50 == 0) {
+        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
+        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
+        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
         printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
         printf("gyroX: %f, gyroY: %f\n", gyroX, gyroY);
         printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
@@ -185,11 +190,11 @@ void PID_Update(volatile PIDControl *p, double sensorInput, double reference, in
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->output = uP + uI + uD; // sets output to motor but doesn't set motor
+    p->output = uP + uI - uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (SAMPLE_TIME * p->error); // undo integration 
-        p->output = uP + uD; // reset output to motor
+        p->output = uP - uD; // reset output to motor
     }
     //printf("Output normalized\n");
 

@@ -50,6 +50,8 @@ typedef struct PIDControler {
 
 } PIDControl;
 
+extern volatile PIDControl linearX;
+extern volatile PIDControl linearY;
 extern volatile PIDControl thetaX;
 extern volatile PIDControl thetaY;
 extern volatile PIDControl omegaX;

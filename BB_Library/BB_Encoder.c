@@ -207,8 +207,8 @@ void GetEncoderXYZ(encodeVal *e) {
     e->x = (root3over2 * mc2) - (root3over2 * mc3);
     e->y = (double)mc1 - (0.5 * mc2) - (0.5 * mc3);
     e->rot = (mblInv * mc1) + (mblInv * mc2) + (mblInv * mc3);
-    printf("m1: %d, m2: %d, m3: %d\n\n", mc1, mc2, mc2);
-    printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
+    // printf("m1: %d, m2: %d, m3: %d\n\n", mc1, mc2, mc2);
+    // printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
 }
 
 /**

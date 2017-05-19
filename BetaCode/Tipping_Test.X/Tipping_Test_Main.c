@@ -28,17 +28,25 @@
 #define cntMsDelay      5000
 #define thsndDelay      1000
 
-#define THETA_X_P 225
-#define THETA_X_I 7
-#define THETA_X_D 0
+#define LINEAR_X_P 0.1
+#define LINEAR_X_I 0
+#define LINEAR_X_D 0
+
+#define LINEAR_Y_P LINEAR_X_P
+#define LINEAR_Y_I LINEAR_X_I
+#define LINEAR_Y_D LINEAR_X_D
+
+#define THETA_X_P 250
+#define THETA_X_I 0
+#define THETA_X_D 5
 
 #define THETA_Y_P THETA_X_P
 #define THETA_Y_I THETA_X_I
 #define THETA_Y_D THETA_X_D
 
-#define OMEGA_X_P 1
+#define OMEGA_X_P 100
 #define OMEGA_X_I 0
-#define OMEGA_X_D .1
+#define OMEGA_X_D 100
 
 #define OMEGA_Y_P OMEGA_X_P
 #define OMEGA_Y_I OMEGA_X_I
@@ -53,6 +61,8 @@
 /*				Global Variables		*/
 /* ------------------------------------------------------------ */
 volatile float eCountRadians = 0;
+volatile PIDControl linearX;
+volatile PIDControl linearY;
 volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
@@ -79,24 +89,71 @@ int main()
     IMU_Read_Gyro();
 
     // Init inner loops, middle, and outer loops
+    SetEncoderCounts(0, 0, 0);
+    PID_Init(&linearX, TRUE, 0, LINEAR_X_P, LINEAR_X_I, LINEAR_X_D);
+    PID_Init(&linearY, TRUE, 0, LINEAR_Y_P, LINEAR_Y_I, LINEAR_Y_D);
+    
     PID_Init(&thetaX, TRUE, xAngle, THETA_X_P, THETA_X_I, THETA_X_D);
     PID_Init(&thetaY, TRUE, yAngle, THETA_Y_P, THETA_Y_I, THETA_Y_D);
+    
     PID_Init(&omegaX, TRUE, IMU_Get_Gyro_Y(), OMEGA_X_P, OMEGA_X_I, OMEGA_X_D);
     PID_Init(&omegaY, TRUE, IMU_Get_Gyro_X(), OMEGA_Y_P, OMEGA_Y_I, OMEGA_Y_D);
 
-    encodeVal e;
+//    encodeVal e;
+//    
+//    printf("Setting encoder counts to 0, 10, -10. Should see: 17.32\n");
+//    SetEncoderCounts(0, 10, -10);
+//    GetEncoderXYZ(&e);
+//    
+//    printf("Setting encoder counts to 0, -10, 10. Should see: -17.32\n");
+//    SetEncoderCounts(0, -10, 10);
+//    GetEncoderXYZ(&e);
+//    
+//    printf("Setting encoder counts to 50, -50, -50. Should see: 100\n");
+//    SetEncoderCounts(50, -50, -50);
+//    GetEncoderXYZ(&e);
     
-    printf("Setting encoder counts to 0, 10, -10. Should see: 17.32\n");
-    SetEncoderCounts(0, 10, -10);
-    GetEncoderXYZ(&e);
-    
-    printf("Setting encoder counts to 0, -10, 10. Should see: -17.32\n");
-    SetEncoderCounts(0, -10, 10);
-    GetEncoderXYZ(&e);
-    
-    printf("Setting encoder counts to 50, -50, -50. Should see: 100\n");
-    SetEncoderCounts(50, -50, -50);
-    GetEncoderXYZ(&e);
+//    double x = 0;
+//    double y = 0;
+//    double z = 0;
+//    printf("x = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
+//    
+//    x = 2001;
+//    y = 100;
+//    z = 100;
+//    printf("\nx = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
+//    
+//    x = 100;
+//    y = 2001;
+//    z = 100;
+//    printf("\nx = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
+//    
+//    x = 100;
+//    y = 100;
+//    z = 2001;
+//    printf("\nx = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
+//    
+//    x = 2001;
+//    y = 2000;
+//    z = 100;
+//    printf("\nx = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
+//    
+//    x = 2000;
+//    y = 2001;
+//    z = 100;
+//    printf("\nx = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
+//    
+//    x = 2000;
+//    y = 2000;
+//    z = 100;
+//    printf("\nx = %f, y = %f, z = %f\n", x, y, z);
+//    SetMotor_XYZ(x, y, z);
     
     while (1) {
         
