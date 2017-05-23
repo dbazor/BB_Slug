@@ -126,7 +126,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     // 4) Set motors
     //SetMotor_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
 
-    SetMotor_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
+    MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
     count++;
     if (count % 50 == 0) {
         printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
@@ -242,7 +242,7 @@ void PID_SetTune(volatile PIDControl *p, double Kp, double Ki, double Kd)
  */
 void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double kp, double ki, double kd)
 {
-    DisableIntT4;
+    //DisableIntT4;
     if (firstInit) { // first init
 
         PID_SetTune(p, kp, ki, kd);
@@ -265,7 +265,7 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double
             p->eIntegral = MIN_PWM;
         }
     }
-    EnableIntT4;
+    //EnableIntT4;
 }
 
 /**
@@ -282,11 +282,8 @@ void PID_SetAngleOffset(double xOffset, double yOffset)
 }
 
 /**
- * @Function SetTunings(void)
+ * @Function PID_Print(void)
  * @param   *p - pointer to motor controller struct
- *          Kp - proportional constant, range: (1 - 4e6)
- *          Ki - integral constant,     range: (1 - 858e6)
- *          Kd - derivative constant,   range: (5 - 2147)
  * @return none
  * @brief
  * @note 
@@ -303,5 +300,17 @@ void PID_Print(volatile PIDControl *p)
     printf("reference:  %e\n", p->reference);
     printf("integralOut:%e\n", p->eIntegral);
     printf("lastInput:  %e\n", p->lastInput);
+}
+
+/**
+ * @Function PID_PrintK(void)
+ * @param   *p - pointer to motor controller struct
+ * @return none
+ * @brief
+ * @note 
+ * @author  */
+void PID_PrintK(volatile PIDControl *p)
+{
+    printf("kp: %g, ki: %g, kd: %g", p->kp, p->ki, p->kd);
 }
 

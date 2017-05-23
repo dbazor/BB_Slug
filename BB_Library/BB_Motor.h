@@ -53,7 +53,7 @@ void MotorsInit(void);
  * @brief   
  * @notes   
  **/
-void SetMotorSpeed(int PWM, int motorNum);
+void MotorSetSpeed(int PWM, int motorNum);
 
 /**
  * Function: GetMotorSpeed()
@@ -62,7 +62,7 @@ void SetMotorSpeed(int PWM, int motorNum);
  * @brief   
  * @notes   
  **/
-int GetMotorSpeed(int motorNum);
+int MotorGetSpeed(int motorNum);
 
 /**
  * Function: GetMotorDirection()
@@ -71,7 +71,7 @@ int GetMotorSpeed(int motorNum);
  * @brief   
  * @notes   
  **/
-int GetMotorDirection(int motorNum);
+int MotorGetDirection(int motorNum);
 
 /**
  * Function: MotorsStop()
@@ -90,6 +90,6 @@ void MotorsStop(void);
  *          Parameter z is rotation, which we pass a zero to for now.
  *          This function vector multiplies by inv(A) and then sets each motor.
  **/
-void SetMotor_XYZ(double x, double y, double z);
+void MotorSet_XYZ(double x, double y, double z);
 
 #endif	/* BB_MOTOR_H */

@@ -42,7 +42,7 @@ const double inverseA[HEIGHT][WIDTH] = {
 };
 
 #define SPEED(x) (90 + (x))
-#define DRIVE(x,y,z)   SetMotorSpeed(90 + (x),MOTOR_1); SetMotorSpeed(90 + (y),MOTOR_2); SetMotorSpeed(90 + (z),MOTOR_3)
+#define DRIVE(x,y,z)   MotorSetSpeed(90 + (x),MOTOR_1); MotorSetSpeed(90 + (y),MOTOR_2); MotorSetSpeed(90 + (z),MOTOR_3)
 
 #define MAXSPEED 1000
 
@@ -140,7 +140,7 @@ void SetDrive(int angle, int rotation)
  **	Description:
  **		
 /* ------------------------------------------------------------ */
-void SetMotorSpeed(int PWM, int motorNum)
+void MotorSetSpeed(int PWM, int motorNum)
 {
     int direction;
 
@@ -190,7 +190,7 @@ void SetMotorSpeed(int PWM, int motorNum)
  **	Description:
  **		
 /* ------------------------------------------------------------ */
-int GetMotorSpeed(int motorNum)
+int MotorGetSpeed(int motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -221,7 +221,7 @@ int GetMotorSpeed(int motorNum)
  **	Description:
  **		
 /* ------------------------------------------------------------ */
-int GetMotorDirection(int motorNum)
+int MotorGetDirection(int motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -363,7 +363,7 @@ void MotorsStop(void)
  *          This function vector multiplies by inv(A) and then sets each motor.
  * @precon  x, y, and z are to be scaled properly
  **/
-void SetMotor_XYZ(double x, double y, double z)
+void MotorSet_XYZ(double x, double y, double z)
 {
     double pwm[HEIGHT] = {0, 0, 0};
     int row;
@@ -420,7 +420,7 @@ void SetMotor_XYZ(double x, double y, double z)
 
     //    printf("AFTER pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
 
-    SetMotorSpeed((int) pwm[0], MOTOR_1);
-    SetMotorSpeed((int) pwm[1], MOTOR_2);
-    SetMotorSpeed((int) pwm[2], MOTOR_3);
+    MotorSetSpeed((int) pwm[0], MOTOR_1);
+    MotorSetSpeed((int) pwm[1], MOTOR_2);
+    MotorSetSpeed((int) pwm[2], MOTOR_3);
 }

@@ -42,13 +42,31 @@ typedef struct PIDControler {
     double kd; /**< Derivative gain constant */
     double error;
     double input; // encoder reading
-    double output; 
+    double output;
     double reference; // setpoint, must be written to
     double lastRef; // last reference
     double eIntegral;
     double lastInput;
 
 } PIDControl;
+
+typedef enum {
+    reset = 'r',
+    balancing = 'b',
+    stop = ' '
+} Status_t;
+
+typedef enum {
+    linear = 'l',
+    theta = 't',
+    omega = 'w'
+} ControllerLevel_t;
+
+typedef enum {
+    proportional = 'p',
+    integral = 'i',
+    derivative = 'd'
+} PID_t;
 
 extern volatile PIDControl linearX;
 extern volatile PIDControl linearY;
@@ -107,6 +125,24 @@ void PID_Init(volatile PIDControl *p, BOOL firstInit, double sensorInput, double
  * @note 
  * @author  */
 void PID_SetAngleOffset(double xOffset, double yOffset);
+
+/**
+ * @Function PID_Print(void)
+ * @param   *p - pointer to motor controller struct
+ * @return none
+ * @brief
+ * @note 
+ * @author  */
+void PID_Print(volatile PIDControl *p);
+
+/**
+ * @Function PID_PrintK(void)
+ * @param   *p - pointer to motor controller struct
+ * @return none
+ * @brief
+ * @note 
+ * @author  */
+void PID_PrintK(volatile PIDControl *p);
 
 #endif /* _PI_CONTROL_H */
 

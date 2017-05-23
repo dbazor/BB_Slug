@@ -126,6 +126,8 @@ void BB_BOARD_Init()
     OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
     // set up the timer interrupt with a priority of 2
     ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
+    DisableIntT4;
+    
     // enable multi-vector interrupts
     INTEnableSystemMultiVectoredInt();
 
