@@ -257,7 +257,6 @@ char IsTransmitEmpty(void)
 void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
 {
     if (INTGetFlag(INT_U1RX)) {
-        //PORTWrite(IOPORT_G, BIT_12);
         INTClearFlag(INT_U1RX);
         if (!GettingFromReceive) {
             writeBack(receiveBuffer, (unsigned char) U1RXREG);
@@ -267,23 +266,17 @@ void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
         }
     }
     if (INTGetFlag(INT_U1TX)) {
-        //PORTWrite(IOPORT_G, BIT_15);
-
+        INTClearFlag(INT_U1TX);
         if (!(getLength(transmitBuffer) == 0)) {
             if (!AddingToTransmit) {
-
                 U1TXREG = readFront(transmitBuffer);
-
             } else {
                 //acknowledge we have a collision and return
                 TransmitCollisionOccured = TRUE;
             }
-        } else if (getLength(transmitBuffer) == 0) {
-            //PORTWrite(IOPORT_G, BIT_14);
-            INTEnable(INT_U1TX, INT_DISABLED);
-            INTClearFlag(INT_U1TX);
         }
     }
+
 }
 
 /*******************************************************************************
