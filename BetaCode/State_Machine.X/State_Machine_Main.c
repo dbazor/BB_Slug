@@ -154,11 +154,13 @@ void PID_GetUARTK()
         PID_PrintK(&thetaX);
         printf("\nOmega  PID values: ");
         PID_PrintK(&omegaX);
-        printf("\nPress 'q' at any time to reset.\n");
         printf("\nPlease enter 'l' for linear, 't' for theta, or 'w' for omega controller.\n");
-        while (c != linear && c != theta && c != omega && c != 'q') {
+        while (c != 0x00 && c != linear && c != theta && c != omega && c != 'q') {
             c = GetChar();
-            if (c == linear) {
+            if (c != 0x00 && c != linear && c != theta && c != omega) {
+                printf("Please try again\n");
+                c = 0x00;
+            } else if (c == linear) {
                 controller2changeX = &linearX;
                 controller2changeY = &linearY;
                 printf("You chose the linear controller.\n");
@@ -170,14 +172,15 @@ void PID_GetUARTK()
                 controller2changeX = &omegaX;
                 controller2changeY = &omegaY;
                 printf("You chose the omega controller.\n");
-            } else if (c != 0x00){
-                printf("Please try again\n");
             }
         }
         printf("Please enter 'p', 'i', or 'd' for PID.\n");
-        while (c != proportional && c != integral && c != derivative && c != 'q') {
+        while (c != 0x00 && c != proportional && c != integral && c != derivative && c != 'q') {
             c = GetChar();
-            if (c == proportional) {
+            if (c != 0x00 && c != proportional && c != integral && c != derivative) {
+                printf("Please try again\n");
+                c = 0x00;
+            } else if (c == proportional) {
                 k2changeX = &controller2changeX->kp;
                 k2changeY = &controller2changeY->kp;
                 printf("You chose kp.\n");
@@ -189,8 +192,6 @@ void PID_GetUARTK()
                 k2changeX = &controller2changeX->kd;
                 k2changeY = &controller2changeY->kd;
                 printf("You chose kd.\n");
-            } else if (c != 0x00) {
-                printf("Please try again\n");
             }
         }
         double magnitude = 1;
@@ -198,11 +199,8 @@ void PID_GetUARTK()
         printf("Press 'j' and 'l' to change magnitude of incrementation. Currently: %f\n", magnitude);
         printf("Press 'i' and 'k' to increment and decrement by magnitude.\n");
         printf("Press escape to leave Reset\n");
-        while (c != 'q' && c != 'c') {
+        while (c != 'q' || c != 'c') {
             c = GetChar();
-            if (c != 0x00) {
-                printf("c: %c\n", c);
-            }
             switch (c) {
             case 0x00:
                 break;
@@ -210,22 +208,24 @@ void PID_GetUARTK()
                 *k2changeX = *k2changeX + magnitude;
                 *k2changeY = *k2changeY + magnitude;
                 printf("Value incremented to: %f\n", *k2changeX);
+                c = 0x00;
                 break;
             case 'j': // left
                 magnitude /= 10;
                 printf("Magnitude decreased: %f\n", magnitude);
+                c = 0x00;
                 break;
             case 'k': // down
                 *k2changeX = *k2changeX - magnitude;
                 *k2changeY = *k2changeY - magnitude;
                 printf("Value decremented to: %f\n", *k2changeX);
+                c = 0x00;
                 break;
             case 'l': // right
                 magnitude *= 10;
                 printf("Magnitude increased: %f\n", magnitude);
+                c = 0x00;
                 break;
-            default:
-                printf("Please try again.\n");
             }
         }
 

@@ -274,6 +274,9 @@ void __ISR(_UART1_VECTOR, ipl4auto) IntUart1Handler(void)
                 //acknowledge we have a collision and return
                 TransmitCollisionOccured = TRUE;
             }
+        } else if (getLength(transmitBuffer) == 0) {
+            INTEnable(INT_U1TX, INT_DISABLED);
+            INTClearFlag(INT_U1TX);
         }
     }
 
