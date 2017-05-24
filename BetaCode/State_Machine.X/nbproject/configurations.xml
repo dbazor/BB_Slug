@@ -30,8 +30,8 @@
       <itemPath>../../BB_Library/BB_I2C.c</itemPath>
       <itemPath>../../BB_Library/BB_IMU.c</itemPath>
       <itemPath>../../BB_Library/BB_QUAT.c</itemPath>
-      <itemPath>Tipping_Test_Main.c</itemPath>
       <itemPath>../../BB_Library/BB_CONTROLLER.c</itemPath>
+      <itemPath>State_Machine_Main.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
