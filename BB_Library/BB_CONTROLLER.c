@@ -59,7 +59,7 @@ volatile PIDControl omegaX;
 volatile PIDControl omegaY;
 double xAngleOffset;
 double yAngleOffset;
-
+volatile BOOL printFlag;
 /*******************************************************************************
  * Interrupts                                                                  *
  ******************************************************************************/
@@ -106,29 +106,28 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     double xAngle = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
     double yAngle = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
 
-    // 2) Run middle controller
-    //PID_Update(&thetaX, xAngle, linearX.output, MAX_PWM);
-    //PID_Update(&thetaY, yAngle, linearY.output, MAX_PWM);
-
-    PID_Update(&thetaX, xAngle, 0, MAX_PWM);
-    PID_Update(&thetaY, yAngle, 0, MAX_PWM);
-
-    // 3) Run inner controller
     IMU_Read_Gyro();
     IMU_Get_Gyro(&g);
     double gyroX = g.x;
     double gyroY = g.y;
+    
+    // 2) Run middle controller
+    PID_ThetaUpdate(&thetaX, xAngle, linearX.output, MAX_PWM, gyroY);
+    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
 
-    //
-    PID_Update(&omegaX, gyroY, thetaX.output, MAX_PWM);
-    PID_Update(&omegaY, gyroX, thetaY.output, MAX_PWM);
+    //PID_Update(&thetaX, xAngle, 0, MAX_PWM);
+    //PID_Update(&thetaY, yAngle, 0, MAX_PWM);
+
+    // 3) Run inner controller
+    PID_OmegaUpdate(&omegaX, gyroY, thetaX.output, MAX_PWM);
+    PID_OmegaUpdate(&omegaY, gyroX, thetaY.output, MAX_PWM);
 
     // 4) Set motors
-    //SetMotor_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
+    MotorSet_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
 
-    MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
+    //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
     count++;
-    if (count % 50 == 0) {
+    if (count % 50 == 0 && printFlag) {
         printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
         printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
         printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
@@ -138,8 +137,6 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     }
     //    PID_Update(&motor1_pid);
     //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
-
-    loopFlag = TRUE;
 
     // these are just to check the frequency
     //    Turn_On_LED(BB_LED_4);
@@ -166,7 +163,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
  * 
  * @return              control output <code>u</code>
  */
-void PID_Update(volatile PIDControl *p, double sensorInput, double reference, int maxOut)
+void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double reference, int maxOut, double eDerivative)
 {
     //printf("Starting update\n");
     p->reference = reference;
@@ -182,11 +179,60 @@ void PID_Update(volatile PIDControl *p, double sensorInput, double reference, in
     /*Compute all the working error variables*/
     p->error = p->reference - p->input; // Error = r - senor
     p->eIntegral += (SAMPLE_TIME * p->error); // Calculate the i-term
+    p->eDerivative = eDerivative; // opposite?
     //printf("Error Calculated\n");
 
     double uP = p->kp * p->error;
     double uI = (p->ki * p->eIntegral); // temp u integral
-    double uD = (p->kd * (p->lastInput - p->input)) / SAMPLE_TIME; //
+    double uD = (p->kd * p->eDerivative) / SAMPLE_TIME; //
+    //printf("U Calculated\n");
+
+    /*Compute PID Output*/
+    p->output = uP + uI - uD; // sets output to motor but doesn't set motor
+
+    if ((p->output > maxOut) || (p->output < -maxOut)) {
+        p->eIntegral -= (SAMPLE_TIME * p->error); // undo integration 
+        p->output = uP - uD; // reset output to motor
+    }
+    //printf("Output normalized\n");
+
+    /*Remember some variables for next time*/
+    p->lastInput = p->input;
+    p->lastRef = p->reference;
+
+}
+
+/**
+ * Proportional-integral (PI) control law.
+ *
+ * @param[in,out]  p    control parameter and state structure
+ *
+ * @note p->eIntegral is A_k from Gabe's Drawing
+ * 
+ * @return              control output <code>u</code>
+ */
+void PID_OmegaUpdate(volatile PIDControl *p, double sensorInput, double reference, int maxOut)
+{
+    //printf("Starting update\n");
+    p->reference = reference;
+    // Reset integral state if reference changes sign
+    if (((p->reference > 0) && (p->lastRef < 0)) || ((p->reference < 0) && (p->lastRef > 0))) {
+        p->eIntegral = 0;
+    }
+
+    // Get the current sensor reading
+    p->input = sensorInput;
+    //printf("input found\n");
+
+    /*Compute all the working error variables*/
+    p->error = p->reference - p->input; // Error = r - senor
+    p->eIntegral += (SAMPLE_TIME * p->error); // Calculate the i-term
+    p->eDerivative = (p->lastInput - p->input);
+    //printf("Error Calculated\n");
+
+    double uP = p->kp * p->error;
+    double uI = (p->ki * p->eIntegral); // temp u integral
+    double uD = (p->kd * p->eDerivative) / SAMPLE_TIME; //
     //printf("U Calculated\n");
 
     /*Compute PID Output*/

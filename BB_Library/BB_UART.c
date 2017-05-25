@@ -101,8 +101,8 @@ void BB_UART_Init(void)
     U1TXREG = '\n'; // put a bit in the TX FIFO to allow it to stop interrupting since done will happen
     UARTSetFifoMode(UART1, UART_INTERRUPT_ON_TX_DONE | UART_INTERRUPT_ON_RX_NOT_EMPTY);
     INTSetVectorPriority(INT_UART_1_VECTOR, INT_PRIORITY_LEVEL_4); //set the interrupt priority
-    INTEnable(INT_U1RX, INT_ENABLED);
-    INTEnable(INT_U1TX, INT_ENABLED);
+    INTEnable(INT_U1RX, INT_DISABLED);
+    INTEnable(INT_U1TX, INT_DISABLED);
 }
 
 /**
@@ -139,20 +139,29 @@ void PutChar(char ch)
  * @author Max Dunne, 2011.11.10 */
 char GetChar(void)
 {
-    char ch;
-    if (getLength(receiveBuffer) == 0) {
-        ch = 0;
+    // Trying to bypass the circular buffer - May 24, 2017
+    char data;
+    if (UARTReceivedDataIsAvailable(UART1)) {
+        data = UARTGetDataByte(UART1);
     } else {
-        GettingFromReceive = TRUE;
-        ch = readFront(receiveBuffer);
-        GettingFromReceive = FALSE;
+        data = 0x00;
     }
-    //re-enter the interrupt if we added a character while transmitting another one
-    if (ReceiveCollisionOccured) {
-        INTSetFlag(INT_U1RX);
-        ReceiveCollisionOccured = FALSE;
-    }
-    return ch;
+    return data;
+    
+    //    char ch;
+    //    if (getLength(receiveBuffer) == 0) {
+    //        ch = 0;
+    //    } else {
+    //        GettingFromReceive = TRUE;
+    //        ch = readFront(receiveBuffer);
+    //        GettingFromReceive = FALSE;
+    //    }
+    //    //re-enter the interrupt if we added a character while transmitting another one
+    //    if (ReceiveCollisionOccured) {
+    //        INTSetFlag(INT_U1RX);
+    //        ReceiveCollisionOccured = FALSE;
+    //    }
+    //    return ch;
 }
 
 /**

@@ -46,6 +46,7 @@ typedef struct PIDControler {
     double reference; // setpoint, must be written to
     double lastRef; // last reference
     double eIntegral;
+    double eDerivative;
     double lastInput;
 
 } PIDControl;
@@ -75,19 +76,27 @@ extern volatile PIDControl thetaY;
 extern volatile PIDControl omegaX;
 extern volatile PIDControl omegaY;
 
-extern volatile BOOL loopFlag;
+extern volatile BOOL printFlag;
 
 /*******************************************************************************
  * PUBLIC FUNCTION PROTOTYPES                                                  *
  ******************************************************************************/
 
 /**
- * @Function int pid_control (struct PIControl *p);
+ * @Function PID_ThetaUpdate
  * @param struct PIControl *p,
  * @return int
  * @brief  
  * @author M*/
-void PID_Update(volatile PIDControl *p, double sensorInput, double reference, int maxOut);
+void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double reference, int maxOut, double eDerivative);
+
+/**
+ * @Function PID_OmegaUpdate
+ * @param struct PIControl *p,
+ * @return int
+ * @brief  
+ * @author M*/
+void PID_OmegaUpdate(volatile PIDControl *p, double sensorInput, double reference, int maxOut);
 
 /**
  * @Function int PID_SetReference (struct PIControl *p);
