@@ -24,6 +24,7 @@
  * Defines                                                                      *
  ******************************************************************************/
 #define tick2Radian  (2*M_PI/2240)
+#define TICK_2_MM (0.0140249672)
 
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
@@ -180,19 +181,12 @@ int GetEncoderCount(UINT8 motorNum)
  * @return Float representing Encoder Count in radians
  * @brief Get the encoder count in radians of a specified motor
  **/
-float GetEncoderRadians(UINT8 motorNum)
+float EncoderGetXYZmeters(encodeVal *e)
 {
-    switch (motorNum) {
-    case MOTOR_1:
-        return tick2Radian*mc1;
-        break;
-    case MOTOR_2:
-        return tick2Radian*mc2;
-        break;
-    case MOTOR_3:
-        return tick2Radian*mc3;
-        break;
-    }
+    GetEncoderXYZ(e);
+    e->x = e->x * UNIT_SCALE;
+    e->y = e->y * UNIT_SCALE;
+    e->rot = e->rot * UNIT_SCALE;
 }
 
 /**
@@ -201,11 +195,12 @@ float GetEncoderRadians(UINT8 motorNum)
  * @return 
  * @brief
  **/
-void GetEncoderXYZ(encodeVal *e) {
+void GetEncoderXYZ(encodeVal *e)
+{
     const double root3over2 = (0.8660254038);
     const double mblInv = 1 / MOTOR_BRACKET_LENGTH;
     e->x = (root3over2 * mc2) - (root3over2 * mc3);
-    e->y = (double)mc1 - (0.5 * mc2) - (0.5 * mc3);
+    e->y = (double) mc1 - (0.5 * mc2) - (0.5 * mc3);
     e->rot = (mblInv * mc1) + (mblInv * mc2) + (mblInv * mc3);
     // printf("m1: %d, m2: %d, m3: %d\n\n", mc1, mc2, mc2);
     // printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
@@ -238,7 +233,8 @@ void SetEncoderCount(UINT8 motorNum, UINT8 value)
  * @return None
  * @brief Set the encoder count of all motors to desired values
  **/
-void SetEncoderCounts(int count1, int count2, int count3) {
+void SetEncoderCounts(int count1, int count2, int count3)
+{
     mc1 = count1;
     mc2 = count2;
     mc3 = count3;

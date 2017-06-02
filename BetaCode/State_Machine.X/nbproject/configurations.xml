@@ -31,7 +31,7 @@
       <itemPath>../../BB_Library/BB_IMU.c</itemPath>
       <itemPath>../../BB_Library/BB_QUAT.c</itemPath>
       <itemPath>../../BB_Library/BB_CONTROLLER.c</itemPath>
-      <itemPath>State_Machine_Main.c</itemPath>
+      <itemPath>AccelerationControllerMain.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

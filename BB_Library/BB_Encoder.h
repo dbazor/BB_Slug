@@ -53,7 +53,7 @@ int GetEncoderCount(UINT8 motorNum);
  * @return Float representing Encoder Count in radians
  * @brief Get the encoder count in radians of a specified motor
  **/
-float GetEncoderRadians(UINT8 motorNum);
+float EncoderGetXYZmeters(UINT8 motorNum);
 
 /**
  * Function: GetEncoderXYZ
