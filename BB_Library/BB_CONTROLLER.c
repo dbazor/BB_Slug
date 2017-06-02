@@ -40,7 +40,7 @@
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
  ******************************************************************************/
-
+#define AVERAGE_SIZE 5
 
 /*******************************************************************************
  * Private Support Functions                                                   *
@@ -86,6 +86,10 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     // clear the interrupt flag always
     mT4ClearIntFlag();
 
+    static double averageX[AVERAGE_SIZE], averageY[AVERAGE_SIZE];
+    static int index = 0;
+    static double sumX = 0, sumY = 0;
+
     // Set pin high
     PORTSetBits(JC03);
 
@@ -122,11 +126,22 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     PID_OmegaUpdate(&omegaY, gyroX, thetaY.output, MAX_PWM);
 
     // 4) Set motors
-    MotorSet_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
+    // Rolling average of size AVERAGE_SIZE
+    sumX -= averageX[index]; // subtract out oldest value
+    sumY -= averageY[index];
+    sumX += thetaX.output; // add in newest value
+    sumY += thetaY.output;
+    averageX[index] = thetaX.output; // replace oldest value with newest value
+    averageY[index] = thetaY.output;
+    index++;
+    index %= AVERAGE_SIZE;
+    
+    MotorSet_XYZ(sumX / AVERAGE_SIZE, sumY / AVERAGE_SIZE, 0); // comment back in for balancing
+    //MotorSet_XYZ(omegaX.output, omegaY.output, 0); 
 
     //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
-    
-    
+
+
     count++;
     if (count % 50 == 0 && printFlag) {
         printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
@@ -137,7 +152,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
         printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
         //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
     }
-    
+
     //    PID_Update(&motor1_pid);
     //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
 
