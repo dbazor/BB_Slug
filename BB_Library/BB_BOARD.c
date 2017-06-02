@@ -70,6 +70,9 @@ void BB_BOARD_Init()
 {
     // disable interrupts
     __builtin_disable_interrupts();
+    
+    // 
+    DelayMs(5000);
 
     //disables all A/D pins for a clean start
     AD1PCFG = 0xffff;

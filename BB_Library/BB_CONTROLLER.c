@@ -110,13 +110,12 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     IMU_Get_Gyro(&g);
     double gyroX = g.x;
     double gyroY = g.y;
-    
-    // 2) Run middle controller
-    PID_ThetaUpdate(&thetaX, xAngle, linearX.output, MAX_PWM, gyroY);
-    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
 
-    //PID_Update(&thetaX, xAngle, 0, MAX_PWM);
-    //PID_Update(&thetaY, yAngle, 0, MAX_PWM);
+    // 2) Run middle controller
+    //    PID_ThetaUpdate(&thetaX, xAngle, linearX.output, MAX_PWM, gyroY);
+    //    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
+    PID_ThetaUpdate(&thetaX, xAngle, 0, MAX_PWM, gyroY);
+    PID_ThetaUpdate(&thetaY, yAngle, 0, MAX_PWM, gyroX);
 
     // 3) Run inner controller
     PID_OmegaUpdate(&omegaX, gyroY, thetaX.output, MAX_PWM);
@@ -126,15 +125,19 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     MotorSet_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
 
     //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
+    
+    
     count++;
     if (count % 50 == 0 && printFlag) {
         printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
         printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
-        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
         printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
-        printf("gyroX: %f, gyroY: %f\n", gyroX, gyroY);
         printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
+        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
+        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
+        //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
     }
+    
     //    PID_Update(&motor1_pid);
     //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
 
@@ -179,20 +182,20 @@ void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     /*Compute all the working error variables*/
     p->error = p->reference - p->input; // Error = r - senor
     p->eIntegral += (SAMPLE_TIME * p->error); // Calculate the i-term
-    p->eDerivative = eDerivative; // opposite?
+    p->eDerivative = -eDerivative; // was / SAMPLE_TIME; because gyro is already rate
     //printf("Error Calculated\n");
 
     double uP = p->kp * p->error;
-    double uI = (p->ki * p->eIntegral); // temp u integral
-    double uD = (p->kd * p->eDerivative) / SAMPLE_TIME; //
+    double uI = p->ki * p->eIntegral; // temp u integral
+    double uD = p->kd * p->eDerivative; //
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->output = uP + uI - uD; // sets output to motor but doesn't set motor
+    p->output = uP + uI + uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (SAMPLE_TIME * p->error); // undo integration 
-        p->output = uP - uD; // reset output to motor
+        p->output -= uI; // reset output to motor
     }
     //printf("Output normalized\n");
 
@@ -216,8 +219,8 @@ void PID_OmegaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     //printf("Starting update\n");
     p->reference = reference;
     // Reset integral state if reference changes sign
-    if (((p->reference > 0) && (p->lastRef < 0)) || ((p->reference < 0) && (p->lastRef > 0))) {
-        p->eIntegral = 0;
+    if (((p->reference > 0.0) && (p->lastRef < 0.0)) || ((p->reference < 0.0) && (p->lastRef > 0.0))) {
+        p->eIntegral = 0.0;
     }
 
     // Get the current sensor reading
@@ -225,22 +228,22 @@ void PID_OmegaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     //printf("input found\n");
 
     /*Compute all the working error variables*/
-    p->error = p->reference - p->input; // Error = r - senor
+    p->error = p->reference - p->input; // Error = r - sensor
     p->eIntegral += (SAMPLE_TIME * p->error); // Calculate the i-term
-    p->eDerivative = (p->lastInput - p->input);
+    p->eDerivative = -(p->input - p->lastInput) / SAMPLE_TIME; // the minus here is important
     //printf("Error Calculated\n");
 
     double uP = p->kp * p->error;
-    double uI = (p->ki * p->eIntegral); // temp u integral
-    double uD = (p->kd * p->eDerivative) / SAMPLE_TIME; //
+    double uI = p->ki * p->eIntegral; // temp u integral
+    double uD = p->kd * p->eDerivative;
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->output = uP + uI - uD; // sets output to motor but doesn't set motor
+    p->output = uP + uI + uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (SAMPLE_TIME * p->error); // undo integration 
-        p->output = uP - uD; // reset output to motor
+        p->output -= uI; // reset output to motor
     }
     //printf("Output normalized\n");
 

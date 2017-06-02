@@ -36,9 +36,9 @@
 #define LINEAR_Y_I LINEAR_X_I
 #define LINEAR_Y_D LINEAR_X_D
 
-#define THETA_X_P 50
+#define THETA_X_P 170
 #define THETA_X_I 0
-#define THETA_X_D 0
+#define THETA_X_D 1
 
 #define THETA_Y_P THETA_X_P
 #define THETA_Y_I THETA_X_I
