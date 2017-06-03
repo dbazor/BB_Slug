@@ -175,10 +175,10 @@ BOOL IMU_Init()
                     PORTReadBits(IOPORT_G, BIT_6) == 0);
 
             DelayMs(500);
-            // Wait for button press
+            // Wait for button press to set x and y offset
             printf("Please press button 1 to set the offset.\n");
             static Quat q, result;
-            double x = 0;
+            double x = 0; // rotation about the x axis
             double y = 0;
             static int count = 0;
             while (PORTReadBits(IOPORT_G, BIT_6) == 0) {

@@ -101,14 +101,14 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    double angleX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
-    double angleY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
+    double thetaX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
+    double thetaY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
 
     // Get tip rates
     IMU_Read_Gyro();
     IMU_Get_Gyro(&g);
-    double gyroX = g.y; // changed for readability
-    double gyroY = g.x;
+    double omegaX = g.y; // changed for readability
+    double omegaY = g.x;
 
     // Get Ball location
     EncoderGetXYZmeters(&e); // may want to accumulate here and reset the encoder values each call to prevent overflow on large counts
@@ -123,27 +123,34 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     prevBallLocY = ballLocY;
 
     // Calc acceleration
-    double accX = (THETA_X_P * angleX) + (THETA_X_D * gyroX) + (LINEAR_X_P * ballLocX) + (LINEAR_X_D * ballVelX);
-    double accY = (THETA_Y_P * angleY) + (THETA_Y_D * gyroY) + (LINEAR_Y_P * ballLocY) + (LINEAR_Y_D * ballVelY);
+    double accCommandX = (LINEAR_X_P * ballLocX) + (LINEAR_X_D * ballVelX) + (THETA_X_P * thetaX) + (THETA_X_D * omegaX); 
+    double accCommandY = (LINEAR_Y_P * ballLocY) + (LINEAR_Y_D * ballVelY) + (THETA_Y_P * thetaY) + (THETA_Y_D * omegaY);
 
    
     // check if acc is below dead band of motor but above min_acc set acc to acc_min
-    if (abs(accX) <= ACC_MIN_X) {
-        if (accX >= ACC_DEADZONE) {
-            accX = ACC_MIN_X;
+    if (abs(accCommandX) <= ACC_MIN_X) {
+        if (accCommandX >= ACC_DEADZONE) {
+            accCommandX = ACC_MIN_X;
         }
-        else if (accX <= -ACC_DEADZONE) {
-            accX = -ACC_MIN_X;
-        }
-    }
-    if (abs(accY) <= ACC_MIN_Y) {
-        if (accY >= ACC_DEADZONE) {
-            accY = ACC_MIN_Y;
-        }
-        else if (accY <= -ACC_DEADZONE) {
-            accY = -ACC_MIN_Y;
+        else if (accCommandX <= -ACC_DEADZONE) {
+            accCommandX = -ACC_MIN_X;
         }
     }
+    if (abs(accCommandY) <= ACC_MIN_Y) {
+        if (accCommandY >= ACC_DEADZONE) {
+            accCommandY = ACC_MIN_Y;
+        }
+        else if (accCommandY <= -ACC_DEADZONE) {
+            accCommandY = -ACC_MIN_Y;
+        }
+    }
+    
+    // Integrate acc to get velocity    
+    double velWheelX = -accCommandX * SAMPLE_TIME + ballVelX;
+    double velWheelY = -accCommandY * SAMPLE_TIME + ballVelY;
+    
+    // set motors
+     MotorSet_XYZ(velWheelX,velWheelY,0);
 }
 /* ------------------------------------------------------------ */
 /*                            Main                              */

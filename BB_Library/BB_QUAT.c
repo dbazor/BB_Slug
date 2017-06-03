@@ -126,8 +126,7 @@ void BB_Quat_Tip_Vector(const Quat *q, Quat *result)
  * @author Daniel Bazor */
 double BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 {
-    return RadiansToDegrees(atan2(tipVect->x, tipVect->z));
-    //return atan(tipVect->x / tipVect->z);
+    return RadiansToDegrees(atan2(tipVect->y, tipVect->z)); // swapped x and y to conform with gyro
 }
 
 /**
@@ -139,8 +138,7 @@ double BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
  * @author Daniel Bazor */
 double BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
 {
-    return RadiansToDegrees(atan2(tipVect->y, tipVect->z)); // negative to match our coordinate convention
-    //return atan(tipVect->y / tipVect->z);
+    return RadiansToDegrees(atan2(tipVect->x, tipVect->z)); // swapped x and y to conform with gyro
 }
 
 /**
