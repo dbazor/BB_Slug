@@ -52,6 +52,11 @@
 #define OMEGA_Y_I OMEGA_X_I
 #define OMEGA_Y_D OMEGA_X_D
 
+#define ACC_MIN_X (0) // TODO need to test to see what the dead band will be for each virtual wheel
+#define ACC_MIN_Y (0) 
+#define ACC_DEADZONE (0) // TODO need to test to see what amount of acc we don't want to act on
+ 
+
 /* ------------------------------------------------------------ */
 /*				Prototypes			*/
 /* ------------------------------------------------------------ */
@@ -75,6 +80,8 @@ volatile double *k2changeX;
 volatile double *k2changeY;
 
 volatile BOOL printFlag;
+double xAngleOffset;
+double yAngleOffset;
 
 /* ------------------------------------------------------------ */
 /*                            Interrupt                         */
@@ -87,26 +94,56 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
 
     static Quat q, result;
     static gyroAxis g;
-    static encodeVal encoder;
+    static encodeVal e;
+    static double prevBallLocX = 0, prevBallLocY = 0;
 
+    // Get tip angles
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
     double angleX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
     double angleY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
 
+    // Get tip rates
     IMU_Read_Gyro();
     IMU_Get_Gyro(&g);
     double gyroX = g.y; // changed for readability
     double gyroY = g.x;
 
-    double ballLocX;
-    double ballLocY;
-    double ballvX;
-    double ballvY;
+    // Get Ball location
+    EncoderGetXYZmeters(&e); // may want to accumulate here and reset the encoder values each call to prevent overflow on large counts
+    double ballLocX = e.x;
+    double ballLocY = e.y;
 
-    double accX = (THETA_X_P * angleX) + (THETA_X_D * gyroX) + (LINEAR_X_P * ballLocX) + (LINEAR_X_D * ballvX);
-    double accY = (THETA_Y_P * angleY) + (THETA_Y_D * gyroY) + (LINEAR_Y_P * ballLocY) + (LINEAR_Y_D * ballvY);
+    // Get Ball speed
+    // speed = change in location / change in time
+    double ballVelX = (ballLocX - prevBallLocX) / SAMPLE_TIME;
+    double ballVelY = (ballLocY - prevBallLocY) / SAMPLE_TIME;
+    prevBallLocX = ballLocX;
+    prevBallLocY = ballLocY;
+
+    // Calc acceleration
+    double accX = (THETA_X_P * angleX) + (THETA_X_D * gyroX) + (LINEAR_X_P * ballLocX) + (LINEAR_X_D * ballVelX);
+    double accY = (THETA_Y_P * angleY) + (THETA_Y_D * gyroY) + (LINEAR_Y_P * ballLocY) + (LINEAR_Y_D * ballVelY);
+
+   
+    // check if acc is below dead band of motor but above min_acc set acc to acc_min
+    if (abs(accX) <= ACC_MIN_X) {
+        if (accX >= ACC_DEADZONE) {
+            accX = ACC_MIN_X;
+        }
+        else if (accX <= -ACC_DEADZONE) {
+            accX = -ACC_MIN_X;
+        }
+    }
+    if (abs(accY) <= ACC_MIN_Y) {
+        if (accY >= ACC_DEADZONE) {
+            accY = ACC_MIN_Y;
+        }
+        else if (accY <= -ACC_DEADZONE) {
+            accY = -ACC_MIN_Y;
+        }
+    }
 }
 /* ------------------------------------------------------------ */
 /*                            Main                              */
@@ -121,25 +158,25 @@ int main()
     PORTClearBits(JC03);
 
     // Overhead of getting tip angles
-    static Quat q, result;
-    IMU_Read_Quat();
-    IMU_Get_Quat(&q);
-    BB_Quat_Tip_Vector(&q, &result);
-    float xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
-    float yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
-
-    IMU_Read_Gyro();
+    //    static Quat q, result;
+    //    IMU_Read_Quat();
+    //    IMU_Get_Quat(&q);
+    //    BB_Quat_Tip_Vector(&q, &result);
+    //    float xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
+    //    float yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
+    //
+    //    IMU_Read_Gyro();
 
     // Init inner loops, middle, and outer loops
     SetEncoderCounts(0, 0, 0);
-    PID_Init(&linearX, TRUE, 0, LINEAR_X_P, LINEAR_X_I, LINEAR_X_D);
-    PID_Init(&linearY, TRUE, 0, LINEAR_Y_P, LINEAR_Y_I, LINEAR_Y_D);
-
-    PID_Init(&thetaX, TRUE, xAngle, THETA_X_P, THETA_X_I, THETA_X_D);
-    PID_Init(&thetaY, TRUE, yAngle, THETA_Y_P, THETA_Y_I, THETA_Y_D);
-
-    PID_Init(&omegaX, TRUE, IMU_Get_Gyro_Y(), OMEGA_X_P, OMEGA_X_I, OMEGA_X_D);
-    PID_Init(&omegaY, TRUE, IMU_Get_Gyro_X(), OMEGA_Y_P, OMEGA_Y_I, OMEGA_Y_D);
+    //    PID_Init(&linearX, TRUE, 0, LINEAR_X_P, LINEAR_X_I, LINEAR_X_D);
+    //    PID_Init(&linearY, TRUE, 0, LINEAR_Y_P, LINEAR_Y_I, LINEAR_Y_D);
+    //
+    //    PID_Init(&thetaX, TRUE, xAngle, THETA_X_P, THETA_X_I, THETA_X_D);
+    //    PID_Init(&thetaY, TRUE, yAngle, THETA_Y_P, THETA_Y_I, THETA_Y_D);
+    //
+    //    PID_Init(&omegaX, TRUE, IMU_Get_Gyro_Y(), OMEGA_X_P, OMEGA_X_I, OMEGA_X_D);
+    //    PID_Init(&omegaY, TRUE, IMU_Get_Gyro_X(), OMEGA_Y_P, OMEGA_Y_I, OMEGA_Y_D);
 
     char c = ' '; // init state is stop
 

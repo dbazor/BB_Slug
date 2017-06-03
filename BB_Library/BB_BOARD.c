@@ -111,7 +111,7 @@ void BB_BOARD_Init()
     BB_UART_Init();
 
     MotorsInit();
-    Encoder_Init();
+    EncoderInit();
     BB_I2C_Init();
     IMU_Init();
 

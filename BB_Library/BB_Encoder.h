@@ -37,7 +37,7 @@ typedef struct encodeVal {
  *      Also sets up IC2, IC3, and IC5 to all use Timer 3. Sets to captuer
  *      on falling and rising edge. See function for more settings initialized
  * @author Pavlo Vlastos */
-void Encoder_Init(void);
+void EncoderInit(void);
 
 /**
  * Function: GetEncoderCount(UINT8 motorNum)
@@ -45,23 +45,24 @@ void Encoder_Init(void);
  * @return Integer representing Encoder Count
  * @brief Get the encoder count of a specified motor
  **/
-int GetEncoderCount(UINT8 motorNum);
+int EncoderGetCount(UINT8 motorNum);
 
 /**
- * Function: GetEncoderRadians(UINT8 motorNum)
+ * Function: EncoderGetXYZmeters
  * @param UINT8 motorNum
  * @return Float representing Encoder Count in radians
  * @brief Get the encoder count in radians of a specified motor
  **/
-float EncoderGetXYZmeters(UINT8 motorNum);
+float EncoderGetXYZmeters(encodeVal *e);
 
 /**
- * Function: GetEncoderXYZ
+ * Function: EncoderGetXYZ
  * @param 
  * @return 
  * @brief
  **/
-void GetEncoderXYZ(encodeVal *e);
+void EncoderGetXYZ(encodeVal *e);
+
 
 /**
  * Function: SetEncoderCount(UINT8 motorNum, UINT8 value)
@@ -69,7 +70,7 @@ void GetEncoderXYZ(encodeVal *e);
  * @return None
  * @brief Set the encoder count of a specified motor, to a desired value
  **/
-void SetEncoderCount(UINT8 motorNum, UINT8 value);
+void EncoderSetCount(UINT8 motorNum, UINT8 value);
 
 /**
  * Function: SetEncoderCounts

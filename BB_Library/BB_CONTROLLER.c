@@ -81,92 +81,92 @@ volatile BOOL printFlag;
   Remarks:
     None
  *****************************************************************************/
-void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
-{
-    // clear the interrupt flag always
-    mT4ClearIntFlag();
-
-    static double averageX[AVERAGE_SIZE], averageY[AVERAGE_SIZE];
-    static int index = 0;
-    static double sumX = 0, sumY = 0;
-
-    // Set pin high
-    PORTSetBits(JC03);
-
-    static int count = 0;
-    static Quat q, result;
-    static gyroAxis g;
-    static encodeVal encoder;
-
-    // 0)
-    //GetEncoderXYZ(&encoder);
-    //PID_Update(&linearX, encoder.x, 0, MAX_ANGLE);
-    //PID_Update(&linearY, encoder.y, 0, MAX_ANGLE);
-
-    // 1) Get most recent data from IMU
-    IMU_Read_Quat();
-    IMU_Get_Quat(&q);
-    BB_Quat_Tip_Vector(&q, &result);
-    double xAngle = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
-    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
-
-    IMU_Read_Gyro();
-    IMU_Get_Gyro(&g);
-    double gyroX = g.x;
-    double gyroY = g.y;
-
-    // 2) Run middle controller
-    //    PID_ThetaUpdate(&thetaX, xAngle, linearX.output, MAX_PWM, gyroY);
-    //    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
-    PID_ThetaUpdate(&thetaX, xAngle, 0, MAX_PWM, gyroY);
-    PID_ThetaUpdate(&thetaY, yAngle, 0, MAX_PWM, gyroX);
-
-    // 3) Run inner controller
-    PID_OmegaUpdate(&omegaX, gyroY, thetaX.output, MAX_PWM);
-    PID_OmegaUpdate(&omegaY, gyroX, thetaY.output, MAX_PWM);
-
-    // 4) Set motors
-    // Rolling average of size AVERAGE_SIZE
-    sumX -= averageX[index]; // subtract out oldest value
-    sumY -= averageY[index];
-    sumX += thetaX.output; // add in newest value
-    sumY += thetaY.output;
-    averageX[index] = thetaX.output; // replace oldest value with newest value
-    averageY[index] = thetaY.output;
-    index++;
-    index %= AVERAGE_SIZE;
-    
-    MotorSet_XYZ(sumX / AVERAGE_SIZE, sumY / AVERAGE_SIZE, 0); // comment back in for balancing
-    //MotorSet_XYZ(omegaX.output, omegaY.output, 0); 
-
-    //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
-
-
-    count++;
-    if (count % 50 == 0 && printFlag) {
-        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
-        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
-        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
-        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
-        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
-        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
-        //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
-    }
-
-    //    PID_Update(&motor1_pid);
-    //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
-
-    // these are just to check the frequency
-    //    Turn_On_LED(BB_LED_4);
-    //    PORTToggleBits(JC03); // for oscilloscope frequency check
-    //    
-
-    // Set pin low
-    PORTClearBits(JC03);
-
-    // Now to test the controller
-    //eCountRadians = GetEncoderRadians(MOTOR_1);
-}
+//void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
+//{
+//    // clear the interrupt flag always
+//    mT4ClearIntFlag();
+//
+//    static double averageX[AVERAGE_SIZE], averageY[AVERAGE_SIZE];
+//    static int index = 0;
+//    static double sumX = 0, sumY = 0;
+//
+//    // Set pin high
+//    PORTSetBits(JC03);
+//
+//    static int count = 0;
+//    static Quat q, result;
+//    static gyroAxis g;
+//    static encodeVal encoder;
+//
+//    // 0)
+//    //GetEncoderXYZ(&encoder);
+//    //PID_Update(&linearX, encoder.x, 0, MAX_ANGLE);
+//    //PID_Update(&linearY, encoder.y, 0, MAX_ANGLE);
+//
+//    // 1) Get most recent data from IMU
+//    IMU_Read_Quat();
+//    IMU_Get_Quat(&q);
+//    BB_Quat_Tip_Vector(&q, &result);
+//    double xAngle = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
+//    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
+//
+//    IMU_Read_Gyro();
+//    IMU_Get_Gyro(&g);
+//    double gyroX = g.x;
+//    double gyroY = g.y;
+//
+//    // 2) Run middle controller
+//    //    PID_ThetaUpdate(&thetaX, xAngle, linearX.output, MAX_PWM, gyroY);
+//    //    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
+//    PID_ThetaUpdate(&thetaX, xAngle, 0, MAX_PWM, gyroY);
+//    PID_ThetaUpdate(&thetaY, yAngle, 0, MAX_PWM, gyroX);
+//
+//    // 3) Run inner controller
+//    PID_OmegaUpdate(&omegaX, gyroY, thetaX.output, MAX_PWM);
+//    PID_OmegaUpdate(&omegaY, gyroX, thetaY.output, MAX_PWM);
+//
+//    // 4) Set motors
+//    // Rolling average of size AVERAGE_SIZE
+//    sumX -= averageX[index]; // subtract out oldest value
+//    sumY -= averageY[index];
+//    sumX += thetaX.output; // add in newest value
+//    sumY += thetaY.output;
+//    averageX[index] = thetaX.output; // replace oldest value with newest value
+//    averageY[index] = thetaY.output;
+//    index++;
+//    index %= AVERAGE_SIZE;
+//    
+//    MotorSet_XYZ(sumX / AVERAGE_SIZE, sumY / AVERAGE_SIZE, 0); // comment back in for balancing
+//    //MotorSet_XYZ(omegaX.output, omegaY.output, 0); 
+//
+//    //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
+//
+//
+//    count++;
+//    if (count % 50 == 0 && printFlag) {
+//        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
+//        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
+//        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
+//        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
+//        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
+//        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
+//        //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
+//    }
+//
+//    //    PID_Update(&motor1_pid);
+//    //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
+//
+//    // these are just to check the frequency
+//    //    Turn_On_LED(BB_LED_4);
+//    //    PORTToggleBits(JC03); // for oscilloscope frequency check
+//    //    
+//
+//    // Set pin low
+//    PORTClearBits(JC03);
+//
+//    // Now to test the controller
+//    //eCountRadians = GetEncoderRadians(MOTOR_1);
+//}
 
 /*******************************************************************************
  * Functions                                                                   *

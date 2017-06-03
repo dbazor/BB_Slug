@@ -106,7 +106,7 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
  *      Also sets up IC2, IC3, and IC5 to all use Timer 3. Sets to captuer
  *      on falling and rising edge. See function for more settings initialized
  * @author Pavlo Vlastos */
-void Encoder_Init(void)
+void EncoderInit(void)
 {
     // Set up pins to read encoder A signals
     PORTSetPinsDigitalIn(IOPORT_D, BIT_9 | BIT_10 | BIT_12);
@@ -160,7 +160,7 @@ void Encoder_Init(void)
  * @return Integer representing Encoder Count
  * @brief Get the encoder count of a specified motor
  **/
-int GetEncoderCount(UINT8 motorNum)
+int EncoderGetCount(UINT8 motorNum)
 {
     switch (motorNum) {
     case MOTOR_1:
@@ -176,26 +176,26 @@ int GetEncoderCount(UINT8 motorNum)
 }
 
 /**
- * Function: GetEncoderRadians(UINT8 motorNum)
+ * Function: EncoderGetXYZmeters
  * @param UINT8 motorNum
  * @return Float representing Encoder Count in radians
  * @brief Get the encoder count in radians of a specified motor
  **/
 float EncoderGetXYZmeters(encodeVal *e)
 {
-    GetEncoderXYZ(e);
-    e->x = e->x * UNIT_SCALE;
-    e->y = e->y * UNIT_SCALE;
-    e->rot = e->rot * UNIT_SCALE;
+    EncoderGetXYZ(e);
+    e->x = e->x * TICK_2_MM;
+    e->y = e->y * TICK_2_MM;
+    e->rot = e->rot * TICK_2_MM; // This one is most likely not right. Rotation in mm?
 }
 
 /**
- * Function: GetEncoderXY
+ * Function: EncoderGetXYZ
  * @param 
  * @return 
  * @brief
  **/
-void GetEncoderXYZ(encodeVal *e)
+void EncoderGetXYZ(encodeVal *e)
 {
     const double root3over2 = (0.8660254038);
     const double mblInv = 1 / MOTOR_BRACKET_LENGTH;
@@ -212,7 +212,7 @@ void GetEncoderXYZ(encodeVal *e)
  * @return None
  * @brief Set the encoder count of a specified motor, to a desired value
  **/
-void SetEncoderCount(UINT8 motorNum, UINT8 value)
+void EncoderSetCount(UINT8 motorNum, UINT8 value)
 {
     switch (motorNum) {
     case MOTOR_1:
