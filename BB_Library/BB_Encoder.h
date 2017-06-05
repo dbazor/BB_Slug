@@ -56,6 +56,14 @@ int EncoderGetCount(UINT8 motorNum);
 float EncoderGetXYZmeters(encodeVal *e);
 
 /**
+ * Function: EncoderGetVirtualWheels
+ * @param UINT8 motorNum
+ * @return Float representing Encoder Count in radians
+ * @brief Get the encoder count in radians of a specified motor
+ **/
+float EncoderGetVirtualWheels(encodeVal *e);
+
+/**
  * Function: EncoderGetXYZ
  * @param 
  * @return 

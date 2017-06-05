@@ -143,6 +143,12 @@ void SetDrive(int angle, int rotation)
 void MotorSetSpeed(int PWM, int motorNum)
 {
     int direction;
+    static int count = 0;
+    count++;
+
+//    if (count % 100 == 0) {
+//        printf("PWM: %d\n", PWM);
+//    }
 
     // Setting direction
     if (PWM < 0) {
@@ -162,17 +168,25 @@ void MotorSetSpeed(int PWM, int motorNum)
     // Select Motor
     switch (motorNum) {
     case MOTOR_1:
+//        if (count % 100 == 0) {
+//            printf("PWM1: %d\n", PWM);
+//        }
         Motor1(PWM, direction);
         break;
 
     case MOTOR_2:
+//        if (count % 100 == 0) {
+//            printf("PWM2: %d\n", PWM);
+//        }
         Motor2(PWM, direction);
         break;
 
     case MOTOR_3:
+//        if (count % 100 == 0) {
+//            printf("PWM3: %d\n", PWM);
+//        }
         Motor3(PWM, direction);
         break;
-
     }
 }
 
@@ -373,6 +387,7 @@ void MotorSet_XYZ(double x, double y, double z)
     const double oneThird = (1.0 / 3.0);
     const double twoThird = (2.0 / 3.0);
     const double root3over3 = (0.577350269);
+    static int count = 0;
 
     //    // Matrix 'inverseA' multiplied by motor frame vector 'y'
     //    for (row = 0; row < HEIGHT; row++) {
@@ -381,9 +396,9 @@ void MotorSet_XYZ(double x, double y, double z)
     //        }
     //    }
 
-    pwm[0] = 0 + twoThird * y + mbl * z;
-    pwm[1] = root3over3 * x - oneThird * y + mbl * z;
-    pwm[2] = -root3over3 * x - oneThird * y + mbl * z;
+    pwm[0] = 0 + (twoThird * y) + (mbl * z);
+    pwm[1] = (root3over3 * x) - (oneThird * y) + (mbl * z);
+    pwm[2] = (-root3over3 * x) - (oneThird * y) + (mbl * z);
 
     double m1 = abs(pwm[0]);
     double m2 = abs(pwm[1]);
@@ -406,9 +421,12 @@ void MotorSet_XYZ(double x, double y, double z)
         //printf("m3 is max\n");
     }
 
-    //    printf("INCOMING x: %f, y: %f, z: %f\n", x, y, z);
-    //    printf("BEFORE pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
-    //    printf("max: %f\n", max);
+//    count++;
+//    if (count % 100 == 0) {
+//        printf("INCOMING x: %f, y: %f, z: %f\n", x, y, z);
+//        printf("BEFORE pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
+//        printf("max: %f\n", max);
+//    }
 
     // If max was changed
     if (max != 0) {
@@ -418,7 +436,9 @@ void MotorSet_XYZ(double x, double y, double z)
         pwm[2] = (pwm[2] * scale);
     }
 
-    //    printf("AFTER pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
+//    if (count % 100 == 0) {
+//        printf("AFTER pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
+//    }
 
     MotorSetSpeed((int) pwm[0], MOTOR_1);
     MotorSetSpeed((int) pwm[1], MOTOR_2);

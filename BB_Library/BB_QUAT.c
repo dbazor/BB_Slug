@@ -8,6 +8,7 @@
 #include "BB_BOARD.h"
 #include <plib.h>
 #include <math.h>
+#include "BB_IMU.h"
 
 /*******************************************************************************
  * PRIVATE #DEFINES                                                            *
@@ -126,7 +127,12 @@ void BB_Quat_Tip_Vector(const Quat *q, Quat *result)
  * @author Daniel Bazor */
 double BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
 {
-    return RadiansToDegrees(atan2(tipVect->y, tipVect->z)); // swapped x and y to conform with gyro
+    if (IN_RADIANS) {
+        return -(atan2(tipVect->y, tipVect->z));
+    } else {
+        return -RadiansToDegrees(atan2(tipVect->y, tipVect->z)); // swapped x and y to conform with gyro
+        // added negative for LQR controller
+    } 
 }
 
 /**
@@ -138,7 +144,11 @@ double BB_Quat_Find_Tip_Angle_X(const Quat *tipVect)
  * @author Daniel Bazor */
 double BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
 {
-    return RadiansToDegrees(atan2(tipVect->x, tipVect->z)); // swapped x and y to conform with gyro
+    if (IN_RADIANS) {
+        return (atan2(tipVect->x, tipVect->z)); // swapped x and y to conform with gyro
+    } else {
+        return RadiansToDegrees(atan2(tipVect->x, tipVect->z));
+    }
 }
 
 /**

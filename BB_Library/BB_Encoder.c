@@ -23,8 +23,9 @@
 /*******************************************************************************
  * Defines                                                                      *
  ******************************************************************************/
-#define tick2Radian  (2*M_PI/2240)
-#define TICK_2_MM (0.0140249672)
+//#define tick2Radian  (2*M_PI/2240)
+#define TICK_2_M (0.000140249672)
+#define TICK_2_RAD (0.002804993)
 
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
@@ -184,9 +185,23 @@ int EncoderGetCount(UINT8 motorNum)
 float EncoderGetXYZmeters(encodeVal *e)
 {
     EncoderGetXYZ(e);
-    e->x = e->x * TICK_2_MM;
-    e->y = e->y * TICK_2_MM;
-    e->rot = e->rot * TICK_2_MM; // This one is most likely not right. Rotation in mm?
+    e->x = e->x * TICK_2_M;
+    e->y = e->y * TICK_2_M;
+    e->rot = e->rot * TICK_2_M; // This one is most likely not right. Rotation in mm?
+}
+
+/**
+ * Function: EncoderGetVirtualWheels
+ * @param UINT8 motorNum
+ * @return Float representing Encoder Count in radians
+ * @brief Get the encoder count in radians of a specified motor
+ **/
+float EncoderGetVirtualWheels(encodeVal *e)
+{
+    EncoderGetXYZ(e);
+    e->x = e->x * TICK_2_RAD;
+    e->y = e->y * TICK_2_RAD;
+    e->rot = e->rot * TICK_2_RAD; // This one is most likely not right. Rotation in mm?
 }
 
 /**

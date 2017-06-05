@@ -52,10 +52,18 @@
 #define OMEGA_Y_I OMEGA_X_I
 #define OMEGA_Y_D OMEGA_X_D
 
-#define ACC_MIN_X (0) // TODO need to test to see what the dead band will be for each virtual wheel
-#define ACC_MIN_Y (0) 
-#define ACC_DEADZONE (0) // TODO need to test to see what amount of acc we don't want to act on
- 
+#define L1 -2.2
+#define L2 -3.6
+#define L3 39.6
+#define L4 11.5
+
+#define ACC_MIN_X (200) // TODO need to test to see what the dead band will be for each virtual wheel
+#define ACC_MIN_Y (100) 
+#define ACC_DEADZONE (20) // TODO need to test to see what amount of acc we don't want to act on
+
+#define DEADBAND_IN 0
+#define PWM_SCALE 1
+#define OMEGA2PWM (63.66 * PWM_SCALE)
 
 /* ------------------------------------------------------------ */
 /*				Prototypes			*/
@@ -82,6 +90,7 @@ volatile double *k2changeY;
 volatile BOOL printFlag;
 double xAngleOffset;
 double yAngleOffset;
+static int omega2pwm = OMEGA2PWM;
 
 /* ------------------------------------------------------------ */
 /*                            Interrupt                         */
@@ -96,13 +105,14 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     static gyroAxis g;
     static encodeVal e;
     static double prevBallLocX = 0, prevBallLocY = 0;
+    static int count = 0;
 
     // Get tip angles
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    double thetaX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
-    double thetaY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
+    double thetaX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in radians
+    double thetaY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in radians
 
     // Get tip rates
     IMU_Read_Gyro();
@@ -111,7 +121,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     double omegaY = g.x;
 
     // Get Ball location
-    EncoderGetXYZmeters(&e); // may want to accumulate here and reset the encoder values each call to prevent overflow on large counts
+    EncoderGetVirtualWheels(&e); // may want to accumulate here and reset the encoder values each call to prevent overflow on large counts
     double ballLocX = e.x;
     double ballLocY = e.y;
 
@@ -123,34 +133,45 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     prevBallLocY = ballLocY;
 
     // Calc acceleration
-    double accCommandX = (LINEAR_X_P * ballLocX) + (LINEAR_X_D * ballVelX) + (THETA_X_P * thetaX) + (THETA_X_D * omegaX); 
-    double accCommandY = (LINEAR_Y_P * ballLocY) + (LINEAR_Y_D * ballVelY) + (THETA_Y_P * thetaY) + (THETA_Y_D * omegaY);
+    double accCommandX = (L1 * ballLocX) + (L2 * ballVelX) - (L3 * thetaY) - (L4 * omegaY); // angle and omega may be negative
+    double accCommandY = (L1 * ballLocY) + (L2 * ballVelY) + (L3 * thetaX) + (L4 * omegaX);
 
-   
+#if (DEADBAND_IN)
     // check if acc is below dead band of motor but above min_acc set acc to acc_min
     if (abs(accCommandX) <= ACC_MIN_X) {
         if (accCommandX >= ACC_DEADZONE) {
             accCommandX = ACC_MIN_X;
-        }
-        else if (accCommandX <= -ACC_DEADZONE) {
+        } else if (accCommandX <= -ACC_DEADZONE) {
             accCommandX = -ACC_MIN_X;
         }
     }
     if (abs(accCommandY) <= ACC_MIN_Y) {
         if (accCommandY >= ACC_DEADZONE) {
             accCommandY = ACC_MIN_Y;
-        }
-        else if (accCommandY <= -ACC_DEADZONE) {
+        } else if (accCommandY <= -ACC_DEADZONE) {
             accCommandY = -ACC_MIN_Y;
         }
     }
-    
+#endif
+
     // Integrate acc to get velocity    
-    double velWheelX = -accCommandX * SAMPLE_TIME + ballVelX;
-    double velWheelY = -accCommandY * SAMPLE_TIME + ballVelY;
-    
+    double velWheelX = OMEGA2PWM * (-accCommandX * SAMPLE_TIME + ballVelX);
+    double velWheelY = OMEGA2PWM * (-accCommandY * SAMPLE_TIME + ballVelY);
+
+    count++;
+    if (count % 100 == 0 && printFlag) {
+        printf("ballLocX: %f, ballVelX: %f, thetaY: %f, omegaY: %f\n", ballLocX, ballVelX, thetaY, omegaY);
+        printf("          %f,           %f,         %f,         %f\n", ballLocX*L1, ballVelX*L2, thetaY*L3, omegaY*L4);
+        
+        printf("ballLocY: %f, ballVelY: %f, thetaX: %f, omegaX: %f\n", ballLocY, ballVelY, thetaX, omegaX);
+        printf("          %f,           %f,         %f,         %f\n", ballLocY*L1, ballVelY*L2, thetaX*L3, omegaX*L4);
+        
+        printf("accCommandX: %f, accCommandY: %f\n", accCommandX, accCommandY);
+        //printf("DeadBandAccX: %f, DeadBandAccY: %f\n", accCommandX, accCommandY);
+        printf("velWheelX: %f, velWheelY: %f\n\n\n", velWheelX, velWheelY);
+    }
     // set motors
-     MotorSet_XYZ(velWheelX,velWheelY,0);
+    MotorSet_XYZ(-velWheelX, -velWheelY, 0);
 }
 /* ------------------------------------------------------------ */
 /*                            Main                              */
@@ -196,6 +217,7 @@ int main()
             printf("\n\nPress 'r' for Reset, 'b' to Balance, and space-bar to Stop. \n");
             DisableIntT4; // turn off controller interrupt
             MotorsStop();
+            SetEncoderCounts(0, 0, 0);
             printf("You chose Stop.\n");
             c = GetChar();
             break;
