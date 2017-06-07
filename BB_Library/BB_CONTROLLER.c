@@ -99,7 +99,7 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     static encodeVal encoder;
 
     // 0)
-    //GetEncoderXYZ(&encoder);
+    GetEncoderXYZ(&encoder);
     //PID_Update(&linearX, encoder.x, 0, MAX_ANGLE);
     //PID_Update(&linearY, encoder.y, 0, MAX_ANGLE);
 
@@ -107,8 +107,8 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    double xAngle = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
-    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
+    double angleX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
+    double angleY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
 
     IMU_Read_Gyro();
     IMU_Get_Gyro(&g);
@@ -118,15 +118,10 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     // 2) Run middle controller
     //    PID_ThetaUpdate(&thetaX, xAngle, linearX.output, MAX_PWM, gyroY);
     //    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
-    PID_ThetaUpdate(&thetaX, xAngle, 0, MAX_PWM, gyroY);
-    PID_ThetaUpdate(&thetaY, yAngle, 0, MAX_PWM, gyroX);
-
-    // 3) Run inner controller
-    PID_OmegaUpdate(&omegaX, gyroY, thetaX.output, MAX_PWM);
-    PID_OmegaUpdate(&omegaY, gyroX, thetaY.output, MAX_PWM);
-
-    // 4) Set motors
-    // Rolling average of size AVERAGE_SIZE
+    PID_ThetaUpdate(&thetaX, angleX, 0, MAX_PWM, gyroY);
+    PID_ThetaUpdate(&thetaY, angleY, 0, MAX_PWM, gyroX);
+    
+   // Rolling average of size AVERAGE_SIZE
     sumX -= averageX[index]; // subtract out oldest value
     sumY -= averageY[index];
     sumX += thetaX.output; // add in newest value
@@ -135,8 +130,15 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     averageY[index] = thetaY.output;
     index++;
     index %= AVERAGE_SIZE;
+    double thetaXoutputAverage = sumX / AVERAGE_SIZE;
+    double thetaYoutputAverage = sumY / AVERAGE_SIZE;
     
-    MotorSet_XYZ(sumX / AVERAGE_SIZE, sumY / AVERAGE_SIZE, 0); // comment back in for balancing
+    // 3) Run inner controller
+    PID_OmegaUpdate(&omegaX, gyroY, thetaXoutputAverage, MAX_PWM);
+    PID_OmegaUpdate(&omegaY, gyroX, thetaYoutputAverage, MAX_PWM);
+
+    // 4) Set motors    
+    MotorSet_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
     //MotorSet_XYZ(omegaX.output, omegaY.output, 0); 
 
     //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
@@ -144,12 +146,17 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
 
     count++;
     if (count % 50 == 0 && printFlag) {
-        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
-        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
-        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
-        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
-        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
-        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
+        // print for MatLab 
+        printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f %f, %f\n", 
+                angleX, angleY, thetaX.output, thetaY.output, 
+                thetaXoutputAverage, thetaYoutputAverage, gyroX, gyroY,  
+                omegaX.output, omegaY.output, encoder.x, encoder.y);
+//        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
+//        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
+//        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
+//        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
+//        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
+//        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
         //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
     }
 
