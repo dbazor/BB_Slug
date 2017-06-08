@@ -52,6 +52,11 @@
 #define OMEGA_Y_I OMEGA_X_I
 #define OMEGA_Y_D OMEGA_X_D
 
+
+#define MOTOR_KP       40 
+#define MOTOR_KI       0  
+#define MOTOR_KD       1 
+
 /* ------------------------------------------------------------ */
 /*				Prototypes			*/
 /* ------------------------------------------------------------ */
@@ -69,6 +74,9 @@ volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
 volatile PIDControl omegaY;
+volatile PIDControl motorCtlr1;
+volatile PIDControl motorCtlr2;
+volatile PIDControl motorCtlr3;
 
 volatile PrintData printData;
 
@@ -112,6 +120,10 @@ int main()
     PID_Init(&omegaX, TRUE, IMU_Get_Gyro_Y(), OMEGA_X_P, OMEGA_X_I, OMEGA_X_D);
     PID_Init(&omegaY, TRUE, IMU_Get_Gyro_X(), OMEGA_Y_P, OMEGA_Y_I, OMEGA_Y_D);
 
+    PID_Init(&motorCtlr1, TRUE, 0, MOTOR_KP, MOTOR_KI, MOTOR_KD);
+    PID_Init(&motorCtlr2, TRUE, 0, MOTOR_KP, MOTOR_KI, MOTOR_KD);
+    PID_Init(&motorCtlr3, TRUE, 0, MOTOR_KP, MOTOR_KI, MOTOR_KD);
+    
     char c = ' '; // init state is stop
 
     while (1) {

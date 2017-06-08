@@ -428,7 +428,7 @@ void MotorSet_XYZ(double x, double y, double z)
     //    MotorSetSpeed((int) pwm[2], MOTOR_3);
 
     // Set global variables of each motor speed in Rad/sec
-    motorSpeedsCmd.motorSpeed1 = speed[0]; // / PWM_2_RAD_PER_SEC;
-    motorSpeedsCmd.motorSpeed2 = speed[1]; // / PWM_2_RAD_PER_SEC;
-    motorSpeedsCmd.motorSpeed3 = speed[2]; // / PWM_2_RAD_PER_SEC;
+    motorSpeedsCmd.m1 = speed[0]; // / PWM_2_RAD_PER_SEC;
+    motorSpeedsCmd.m2 = speed[1]; // / PWM_2_RAD_PER_SEC;
+    motorSpeedsCmd.m3 = speed[2]; // / PWM_2_RAD_PER_SEC;
 }

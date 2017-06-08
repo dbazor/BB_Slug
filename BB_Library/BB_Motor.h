@@ -36,9 +36,9 @@
 #define MAX_RAD_PER_SEC (MAX_PWM/PWM_2_RAD_PER_SEC)
 
 typedef struct MotorSpeedsCmd { // holds commanded motorSpeeds in rad/sec
-    double motorSpeed1;
-    double motorSpeed2;
-    double motorSpeed3;
+    double m1;
+    double m2;
+    double m3;
 } MotorSpeedsCmd;
 
 extern volatile MotorSpeedsCmd motorSpeedsCmd;

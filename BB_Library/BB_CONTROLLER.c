@@ -112,12 +112,12 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4Handler(void)
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    double angleX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in degrees
-    double angleY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in degrees
+    double angleX = BB_Quat_Find_Tip_Angle_X(&result) - xAngleOffset; // in rad
+    double angleY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in rad
 
     IMU_Read_Gyro();
     IMU_Get_Gyro(&g);    
-    
+    // low pass the gyro
     double gyroX = g.x;
     double gyroY = g.y;
     // Rolling average of size AVERAGE_SIZE
@@ -220,10 +220,15 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) Timer5Handler(void)
     double motorSpeed2 = (encoder.m2 - prevEncoder2) / MOTOR_CTL_SAMPLE_TIME;
     double motorSpeed3 = (encoder.m3 - prevEncoder3) / MOTOR_CTL_SAMPLE_TIME; 
     
+    prevEncoder1 = encoder.m1;
+    prevEncoder2 = encoder.m2;
+    prevEncoder3 = encoder.m3;
+    
     // run update on each
-    PID_MotorUpdate(&motorCtlr1,motorSpeed1,motorSpeedsCmd.motorSpeed1,MAX_RAD_PER_SEC);
-    PID_MotorUpdate(&motorCtlr2,motorSpeed2,motorSpeedsCmd.motorSpeed2,MAX_RAD_PER_SEC);
-    PID_MotorUpdate(&motorCtlr3,motorSpeed3,motorSpeedsCmd.motorSpeed3,MAX_RAD_PER_SEC);
+    PID_MotorUpdate(&motorCtlr1, motorSpeed1, motorSpeedsCmd.m1, MAX_RAD_PER_SEC);
+    PID_MotorUpdate(&motorCtlr2, motorSpeed2, motorSpeedsCmd.m2, MAX_RAD_PER_SEC);
+    PID_MotorUpdate(&motorCtlr3, motorSpeed3, motorSpeedsCmd.m3, MAX_RAD_PER_SEC);
+    
     // set motors to new PWM
     MotorSetSpeed((int)(RAD_PER_SEC_2_PWM*motorCtlr1.output), MOTOR_1);
     MotorSetSpeed((int)(RAD_PER_SEC_2_PWM*motorCtlr2.output), MOTOR_2);

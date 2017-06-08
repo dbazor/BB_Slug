@@ -23,7 +23,10 @@
 /*******************************************************************************
  * Defines                                                                      *
  ******************************************************************************/
-#define tick2Radian  (2*M_PI/2240)
+#define TICK_2_RAD  (2.0*M_PI/2240.0)
+#define SINGLE_TICK_DISTANCE  TICK_2_RAD
+#define TIME_PER_COUNTER_TIC (0.0000032) // in seconds
+
 
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
@@ -32,13 +35,23 @@ static volatile int mc1 = 0; // motor 1 encoder count
 static volatile int mc2 = 0; // motor 2 encoder count 
 static volatile int mc3 = 0; // motor 3 encoder count
 
+static volatile unsigned int icCount2 = 0, icCount3 = 0, icCount5 = 0;
+
 /* ------------------------------------------------------------ */
 /*				Interrupt Sub-Routine           */
 
 /* ------------------------------------------------------------ */
 void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
 {
-    int ic2time = IC2BUF; // clear fifo
+    WriteTimer3(0); // reset Timer3 count
+    int ic2time = IC2BUF; // clear fifo by getting count since last edge
+    icCount2 += ic2time;
+    icCount3 += ic2time;
+    icCount5 += ic2time;
+    // use time to find current instant velocity
+    double instantVel = SINGLE_TICK_DISTANCE / (icCount2 * TIME_PER_COUNTER_TIC);
+
+    // use rolling average to get average velocity
 
     int encoder1A = PORTReadBits(ENCODER_1A); // input capture for motor 1 encoder signal A
     int encoder1B = PORTReadBits(ENCODER_1B); // digital input for motor 1 encoder signal B
@@ -119,12 +132,17 @@ void Encoder_Init(void)
     PORTSetPinsDigitalIn(IOPORT_D, BIT_9 | BIT_10 | BIT_12);
     PORTSetPinsDigitalIn(IOPORT_E, BIT_4 | BIT_5 | BIT_6);
 
-    // set up IC3 to use Timer3. 
-    T3CONbits.TCKPS = 0x3; // Timer3 1:8 prescaler; ticks at 10 MHz (each tick is 100ns)
-    PR3 = TMR3_ROLLOVER;
+    // alternate way to setup timer3
+    OpenTimer3(T3_ON | T3_SOURCE_INT | T3_PS_1_256, TMR3_ROLLOVER);
+    DisableIntT3;
+    WriteTimer3(0);
 
-    // rollover value is also used in ISR to handle timer rollovers.
-    TMR3 = 0;
+//    // set up IC3 to use Timer3. 
+//    T3CONbits.TCKPS = 0x3; // Timer3 1:8 prescaler; ticks at 10 MHz (each tick is 100ns)
+//    PR3 = TMR3_ROLLOVER;
+//
+//    // rollover value is also used in ISR to handle timer rollovers.
+//    TMR3 = 0;
 
     IC2CONbits.ICTMR = 0; // IC2 uses Timer3
     IC3CONbits.ICTMR = 0; // IC3 uses Timer3
@@ -190,9 +208,9 @@ int GetEncoderCount(UINT8 motorNum)
  **/
 void GetEncoderRadians(encodeVal *e)
 {
-    e->m1 = tick2Radian * mc1;
-    e->m2 = tick2Radian * mc2;
-    e->m3 = tick2Radian * mc3;
+    e->m1 = TICK_2_RAD * mc1;
+    e->m2 = TICK_2_RAD * mc2;
+    e->m3 = TICK_2_RAD * mc3;
 }
 
 /**

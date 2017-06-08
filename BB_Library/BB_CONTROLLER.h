@@ -27,9 +27,6 @@
 #define TIMER5_FREQ     1000    // this is the frequency the motor controller will run at
 #define T5_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER5_FREQ)
 #define MOTOR_CTL_SAMPLE_TIME     (1.0/(double)TIMER5_FREQ)
-#define MOTOR1_KP       40  // Kp - proportional constant, range: (1 - 4e6)     // fix
-#define MOTOR1_KI       0   // Ki - integral constant,     range: (2 - 858e6)   // fix
-#define MOTOR1_KD       1   // Kd - derivative constant,   range: (5 - 2147)    // fix
 #define MAX_ANGLE       10  // max angle passed into linear (outer) controller
 
 /*******************************************************************************
