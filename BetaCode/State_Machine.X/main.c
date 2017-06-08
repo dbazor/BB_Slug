@@ -112,7 +112,8 @@ int global_data;
         return 3;
     }
  */
-static int ExampleLocalFunction(int param1, int param2) {
+static int ExampleLocalFunction(int param1, int param2)
+{
     return 0;
 }
 
@@ -139,7 +140,8 @@ static int ExampleLocalFunction(int param1, int param2) {
   @Remarks
     Refer to the example_file.h interface header for function usage details.
  */
-int ExampleInterfaceFunction(int param1, int param2) {
+int ExampleInterfaceFunction(int param1, int param2)
+{
     return 0;
 }
 

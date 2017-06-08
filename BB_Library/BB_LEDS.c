@@ -60,7 +60,8 @@ void Turn_Off_LED(IoPortId portId, unsigned int outputs)
  * @return  None
  * @brief   Turn off specified LED
  **/
-void Turn_Off_All_LED() {
+void Turn_Off_All_LED()
+{
     Turn_Off_LED(BB_LED_1);
     Turn_Off_LED(BB_LED_2);
     Turn_Off_LED(BB_LED_3);

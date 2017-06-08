@@ -264,7 +264,8 @@ void PID_GetUARTK()
     }
 }
 
-void PrintMatlabData() {
+void PrintMatlabData()
+{
     if (printData.ready2print) {
         printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
                 printData.count, printData.angleX, printData.angleY, printData.thetaOutX,

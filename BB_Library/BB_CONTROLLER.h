@@ -21,9 +21,12 @@
  ******************************************************************************/
 #define JC03            IOPORT_G, BIT_1
 #define PRESCALE        64
-#define TIMER4_FREQ     100    // this is the frequency the motor controller will run at
+#define TIMER4_FREQ     100    // this is the frequency the tipping controller will run at
 #define T4_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER4_FREQ)
-#define SAMPLE_TIME     (1.0/(double)TIMER4_FREQ)
+#define TIP_CTL_SAMPLE_TIME     (1.0/(double)TIMER4_FREQ)
+#define TIMER5_FREQ     1000    // this is the frequency the motor controller will run at
+#define T5_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER5_FREQ)
+#define MOTOR_CTL_SAMPLE_TIME     (1.0/(double)TIMER5_FREQ)
 #define MOTOR1_KP       40  // Kp - proportional constant, range: (1 - 4e6)     // fix
 #define MOTOR1_KI       0   // Ki - integral constant,     range: (2 - 858e6)   // fix
 #define MOTOR1_KD       1   // Kd - derivative constant,   range: (5 - 2147)    // fix
@@ -114,6 +117,17 @@ void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double referenc
  * @brief  
  * @author M*/
 void PID_OmegaUpdate(volatile PIDControl *p, double sensorInput, double reference, int maxOut);
+
+/**
+ * Proportional-integral (PI) control law.
+ *
+ * @param[in,out]  p    control parameter and state structure
+ *
+ * @note p->eIntegral is A_k from Gabe's Drawing
+ * 
+ * @return              control output <code>u</code>
+ */
+void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double reference, int maxOut);
 
 /**
  * @Function int PID_SetReference (struct PIControl *p);

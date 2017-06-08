@@ -47,9 +47,9 @@ void BB_Quat_Normalize(Quat *q)
     double x = q->x;
     double y = q->y;
     double z = q->z;
-    
-    double normInv = 1/sqrt(w*w + x*x + y*y + z*z);
-    
+
+    double normInv = 1 / sqrt(w * w + x * x + y * y + z * z);
+
     q->w = w * normInv;
     q->x = x * normInv;
     q->y = y * normInv;
@@ -149,8 +149,9 @@ double BB_Quat_Find_Tip_Angle_Y(const Quat *tipVect)
  * @return  
  * @brief   Prints the quaternion passed by reference followed by a newLine in format [w x y z]'
  * @author Daniel Bazor */
-double BB_Quat_Print(const Quat *q){
-        printf("[%f %f %f %f]'\n",
+double BB_Quat_Print(const Quat *q)
+{
+    printf("[%f %f %f %f]'\n",
             q->w,
             q->x,
             q->y,

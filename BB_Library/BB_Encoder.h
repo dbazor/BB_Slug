@@ -22,6 +22,9 @@ typedef struct encodeVal {
     double x;
     double y;
     double rot; // rotation
+    double m1;
+    double m2;
+    double m3;
 } encodeVal;
 
 /*******************************************************************************
@@ -53,7 +56,7 @@ int GetEncoderCount(UINT8 motorNum);
  * @return Float representing Encoder Count in radians
  * @brief Get the encoder count in radians of a specified motor
  **/
-float GetEncoderRadians(UINT8 motorNum);
+void GetEncoderRadians(encodeVal *e);
 
 /**
  * Function: GetEncoderXYZ

@@ -33,6 +33,7 @@ volatile static int motor1Direction;
 volatile static int motor2Direction;
 volatile static int motor3Direction;
 
+volatile MotorSpeedsCmd motorSpeedsCmd;
 
 
 const double inverseA[HEIGHT][WIDTH] = {
@@ -365,7 +366,7 @@ void MotorsStop(void)
  **/
 void MotorSet_XYZ(double x, double y, double z)
 {
-    double pwm[HEIGHT] = {0, 0, 0};
+    double speed[HEIGHT] = {0, 0, 0};
     int row;
     int col;
 
@@ -381,27 +382,27 @@ void MotorSet_XYZ(double x, double y, double z)
     //        }
     //    }
 
-    pwm[0] = 0 + twoThird * y + mbl * z;
-    pwm[1] = root3over3 * x - oneThird * y + mbl * z;
-    pwm[2] = -root3over3 * x - oneThird * y + mbl * z;
+    speed[0] = 0 + twoThird * y + mbl * z;
+    speed[1] = root3over3 * x - oneThird * y + mbl * z;
+    speed[2] = -root3over3 * x - oneThird * y + mbl * z;
 
-    double m1 = abs(pwm[0]);
-    double m2 = abs(pwm[1]);
-    double m3 = abs(pwm[2]);
+    double m1 = abs(speed[0]);
+    double m2 = abs(speed[1]);
+    double m3 = abs(speed[2]);
     double max = 0;
 
     // For scaling by the largest value, if a pwm to a motor is more than the max
-    if ((m1 > MAX_PWM) && (m1 > m2) && (m1 > m3)) {
+    if ((m1 > MAX_RAD_PER_SEC) && (m1 > m2) && (m1 > m3)) {
         max = m1;
         //printf("m1 is max\n");
     }
 
-    if ((m2 > MAX_PWM) && (m2 > m1) && (m2 > m3)) {
+    if ((m2 > MAX_RAD_PER_SEC) && (m2 > m1) && (m2 > m3)) {
         max = m2;
         //printf("m2 is max\n");
     }
 
-    if ((m3 > MAX_PWM) && (m3 > m1) && (m3 > m2)) {
+    if ((m3 > MAX_RAD_PER_SEC) && (m3 > m1) && (m3 > m2)) {
         max = m3;
         //printf("m3 is max\n");
     }
@@ -412,15 +413,22 @@ void MotorSet_XYZ(double x, double y, double z)
 
     // If max was changed
     if (max != 0) {
-        double scale = 1000 / max;
-        pwm[0] = (pwm[0] * scale);
-        pwm[1] = (pwm[1] * scale);
-        pwm[2] = (pwm[2] * scale);
+        double scale = MAX_RAD_PER_SEC / max;
+        speed[0] = (speed[0] * scale);
+        speed[1] = (speed[1] * scale);
+        speed[2] = (speed[2] * scale);
     }
 
     //    printf("AFTER pwm[0]: %f, pwm[1]: %f, pwm[2]: %f\n", pwm[0], pwm[1], pwm[2]);
 
-    MotorSetSpeed((int) pwm[0], MOTOR_1);
-    MotorSetSpeed((int) pwm[1], MOTOR_2);
-    MotorSetSpeed((int) pwm[2], MOTOR_3);
+
+    // these used to set the Motor speeds directly but now global variables are just set
+    //    MotorSetSpeed((int) pwm[0], MOTOR_1);
+    //    MotorSetSpeed((int) pwm[1], MOTOR_2);
+    //    MotorSetSpeed((int) pwm[2], MOTOR_3);
+
+    // Set global variables of each motor speed in Rad/sec
+    motorSpeedsCmd.motorSpeed1 = speed[0]; // / PWM_2_RAD_PER_SEC;
+    motorSpeedsCmd.motorSpeed2 = speed[1]; // / PWM_2_RAD_PER_SEC;
+    motorSpeedsCmd.motorSpeed3 = speed[2]; // / PWM_2_RAD_PER_SEC;
 }

@@ -70,7 +70,7 @@ void BB_BOARD_Init()
 {
     // disable interrupts
     __builtin_disable_interrupts();
-    
+
     // 
     DelayMs(5000);
 
@@ -102,10 +102,10 @@ void BB_BOARD_Init()
 
     //    // *NOTE: This is in the peripheral library example code init()
     //    SYSTEMConfig(SYS_FREQ, SYS_CFG_WAIT_STATES | SYS_CFG_PCACHE);
-    
+
     // for the button
     PORTSetPinsDigitalIn(IOPORT_G, BIT_6);
-    
+
     Leds_Init();
 
     BB_UART_Init();
@@ -115,7 +115,7 @@ void BB_BOARD_Init()
     BB_I2C_Init();
     IMU_Init();
 
-    
+
     printf("Press Button 1 again for operation.\n");
     while (PORTReadBits(IOPORT_G, BIT_6) == 0) {
         ;
@@ -128,9 +128,16 @@ void BB_BOARD_Init()
     // STEP 2. configure Timer 1 using internal clock, 1:64 pre-scaler
     OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
     // set up the timer interrupt with a priority of 2
-    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_2);
+    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_5);
     DisableIntT4;
-    
+
+    // Motor PID interrupt
+    OpenTimer5(T5_ON | T5_SOURCE_INT | T5_PS_1_64, T5_PERIOD);
+    // set up the timer interrupt with a priority of 2
+    ConfigIntTimer4(T5_INT_ON | T5_INT_PRIOR_4);
+    DisableIntT5;
+
+
     // enable multi-vector interrupts
     INTEnableSystemMultiVectoredInt();
 

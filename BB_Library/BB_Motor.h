@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * PRIVATE #DEFINES                                                            *
+ * PUBLIC #DEFINES                                                            *
  ******************************************************************************/
 #define FORWARD 1
 #define REVERSE 0
@@ -19,7 +19,6 @@
 #define MIN_PWM (-MAX_PWM)
 #define MAX_VOLTAGE 12
 // add a min voltage
-
 #define MOTOR_1_DIR IOPORT_E, BIT_1
 #define MOTOR_2_DIR IOPORT_E, BIT_2
 #define MOTOR_3_DIR IOPORT_E, BIT_3
@@ -31,6 +30,18 @@
 #define ROOT3OVER3  (0.577350269)
 #define HEIGHT      3
 #define WIDTH       3
+
+#define PWM_2_RAD_PER_SEC  63.66197724  // this is assuming a max speed of 150 RPM which is high
+#define RAD_PER_SEC_2_PWM  (1/PWM_2_RAD_PER_SEC)
+#define MAX_RAD_PER_SEC (MAX_PWM/PWM_2_RAD_PER_SEC)
+
+typedef struct MotorSpeedsCmd { // holds commanded motorSpeeds in rad/sec
+    double motorSpeed1;
+    double motorSpeed2;
+    double motorSpeed3;
+} MotorSpeedsCmd;
+
+extern volatile MotorSpeedsCmd motorSpeedsCmd;
 
 /*******************************************************************************
  * PROTOTYEPS                                                   *

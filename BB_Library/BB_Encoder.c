@@ -57,9 +57,9 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
         // localm1E1Count--;
         // SetEncoder1Count(localm1E1Count);
     }
-    
+
     //printf("Encoder1: %d\n", mc1);
-    
+
     IFS0bits.IC2IF = 0; // clear interrupt flag
 }
 
@@ -82,7 +82,7 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
     }
 
     //printf("Encoder2: %d\n", mc2);
-    
+
     IFS0bits.IC3IF = 0; // clear interrupt flag
 }
 
@@ -101,7 +101,7 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
     }
 
     //printf("Encoder3: %d\n", mc3);
-    
+
     IFS0bits.IC5IF = 0; // clear interrupt flag
 }
 
@@ -188,19 +188,11 @@ int GetEncoderCount(UINT8 motorNum)
  * @return Float representing Encoder Count in radians
  * @brief Get the encoder count in radians of a specified motor
  **/
-float GetEncoderRadians(UINT8 motorNum)
+void GetEncoderRadians(encodeVal *e)
 {
-    switch (motorNum) {
-    case MOTOR_1:
-        return tick2Radian*mc1;
-        break;
-    case MOTOR_2:
-        return tick2Radian*mc2;
-        break;
-    case MOTOR_3:
-        return tick2Radian*mc3;
-        break;
-    }
+    e->m1 = tick2Radian * mc1;
+    e->m2 = tick2Radian * mc2;
+    e->m3 = tick2Radian * mc3;
 }
 
 /**
@@ -209,14 +201,15 @@ float GetEncoderRadians(UINT8 motorNum)
  * @return 
  * @brief
  **/
-void GetEncoderXYZ(encodeVal *e) {
+void GetEncoderXYZ(encodeVal *e)
+{
     const double root3over2 = (0.8660254038);
     const double mblInv = 1 / MOTOR_BRACKET_LENGTH;
     e->x = (root3over2 * mc2) - (root3over2 * mc3);
-    e->y = (double)mc1 - (0.5 * mc2) - (0.5 * mc3);
+    e->y = (double) mc1 - (0.5 * mc2) - (0.5 * mc3);
     e->rot = (mblInv * mc1) + (mblInv * mc2) + (mblInv * mc3);
-//    printf("m1: %d, m2: %d, m3: %d | ", mc1, mc2, mc3);
-//    printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
+    //    printf("m1: %d, m2: %d, m3: %d | ", mc1, mc2, mc3);
+    //    printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
 }
 
 /**
@@ -246,7 +239,8 @@ void SetEncoderCount(UINT8 motorNum, UINT8 value)
  * @return None
  * @brief Set the encoder count of all motors to desired values
  **/
-void SetEncoderCounts(int count1, int count2, int count3) {
+void SetEncoderCounts(int count1, int count2, int count3)
+{
     mc1 = count1;
     mc2 = count2;
     mc3 = count3;
