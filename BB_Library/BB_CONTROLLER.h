@@ -51,6 +51,21 @@ typedef struct PIDControler {
 
 } PIDControl;
 
+typedef struct PrintData {
+    BOOL ready2print;
+    int count;
+    double angleX;
+    double angleY;
+    double thetaOutX;
+    double thetaOutY;
+    double gyroX;
+    double gyroY;
+    double omegaOutX;
+    double omegaOutY;
+    double encoderX;
+    double encoderY;
+} PrintData;
+
 typedef enum {
     reset = 'r',
     balancing = 'b',
@@ -75,6 +90,8 @@ extern volatile PIDControl thetaX;
 extern volatile PIDControl thetaY;
 extern volatile PIDControl omegaX;
 extern volatile PIDControl omegaY;
+
+extern volatile PrintData printData;
 
 extern volatile BOOL printFlag;
 

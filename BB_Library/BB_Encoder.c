@@ -57,6 +57,9 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
         // localm1E1Count--;
         // SetEncoder1Count(localm1E1Count);
     }
+    
+    //printf("Encoder1: %d\n", mc1);
+    
     IFS0bits.IC2IF = 0; // clear interrupt flag
 }
 
@@ -78,6 +81,8 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
         mc2--;
     }
 
+    //printf("Encoder2: %d\n", mc2);
+    
     IFS0bits.IC3IF = 0; // clear interrupt flag
 }
 
@@ -94,6 +99,9 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
     } else if (encoder3A != encoder3B) {
         mc3--;
     }
+
+    //printf("Encoder3: %d\n", mc3);
+    
     IFS0bits.IC5IF = 0; // clear interrupt flag
 }
 
@@ -207,8 +215,8 @@ void GetEncoderXYZ(encodeVal *e) {
     e->x = (root3over2 * mc2) - (root3over2 * mc3);
     e->y = (double)mc1 - (0.5 * mc2) - (0.5 * mc3);
     e->rot = (mblInv * mc1) + (mblInv * mc2) + (mblInv * mc3);
-    // printf("m1: %d, m2: %d, m3: %d\n\n", mc1, mc2, mc2);
-    // printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
+//    printf("m1: %d, m2: %d, m3: %d | ", mc1, mc2, mc3);
+//    printf("e.x = %f, e.y = %f, e.rot = %f\n", e->x, e->y, e->rot);
 }
 
 /**

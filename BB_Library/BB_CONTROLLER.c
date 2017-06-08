@@ -57,6 +57,7 @@ volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
 volatile PIDControl omegaY;
+volatile PrintData printData;
 double xAngleOffset;
 double yAngleOffset;
 volatile BOOL printFlag;
@@ -120,43 +121,62 @@ void __ISR(_TIMER_4_VECTOR, IPL2SOFT) Timer4Handler(void)
     //    PID_ThetaUpdate(&thetaY, yAngle, linearY.output, MAX_PWM, gyroX);
     PID_ThetaUpdate(&thetaX, angleX, 0, MAX_PWM, gyroY);
     PID_ThetaUpdate(&thetaY, angleY, 0, MAX_PWM, gyroX);
-    
-   // Rolling average of size AVERAGE_SIZE
+
+    // 3) Run inner controller
+    PID_OmegaUpdate(&omegaX, gyroY, thetaX.output, MAX_PWM);
+    PID_OmegaUpdate(&omegaY, gyroX, thetaY.output, MAX_PWM);
+
+    // Rolling average of size AVERAGE_SIZE
     sumX -= averageX[index]; // subtract out oldest value
     sumY -= averageY[index];
-    sumX += thetaX.output; // add in newest value
-    sumY += thetaY.output;
-    averageX[index] = thetaX.output; // replace oldest value with newest value
-    averageY[index] = thetaY.output;
+    sumX += omegaX.output; // add in newest value
+    sumY += omegaY.output;
+    averageX[index] = omegaX.output; // replace oldest value with newest value
+    averageY[index] = omegaY.output;
     index++;
     index %= AVERAGE_SIZE;
-    double thetaXoutputAverage = sumX / AVERAGE_SIZE;
-    double thetaYoutputAverage = sumY / AVERAGE_SIZE;
-    
-    // 3) Run inner controller
-    PID_OmegaUpdate(&omegaX, gyroY, thetaXoutputAverage, MAX_PWM);
-    PID_OmegaUpdate(&omegaY, gyroX, thetaYoutputAverage, MAX_PWM);
+    double omegaXoutputAverage = sumX / AVERAGE_SIZE;
+    double omegaYoutputAverage = sumY / AVERAGE_SIZE;
+
+
 
     // 4) Set motors    
-    MotorSet_XYZ(omegaX.output, omegaY.output, 0); // comment back in for balancing
+    MotorSet_XYZ(omegaXoutputAverage, omegaYoutputAverage, 0); // comment back in for balancing
     //MotorSet_XYZ(omegaX.output, omegaY.output, 0); 
 
     //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
 
 
     count++;
-    if (count % 50 == 0 && printFlag) {
+    //if (count % 50 == 0 && printFlag) {
+    if (printFlag) {
+        printData.ready2print = TRUE;
+        printData.count = count;
+        printData.angleX = angleX;
+        printData.angleY = angleY;
+        printData.thetaOutX = thetaX.output;
+        printData.thetaOutY = thetaY.output;
+        printData.gyroX = gyroX;
+        printData.gyroY = gyroY;
+        printData.omegaOutX = omegaX.output;
+        printData.omegaOutY = omegaY.output;
+        printData.encoderX = encoder.x;
+        printData.encoderY = encoder.y;
+        
+        //        printf("Encoder1: %d, Encoder2: %d, Encoder3: %d EncoderX: %f, EncoderY: %f, EncoderRot: %f\n", 
+        //                GetEncoderCount(MOTOR_1), GetEncoderCount(MOTOR_2), GetEncoderCount(MOTOR_3), 
+        //                encoder.x, encoder.y, encoder.rot);
         // print for MatLab 
-        printf("%f, %f, %f, %f, %f, %f, %f, %f, %f, %f %f, %f\n", 
-                angleX, angleY, thetaX.output, thetaY.output, 
-                thetaXoutputAverage, thetaYoutputAverage, gyroX, gyroY,  
-                omegaX.output, omegaY.output, encoder.x, encoder.y);
-//        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
-//        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
-//        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
-//        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
-//        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
-//        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
+        //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+        //                count, angleX, angleY, thetaX.output, thetaY.output, gyroX, gyroY,
+        //                omegaX.output, omegaY.output, omegaXoutputAverage, omegaYoutputAverage,
+        //                encoder.x, encoder.y);
+        //        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
+        //        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
+        //        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
+        //        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
+        //        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
+        //        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
         //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
     }
 

@@ -36,8 +36,8 @@
 #define LINEAR_Y_I LINEAR_X_I
 #define LINEAR_Y_D LINEAR_X_D
 
-#define THETA_X_P 170
-#define THETA_X_I 0
+#define THETA_X_P 190
+#define THETA_X_I 10
 #define THETA_X_D 1
 
 #define THETA_Y_P THETA_X_P
@@ -56,6 +56,7 @@
 /*				Prototypes			*/
 /* ------------------------------------------------------------ */
 void PID_GetUARTK();
+void PrintMatlabData();
 
 /* ------------------------------------------------------------ */
 /*				Global Variables		*/
@@ -68,6 +69,8 @@ volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
 volatile PIDControl omegaY;
+
+volatile PrintData printData;
 
 volatile PIDControl *controller2changeX;
 volatile PIDControl *controller2changeY;
@@ -140,7 +143,6 @@ int main()
             printf("Please try again.\n");
             c = GetChar();
         }
-
     }
 
     return 0;
@@ -159,6 +161,7 @@ void PID_GetUARTK()
         printf("\nPress space at any time to quit. Press 'p' to toggle interrupt printing.\n");
         printf("\nPlease enter 'l' for linear, 't' for theta, or 'w' for omega controller.\n");
         while (c != linear && c != theta && c != omega && c != ' ') {
+            PrintMatlabData();
             c = GetChar();
             switch (c) {
             case 0x00:
@@ -192,6 +195,7 @@ void PID_GetUARTK()
         }
         printf("Please enter 'p', 'i', or 'd' for PID.\n");
         while (c != proportional && c != integral && c != derivative && c != ' ') {
+            PrintMatlabData();
             c = GetChar();
             switch (c) {
             case 0x00:
@@ -221,6 +225,7 @@ void PID_GetUARTK()
         printf("Press 'i' and 'k' to increment and decrement by magnitude.\n");
         printf("Press space to leave Reset\n");
         while (c != ' ' && c != 'c') {
+            PrintMatlabData();
             c = GetChar();
             switch (c) {
             case 0x00:
@@ -256,5 +261,15 @@ void PID_GetUARTK()
             }
         }
 
+    }
+}
+
+void PrintMatlabData() {
+    if (printData.ready2print) {
+        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+                printData.count, printData.angleX, printData.angleY, printData.thetaOutX,
+                printData.thetaOutY, printData.gyroX, printData.gyroY,
+                printData.omegaOutX, printData.omegaOutY, printData.encoderX, printData.encoderY);
+        printData.ready2print = FALSE;
     }
 }
