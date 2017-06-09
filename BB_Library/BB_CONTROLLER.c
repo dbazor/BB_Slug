@@ -215,7 +215,7 @@ void __ISR(_TIMER_5_VECTOR, IPL4SOFT) Timer5Handler(void)
     // get current values of the encoders in rad/sec
     GetEncoderRadians(&encoder);
     
-    // convert to speed in rad/sec Might need to take an average to filter out noise
+    // convert to speed in rad/sec Might need to take an average to filter out noise                need to change to get three global velocities from encoder
     double motorSpeed1 = (encoder.m1 - prevEncoder1) / MOTOR_CTL_SAMPLE_TIME;
     double motorSpeed2 = (encoder.m2 - prevEncoder2) / MOTOR_CTL_SAMPLE_TIME;
     double motorSpeed3 = (encoder.m3 - prevEncoder3) / MOTOR_CTL_SAMPLE_TIME; 

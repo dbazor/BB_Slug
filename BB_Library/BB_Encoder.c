@@ -50,7 +50,8 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
     icCount5 += ic2time;
     // use time to find current instant velocity
     double instantVel = SINGLE_TICK_DISTANCE / (icCount2 * TIME_PER_COUNTER_TIC);
-
+    icCount2 = 0; // reset just this count
+    
     // use rolling average to get average velocity
 
     int encoder1A = PORTReadBits(ENCODER_1A); // input capture for motor 1 encoder signal A
@@ -134,7 +135,7 @@ void Encoder_Init(void)
 
     // alternate way to setup timer3
     OpenTimer3(T3_ON | T3_SOURCE_INT | T3_PS_1_256, TMR3_ROLLOVER);
-    DisableIntT3;
+    DisableIntT3; // could use interrupt to add to three counters on case of rollover
     WriteTimer3(0);
 
 //    // set up IC3 to use Timer3. 
