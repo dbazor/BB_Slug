@@ -61,10 +61,13 @@ volatile PIDControl motorCtlr1;
 volatile PIDControl motorCtlr2;
 volatile PIDControl motorCtlr3;
 volatile PrintData printData;
-volatile MotorSpeedsCmd motorSpeedsCmd; // currently in rad/sec
+volatile MotorSpeedsCmd mSpeedsCmd; // currently in rad/sec
 double xAngleOffset;
 double yAngleOffset;
 volatile BOOL printFlag;
+
+volatile MotorSpeedsCmd mSpeedsCmd;
+
 /*******************************************************************************
  * Interrupts                                                                  *
  ******************************************************************************/
@@ -86,7 +89,7 @@ volatile BOOL printFlag;
   Remarks:
     None
  *****************************************************************************/
-void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4Handler(void)
+void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
 {
     // clear the interrupt flag always
     mT4ClearIntFlag();
@@ -116,10 +119,11 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4Handler(void)
     double angleY = BB_Quat_Find_Tip_Angle_Y(&result) - yAngleOffset; // in rad
 
     IMU_Read_Gyro();
-    IMU_Get_Gyro(&g);    
+    IMU_Get_Gyro(&g);
     // low pass the gyro
     double gyroX = g.x;
     double gyroY = g.y;
+
     // Rolling average of size AVERAGE_SIZE
     sumX -= averageX[index]; // subtract out oldest value
     sumY -= averageY[index];
@@ -141,10 +145,6 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4Handler(void)
     // 3) Run inner controller
     PID_OmegaUpdate(&omegaX, gyroAverageY, thetaX.output, MAX_RAD_PER_SEC);
     PID_OmegaUpdate(&omegaY, gyroAverageX, thetaY.output, MAX_RAD_PER_SEC);
-
-
-
-
 
     // 4) Set motors    
     MotorSet_XYZ(omegaX.output, omegaY.output, 0); // this now just sets global variables for the three motor controllers to try to achieve in rad/sec.
@@ -204,35 +204,44 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Timer4Handler(void)
 // controller to maintain correct rate on each motor
 // since this is a rate controller it may need feed-forward
 
-void __ISR(_TIMER_5_VECTOR, IPL4SOFT) Timer5Handler(void)
+void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
 {
-    static encodeVal encoder;
+    static count = 0;
+    static motorVelocity mV;
+    static MotorSpeedsCmd mVcmd;
     static double prevEncoder1 = 0, prevEncoder2 = 0, prevEncoder3 = 0;
     // clear the interrupt flag always
-    mT4ClearIntFlag();
+    mT5ClearIntFlag();
     // get newest values for desired motor speeds in rad/sec
 
     // get current values of the encoders in rad/sec
-    GetEncoderRadians(&encoder);
-    
+    //GetEncoderRadians(&encoder);
+
     // convert to speed in rad/sec Might need to take an average to filter out noise                need to change to get three global velocities from encoder
-    double motorSpeed1 = (encoder.m1 - prevEncoder1) / MOTOR_CTL_SAMPLE_TIME;
-    double motorSpeed2 = (encoder.m2 - prevEncoder2) / MOTOR_CTL_SAMPLE_TIME;
-    double motorSpeed3 = (encoder.m3 - prevEncoder3) / MOTOR_CTL_SAMPLE_TIME; 
-    
-    prevEncoder1 = encoder.m1;
-    prevEncoder2 = encoder.m2;
-    prevEncoder3 = encoder.m3;
-    
+    //    double motorSpeed1 = (encoder.m1 - prevEncoder1) / MOTOR_CTL_SAMPLE_TIME;
+    //    double motorSpeed2 = (encoder.m2 - prevEncoder2) / MOTOR_CTL_SAMPLE_TIME;
+    //    double motorSpeed3 = (encoder.m3 - prevEncoder3) / MOTOR_CTL_SAMPLE_TIME; 
+    //    prevEncoder1 = encoder.m1;
+    //    prevEncoder2 = encoder.m2;
+    //    prevEncoder3 = encoder.m3;
+
+    EncoderGetMotorSpeed(&mV);
+    MotorGetCommand(&mVcmd);
+
     // run update on each
-    PID_MotorUpdate(&motorCtlr1, motorSpeed1, motorSpeedsCmd.m1, MAX_RAD_PER_SEC);
-    PID_MotorUpdate(&motorCtlr2, motorSpeed2, motorSpeedsCmd.m2, MAX_RAD_PER_SEC);
-    PID_MotorUpdate(&motorCtlr3, motorSpeed3, motorSpeedsCmd.m3, MAX_RAD_PER_SEC);
-    
+    PID_MotorUpdate(&motorCtlr1, mV.m1, mVcmd.m1, MAX_RAD_PER_SEC);
+    PID_MotorUpdate(&motorCtlr2, mV.m2, mVcmd.m2, MAX_RAD_PER_SEC);
+    PID_MotorUpdate(&motorCtlr3, mV.m3, mVcmd.m3, MAX_RAD_PER_SEC);
+
     // set motors to new PWM
-    MotorSetSpeed((int)(RAD_PER_SEC_2_PWM*motorCtlr1.output), MOTOR_1);
-    MotorSetSpeed((int)(RAD_PER_SEC_2_PWM*motorCtlr2.output), MOTOR_2);
-    MotorSetSpeed((int)(RAD_PER_SEC_2_PWM*motorCtlr3.output), MOTOR_3);
+    MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr1.output), MOTOR_1);
+    MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr2.output), MOTOR_2);
+    MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr3.output), MOTOR_3);
+
+    count++;
+    if (count % 50 == 0 && printFlag) {
+        printf("MC: %f, %f, %f \n", mV.m2, mVcmd.m2, motorCtlr2.output);
+    }
 }
 /*******************************************************************************
  * Functions                                                                   *

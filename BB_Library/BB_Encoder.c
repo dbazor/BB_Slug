@@ -26,7 +26,7 @@
 #define TICK_2_RAD  (2.0*M_PI/2240.0)
 #define SINGLE_TICK_DISTANCE  TICK_2_RAD
 #define TIME_PER_COUNTER_TIC (0.0000032) // in seconds
-
+#define MOTOR_AVG_SIZE 5
 
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
@@ -36,6 +36,9 @@ static volatile int mc2 = 0; // motor 2 encoder count
 static volatile int mc3 = 0; // motor 3 encoder count
 
 static volatile unsigned int icCount2 = 0, icCount3 = 0, icCount5 = 0;
+static volatile double avgVelM1 = 0;
+static volatile double avgVelM2 = 0;
+static volatile double avgVelM3 = 0;
 
 /* ------------------------------------------------------------ */
 /*				Interrupt Sub-Routine           */
@@ -43,8 +46,15 @@ static volatile unsigned int icCount2 = 0, icCount3 = 0, icCount5 = 0;
 /* ------------------------------------------------------------ */
 void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
 {
+    static double sum = 0, direction = 0;
+    static double average[MOTOR_AVG_SIZE];
+    static int index = 0;
+    
     WriteTimer3(0); // reset Timer3 count
     int ic2time = IC2BUF; // clear fifo by getting count since last edge
+    if (ic2time == 0) { // Prevent Division from zero
+        ic2time = 1;
+    }
     icCount2 += ic2time;
     icCount3 += ic2time;
     icCount5 += ic2time;
@@ -52,8 +62,6 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
     double instantVel = SINGLE_TICK_DISTANCE / (icCount2 * TIME_PER_COUNTER_TIC);
     icCount2 = 0; // reset just this count
     
-    // use rolling average to get average velocity
-
     int encoder1A = PORTReadBits(ENCODER_1A); // input capture for motor 1 encoder signal A
     int encoder1B = PORTReadBits(ENCODER_1B); // digital input for motor 1 encoder signal B
 
@@ -64,14 +72,22 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
     //      decrement encoder count
     if (((encoder1A > 0) && (encoder1B > 0)) || (encoder1A == encoder1B)) {
         mc1++;
-        // localm1E1Count++;
-        // SetEncoder1Count(localm1E1Count);
+        direction = 1; // Forward
     } else if (encoder1A != encoder1B) {
         mc1--;
-        // localm1E1Count--;
-        // SetEncoder1Count(localm1E1Count);
+        direction = -1; // Reverse
     }
 
+    instantVel *= direction;
+    
+    // use rolling average to get average velocity
+    sum -= average[index]; // subtract out oldest value
+    sum += instantVel; // add in newest value
+    average[index] = instantVel; // replace oldest value with newest value
+    index++;
+    index %= MOTOR_AVG_SIZE;
+    avgVelM1 = sum / MOTOR_AVG_SIZE;
+    
     //printf("Encoder1: %d\n", mc1);
 
     IFS0bits.IC2IF = 0; // clear interrupt flag
@@ -79,7 +95,21 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
 
 void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
 {
-    int ic3time = IC3BUF; // clear fifo
+    static double sum = 0, direction = 0;
+    static double average[MOTOR_AVG_SIZE];
+    static int index = 0;
+    
+    WriteTimer3(0); // reset Timer3 count
+    int ic3time = IC3BUF; // clear fifo by getting count since last edge
+    if (ic3time == 0) { // Prevent Division from zero
+        ic3time = 1;
+    }
+    icCount2 += ic3time;
+    icCount3 += ic3time;
+    icCount5 += ic3time;
+    // use time to find current instant velocity
+    double instantVel = SINGLE_TICK_DISTANCE / (icCount3 * TIME_PER_COUNTER_TIC);
+    icCount3 = 0; // reset just this count
 
     int encoder2A = PORTReadBits(ENCODER_2A); // input capture for motor 2 encoder signal A
     int encoder2B = PORTReadBits(ENCODER_2B); // digital input for motor 2 encoder signal B
@@ -91,18 +121,46 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
     //      decrement encoder count
     if (((encoder2A > 0) && (encoder2B > 0)) || (encoder2A == encoder2B)) {
         mc2++;
+        direction = 1;
     } else if (encoder2A != encoder2B) {
         mc2--;
+        direction = -1;
     }
 
     //printf("Encoder2: %d\n", mc2);
+
+    instantVel *= direction;
+    
+    // use rolling average to get average velocity
+    sum -= average[index]; // subtract out oldest value
+    sum += instantVel; // add in newest value
+    average[index] = instantVel; // replace oldest value with newest value
+    index++;
+    index %= MOTOR_AVG_SIZE;
+    avgVelM2 = sum / MOTOR_AVG_SIZE;
+    
+    //printf("Encoder1: %d\n", mc1);
 
     IFS0bits.IC3IF = 0; // clear interrupt flag
 }
 
 void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
 {
-    int ic5time = IC5BUF; // clear fifo
+    static double sum = 0, direction = 0;
+    static double average[MOTOR_AVG_SIZE];
+    static int index = 0;
+    
+    WriteTimer3(0); // reset Timer3 count
+    int ic5time = IC5BUF; // clear fifo by getting count since last edge
+    if (ic5time == 0) { // Prevent Division from zero
+        ic5time = 1;
+    }
+    icCount2 += ic5time;
+    icCount3 += ic5time;
+    icCount5 += ic5time;
+    // use time to find current instant velocity
+    double instantVel = SINGLE_TICK_DISTANCE / (icCount5 * TIME_PER_COUNTER_TIC);
+    icCount5 = 0; // reset just this count
 
     int encoder3A = PORTReadBits(ENCODER_3A); // input capture for motor 3 encoder signal A
     int encoder3B = PORTReadBits(ENCODER_3B); // digital input for motor 3 encoder signal B
@@ -110,9 +168,21 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
     // see previous ISR for details
     if (((encoder3A > 0) && (encoder3B > 0)) || (encoder3A == encoder3B)) {
         mc3++;
+        direction = 1;
     } else if (encoder3A != encoder3B) {
         mc3--;
+        direction = -1;
     }
+    
+    instantVel *= direction;
+    
+    // use rolling average to get average velocity
+    sum -= average[index]; // subtract out oldest value
+    sum += instantVel; // add in newest value
+    average[index] = instantVel; // replace oldest value with newest value
+    index++;
+    index %= MOTOR_AVG_SIZE;
+    avgVelM3 = sum / MOTOR_AVG_SIZE;
 
     //printf("Encoder3: %d\n", mc3);
 
@@ -165,8 +235,8 @@ void Encoder_Init(void)
     IFS0bits.IC3IF = 0; // clear interrupt flag for IC3
     IFS0bits.IC5IF = 0; // clear interrupt flag for IC5
 
-    IPC2bits.IC2IP = 1; // interrupt priority 1 for IC2
-    IPC3bits.IC3IP = 2; // interrupt priority 2 for IC3
+    IPC2bits.IC2IP = 3; // interrupt priority 3 for IC2 // changed from 1, 2, 3
+    IPC3bits.IC3IP = 3; // interrupt priority 3 for IC3
     IPC5bits.IC5IP = 3; // interrupt priority 3 for IC5
 
     IEC0bits.IC2IE = 1; // enable IC2 interrupt
@@ -263,4 +333,16 @@ void SetEncoderCounts(int count1, int count2, int count3)
     mc1 = count1;
     mc2 = count2;
     mc3 = count3;
+}
+
+/**
+ * Function: EncoderGetMotorSpeed
+ * @param 
+ * @return 
+ * @brief
+ **/
+void EncoderGetMotorSpeed(motorVelocity *v) {
+    v->m1 = avgVelM1;
+    v->m2 = avgVelM2;
+    v->m3 = avgVelM3;
 }

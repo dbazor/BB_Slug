@@ -53,9 +53,9 @@
 #define OMEGA_Y_D OMEGA_X_D
 
 
-#define MOTOR_KP       40 
+#define MOTOR_KP       1
 #define MOTOR_KI       0  
-#define MOTOR_KD       1 
+#define MOTOR_KD       0
 
 /* ------------------------------------------------------------ */
 /*				Prototypes			*/
@@ -82,8 +82,10 @@ volatile PrintData printData;
 
 volatile PIDControl *controller2changeX;
 volatile PIDControl *controller2changeY;
+volatile PIDControl *controller2changeZ;
 volatile double *k2changeX;
 volatile double *k2changeY;
+volatile double *k2changeZ;
 
 volatile BOOL printFlag;
 
@@ -123,7 +125,7 @@ int main()
     PID_Init(&motorCtlr1, TRUE, 0, MOTOR_KP, MOTOR_KI, MOTOR_KD);
     PID_Init(&motorCtlr2, TRUE, 0, MOTOR_KP, MOTOR_KI, MOTOR_KD);
     PID_Init(&motorCtlr3, TRUE, 0, MOTOR_KP, MOTOR_KI, MOTOR_KD);
-    
+
     char c = ' '; // init state is stop
 
     while (1) {
@@ -134,18 +136,22 @@ int main()
         case stop:
             printf("\n\nPress 'r' for Reset, 'b' to Balance, and space-bar to Stop. \n");
             DisableIntT4; // turn off controller interrupt
+            DisableIntT5;
             MotorsStop();
             printf("You chose Stop.\n");
             c = GetChar();
             break;
         case balancing:
-            EnableIntT4; // turn on controller interrupt
+            //EnableIntT4; // turn on controller interrupt      // uncomment to activate controller
+            EnableIntT5;
+            MotorSet_XYZ(10.0, 10.0, 0); // test motor controller
             printf("You chose balancing.\n");
             PID_GetUARTK();
             c = ' ';
             break;
         case reset:
             DisableIntT4; // turn off controller interrupt
+            DisableIntT5;
             MotorsStop();
             printf("You chose reset.\n");
             PID_GetUARTK();
@@ -171,7 +177,7 @@ void PID_GetUARTK()
         printf("\nOmega  PID values: ");
         PID_PrintK(&omegaX);
         printf("\nPress space at any time to quit. Press 'p' to toggle interrupt printing.\n");
-        printf("\nPlease enter 'l' for linear, 't' for theta, or 'w' for omega controller.\n");
+        printf("\nPlease enter 'l' for linear, 't' for theta, 'w' for omega, or 'm' for motor controller.\n");
         while (c != linear && c != theta && c != omega && c != ' ') {
             PrintMatlabData();
             c = GetChar();
@@ -181,16 +187,19 @@ void PID_GetUARTK()
             case linear:
                 controller2changeX = &linearX;
                 controller2changeY = &linearY;
+                controller2changeZ = &linearY; // Change Y 'twice'
                 printf("You chose the linear controller.\n");
                 break;
             case theta:
                 controller2changeX = &thetaX;
                 controller2changeY = &thetaY;
+                controller2changeZ = &thetaY; // Change Y 'twice'
                 printf("You chose the theta controller.\n");
                 break;
             case omega:
                 controller2changeX = &omegaX;
                 controller2changeY = &omegaY;
+                controller2changeZ = &omegaY; // Change Y 'twice'
                 printf("You chose the omega controller.\n");
                 break;
             case 'p':
@@ -200,6 +209,12 @@ void PID_GetUARTK()
                 } else if (printFlag == FALSE) {
                     printFlag = TRUE;
                 }
+                break;
+            case 'm':
+                controller2changeX = &motorCtlr1;
+                controller2changeY = &motorCtlr2;
+                controller2changeZ = &motorCtlr3;
+                printf("You chose the motor controller.\n");
                 break;
             default:
                 printf("Please try again\n");
@@ -215,16 +230,19 @@ void PID_GetUARTK()
             case proportional:
                 k2changeX = &controller2changeX->kp;
                 k2changeY = &controller2changeY->kp;
+                k2changeZ = &controller2changeZ->kp;
                 printf("You chose kp.\n");
                 break;
             case integral:
                 k2changeX = &controller2changeX->ki;
                 k2changeY = &controller2changeY->ki;
+                k2changeZ = &controller2changeZ->ki;
                 printf("You chose ki.\n");
                 break;
             case derivative:
                 k2changeX = &controller2changeX->kd;
                 k2changeY = &controller2changeY->kd;
+                k2changeZ = &controller2changeZ->kd;
                 printf("You chose kd.\n");
                 break;
             default:
@@ -245,6 +263,7 @@ void PID_GetUARTK()
             case 'i': // up
                 *k2changeX = *k2changeX + magnitude;
                 *k2changeY = *k2changeY + magnitude;
+                *k2changeZ = *k2changeZ + magnitude;
                 printf("Value incremented to: %f\n", *k2changeX);
                 break;
             case 'j': // left
@@ -254,6 +273,7 @@ void PID_GetUARTK()
             case 'k': // down
                 *k2changeX = *k2changeX - magnitude;
                 *k2changeY = *k2changeY - magnitude;
+                *k2changeZ = *k2changeZ - magnitude;
                 printf("Value decremented to: %f\n", *k2changeX);
                 break;
             case 'l': // right
@@ -263,6 +283,7 @@ void PID_GetUARTK()
             case '0':
                 *k2changeX = 0;
                 *k2changeY = 0;
+                *k2changeZ = 0;
                 printf("Value zeroed to: %f\n", *k2changeX);
                 break;
             case ' ':
@@ -278,11 +299,14 @@ void PID_GetUARTK()
 
 void PrintMatlabData()
 {
-    if (printData.ready2print) {
-        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-                printData.count, printData.angleX, printData.angleY, printData.thetaOutX,
-                printData.thetaOutY, printData.gyroX, printData.gyroY,
-                printData.omegaOutX, printData.omegaOutY, printData.encoderX, printData.encoderY);
-        printData.ready2print = FALSE;
-    }
+    static motorVelocity mV;
+    EncoderGetMotorSpeed(&mV);
+    //    printf("%f, %f, %f\n", mV.m1, mV.m2, mV.m3);
+    //    if (printData.ready2print) {
+    //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+    //                printData.count, printData.angleX, printData.angleY, printData.thetaOutX,
+    //                printData.thetaOutY, printData.gyroX, printData.gyroY,
+    //                printData.omegaOutX, printData.omegaOutY, printData.encoderX, printData.encoderY);
+    //        printData.ready2print = FALSE;
+    //    }
 }

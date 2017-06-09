@@ -33,8 +33,7 @@ volatile static int motor1Direction;
 volatile static int motor2Direction;
 volatile static int motor3Direction;
 
-volatile MotorSpeedsCmd motorSpeedsCmd;
-
+volatile static double mSpeed1 = 0, mSpeed2 = 0, mSpeed3 = 0;
 
 const double inverseA[HEIGHT][WIDTH] = {
     {0, TWO_THIRDS, MOTOR_BRACKET_LENGTH},
@@ -428,7 +427,20 @@ void MotorSet_XYZ(double x, double y, double z)
     //    MotorSetSpeed((int) pwm[2], MOTOR_3);
 
     // Set global variables of each motor speed in Rad/sec
-    motorSpeedsCmd.m1 = speed[0]; // / PWM_2_RAD_PER_SEC;
-    motorSpeedsCmd.m2 = speed[1]; // / PWM_2_RAD_PER_SEC;
-    motorSpeedsCmd.m3 = speed[2]; // / PWM_2_RAD_PER_SEC;
+    mSpeed1 = speed[0]; // / PWM_2_RAD_PER_SEC;
+    mSpeed2 = speed[1]; // / PWM_2_RAD_PER_SEC;
+    mSpeed3 = speed[2]; // / PWM_2_RAD_PER_SEC;
+}
+
+/**
+ * Function: MotorsStop()
+ * @param
+ * @return  
+ * @brief   
+ * @notes   
+ **/
+void MotorGetCommand(MotorSpeedsCmd *m) {
+    m->m1 = mSpeed1;
+    m->m2 = mSpeed2;
+    m->m3 = mSpeed3;
 }

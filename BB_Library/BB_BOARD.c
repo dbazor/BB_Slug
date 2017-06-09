@@ -128,13 +128,13 @@ void BB_BOARD_Init()
     // STEP 2. configure Timer 1 using internal clock, 1:64 pre-scaler
     OpenTimer4(T4_ON | T4_SOURCE_INT | T4_PS_1_64, T4_PERIOD);
     // set up the timer interrupt with a priority of 2
-    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_5);
+    ConfigIntTimer4(T4_INT_ON | T4_INT_PRIOR_6); 
     DisableIntT4;
 
     // Motor PID interrupt
     OpenTimer5(T5_ON | T5_SOURCE_INT | T5_PS_1_64, T5_PERIOD);
     // set up the timer interrupt with a priority of 2
-    ConfigIntTimer4(T5_INT_ON | T5_INT_PRIOR_4);
+    ConfigIntTimer5(T5_INT_ON | T5_INT_PRIOR_5);
     DisableIntT5;
 
 

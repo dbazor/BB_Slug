@@ -41,8 +41,6 @@ typedef struct MotorSpeedsCmd { // holds commanded motorSpeeds in rad/sec
     double m3;
 } MotorSpeedsCmd;
 
-extern volatile MotorSpeedsCmd motorSpeedsCmd;
-
 /*******************************************************************************
  * PROTOTYEPS                                                   *
  ******************************************************************************/
@@ -103,4 +101,12 @@ void MotorsStop(void);
  **/
 void MotorSet_XYZ(double x, double y, double z);
 
+/**
+ * Function: MotorsStop()
+ * @param
+ * @return  
+ * @brief   
+ * @notes   
+ **/
+void MotorGetCommand(MotorSpeedsCmd *m);
 #endif	/* BB_MOTOR_H */

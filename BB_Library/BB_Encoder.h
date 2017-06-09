@@ -27,6 +27,12 @@ typedef struct encodeVal {
     double m3;
 } encodeVal;
 
+typedef struct motorVelocity {
+    double m1;
+    double m2;
+    double m3;
+} motorVelocity;
+
 /*******************************************************************************
  * FUNCTION PROTOYPES                                                          *
  ******************************************************************************/
@@ -81,5 +87,13 @@ void SetEncoderCount(UINT8 motorNum, UINT8 value);
  * @brief Set the encoder count of all motors to desired values
  **/
 void SetEncoderCounts(int count1, int count2, int count3);
+
+/**
+ * Function: EncoderGetMotorSpeed
+ * @param 
+ * @return 
+ * @brief
+ **/
+void EncoderGetMotorSpeed(motorVelocity *v);
 
 #endif	/* BB_ENCODER_H */ 
