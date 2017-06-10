@@ -143,8 +143,8 @@ int main()
             break;
         case balancing:
             //EnableIntT4; // turn on controller interrupt      // uncomment to activate controller
-            EnableIntT5;
-            MotorSet_XYZ(10.0, 10.0, 0); // test motor controller
+            //EnableIntT5;
+            MotorSet_XYZ(MAX_RAD_PER_SEC, MAX_RAD_PER_SEC, 0); // test motor controller
             printf("You chose balancing.\n");
             PID_GetUARTK();
             c = ' ';
@@ -156,6 +156,61 @@ int main()
             printf("You chose reset.\n");
             PID_GetUARTK();
             c = ' ';
+            break;
+        case 'm':
+            while (1) {
+                static double mXspeed = 0, mYspeed = 0;
+                static double magnitude = 1;
+                static MotorSpeedsCmd mVcmd;
+                if (printFlag) {
+                    PrintMatlabData();
+                }
+                c = GetChar();
+                switch (c) {
+                case 'e': // X movement
+                    mXspeed += magnitude;
+                    printf("Value incremented to: %f\n", mXspeed);
+                    break;
+                case 'd':
+                    mXspeed -= magnitude;
+                    printf("Value decremented to: %f\n", mXspeed);
+                    break;
+                case 'r': // Y movement
+                    mYspeed += magnitude;
+                    printf("Value incremented to: %f\n", mYspeed);
+                    break;
+                case 'f':
+                    mYspeed -= magnitude;
+                    printf("Value decremented to: %f\n", mYspeed);
+                    break;
+                case 'a':
+                    magnitude /= 10.0;
+                    printf("Magnitude now: %f\n", magnitude);
+                    break;
+                case 's':
+                    magnitude *= 10.0;
+                    printf("Magnitude now: %f\n", magnitude);
+                    break;
+                case '0':
+                    mXspeed = 0;
+                    mYspeed = 0;
+                    printf("Speeds zeroed\n");
+                    break;
+                case 'p':
+                    // toggle print flag
+                    if (printFlag == TRUE) {
+                        printFlag = FALSE;
+                    } else if (printFlag == FALSE) {
+                        printFlag = TRUE;
+                    }
+                    break;
+                }
+                MotorSet_XYZ(mXspeed, mYspeed, 0);
+                MotorGetCommand(&mVcmd);
+                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m1), MOTOR_1);
+                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m2), MOTOR_2);
+                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m3), MOTOR_3);
+            }
             break;
         default:
             printf("Please try again.\n");
@@ -176,6 +231,8 @@ void PID_GetUARTK()
         PID_PrintK(&thetaX);
         printf("\nOmega  PID values: ");
         PID_PrintK(&omegaX);
+        printf("\nmotorCtlr1  PID values: ");
+        PID_PrintK(&motorCtlr1);
         printf("\nPress space at any time to quit. Press 'p' to toggle interrupt printing.\n");
         printf("\nPlease enter 'l' for linear, 't' for theta, 'w' for omega, or 'm' for motor controller.\n");
         while (c != linear && c != theta && c != omega && c != ' ') {
@@ -301,7 +358,7 @@ void PrintMatlabData()
 {
     static motorVelocity mV;
     EncoderGetMotorSpeed(&mV);
-    //    printf("%f, %f, %f\n", mV.m1, mV.m2, mV.m3);
+    printf("%f, %f, %f\n", mV.m1, mV.m2, mV.m3);
     //    if (printData.ready2print) {
     //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
     //                printData.count, printData.angleX, printData.angleY, printData.thetaOutX,

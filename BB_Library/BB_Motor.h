@@ -31,9 +31,9 @@
 #define HEIGHT      3
 #define WIDTH       3
 
-#define PWM_2_RAD_PER_SEC  63.66197724  // this is assuming a max speed of 150 RPM which is high
-#define RAD_PER_SEC_2_PWM  (1/PWM_2_RAD_PER_SEC)
-#define MAX_RAD_PER_SEC (MAX_PWM/PWM_2_RAD_PER_SEC)
+#define RAD_PER_SEC_2_PWM  63.66197724  // this is assuming a max speed of 150 RPM which is high
+#define PWM_2_RAD_PER_SEC  (1/RAD_PER_SEC_2_PWM)
+#define MAX_RAD_PER_SEC (MAX_PWM*PWM_2_RAD_PER_SEC)
 
 typedef struct MotorSpeedsCmd { // holds commanded motorSpeeds in rad/sec
     double m1;

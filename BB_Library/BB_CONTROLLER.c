@@ -238,10 +238,10 @@ void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr2.output), MOTOR_2);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr3.output), MOTOR_3);
 
-    count++;
-    if (count % 50 == 0 && printFlag) {
-        printf("MC: %f, %f, %f \n", mV.m2, mVcmd.m2, motorCtlr2.output);
-    }
+    //    count++;
+    //    if (count % 50 == 0 && printFlag) {
+    //        printf("MC: %f, %f, %f \n", mV.m2, mVcmd.m2, motorCtlr2.output);
+    //    }
 }
 /*******************************************************************************
  * Functions                                                                   *
