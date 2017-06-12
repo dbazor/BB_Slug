@@ -7,7 +7,7 @@
 /*******************************************************************************
  * PUBLIC #DEFINES                                                             *
  ******************************************************************************/
-#define IN_RADIANS          TRUE // True for radians, False for degrees
+#define IN_RADIANS          1 // True for radians, False for degrees
 #define RADIANS_FACTOR      900.0
 #define DEGREE_FACTOR       16.0
 

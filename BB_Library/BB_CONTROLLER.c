@@ -155,8 +155,8 @@ void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
 
 
     count++;
-    //if (count % 50 == 0 && printFlag) {
-    if (printFlag) {
+    if (count % 50 == 0 && printFlag) {
+    //if (printFlag) {
         printData.ready2print = TRUE;
         printData.count = count;
         printData.angleX = angleX;
@@ -169,31 +169,7 @@ void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
         printData.omegaOutY = omegaY.output;
         printData.encoderX = encoder.x;
         printData.encoderY = encoder.y;
-
-        //        printf("Encoder1: %d, Encoder2: %d, Encoder3: %d EncoderX: %f, EncoderY: %f, EncoderRot: %f\n", 
-        //                GetEncoderCount(MOTOR_1), GetEncoderCount(MOTOR_2), GetEncoderCount(MOTOR_3), 
-        //                encoder.x, encoder.y, encoder.rot);
-        // print for MatLab 
-        //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-        //                count, angleX, angleY, thetaX.output, thetaY.output, gyroX, gyroY,
-        //                omegaX.output, omegaY.output, omegaXoutputAverage, omegaYoutputAverage,
-        //                encoder.x, encoder.y);
-        //        printf("\n\nCount: %d\nencoder.x = %f, encoder.y = %f\n", count, encoder.x, encoder.y);
-        //        printf("linaerX.output = %f, linaerY.output = %f\n", linearX.output, linearY.output);
-        //        printf("thetaX.uPWM = %f, thetaY.uPWM = %f\n", thetaX.output, thetaY.output);
-        //        printf("omegaX.uPWM = %f, omegaY.uPWM = %f\n", omegaX.output, omegaY.output);
-        //        printf("\ngyroX: %f, gyroY: %f\n", gyroX, gyroY);
-        //        printf("x angle = %f, y angle = %f\n", xAngle, yAngle);
-        //    printf("xAngle: %f, gyroY: %f\n", xAngle, gyroY);
     }
-
-    //    PID_Update(&motor1_pid);
-    //    SetMotorSpeed(motor1_pid.uPWM, motor1_pid.motorNum);
-
-    // these are just to check the frequency
-    //    Turn_On_LED(BB_LED_4);
-    //    PORTToggleBits(JC03); // for oscilloscope frequency check
-    //    
 
     // Set pin low
     PORTClearBits(JC03);
@@ -239,20 +215,20 @@ void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr2.output), MOTOR_2);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr3.output), MOTOR_3);
 
-    count++;
-    if (count % 50 == 0 && printFlag) {
-        printData.ready2print = TRUE;
-        printData.count = count;
-        printData.m1Speed = mV.m1;
-        printData.m2Speed = mV.m2;
-        printData.m3Speed = mV.m3;
-        printData.m1Cmd = mVcmd.m1;
-        printData.m2Cmd = mVcmd.m2;
-        printData.m3Cmd = mVcmd.m3;
-        printData.m1Output = motorCtlr1.output;
-        printData.m2Output = motorCtlr2.output;
-        printData.m3Output = motorCtlr3.output;
-    }
+    //    count++;
+    //    if ((count % 100) == 0 && printFlag) {
+    //        printData.ready2print = TRUE;
+    //        printData.count = count;
+    //        printData.m1Speed = mV.m1;
+    //        printData.m2Speed = mV.m2;
+    //        printData.m3Speed = mV.m3;
+    //        printData.m1Cmd = mVcmd.m1;
+    //        printData.m2Cmd = mVcmd.m2;
+    //        printData.m3Cmd = mVcmd.m3;
+    //        printData.m1Output = motorCtlr1.output;
+    //        printData.m2Output = motorCtlr2.output;
+    //        printData.m3Output = motorCtlr3.output;
+    //    }
 }
 /*******************************************************************************
  * Functions                                                                   *
@@ -392,7 +368,7 @@ void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double referenc
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
-        p->output -= uI; // reset output to motor
+        p->output = uP + uD; // reset output to motor
     }
     //printf("Output normalized\n");
 

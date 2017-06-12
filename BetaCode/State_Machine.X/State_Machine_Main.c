@@ -28,7 +28,7 @@
 #define cntMsDelay      5000
 #define thsndDelay      1000
 
-#define LINEAR_X_P 0.1
+#define LINEAR_X_P 1
 #define LINEAR_X_I 0
 #define LINEAR_X_D 0
 
@@ -36,9 +36,9 @@
 #define LINEAR_Y_I LINEAR_X_I
 #define LINEAR_Y_D LINEAR_X_D
 
-#define THETA_X_P 190
-#define THETA_X_I 10
-#define THETA_X_D 1
+#define THETA_X_P 100
+#define THETA_X_I 0
+#define THETA_X_D 0
 
 #define THETA_Y_P THETA_X_P
 #define THETA_Y_I THETA_X_I
@@ -53,8 +53,8 @@
 #define OMEGA_Y_D OMEGA_X_D
 
 
-#define MOTOR_KP       1
-#define MOTOR_KI       0  
+#define MOTOR_KP       7
+#define MOTOR_KI       40  
 #define MOTOR_KD       0
 
 /* ------------------------------------------------------------ */
@@ -90,7 +90,7 @@ volatile double *k2changeZ;
 
 volatile BOOL printFlag;
 
-static double mXspeed = 8.0, mYspeed = 0;
+static double mXspeed = 2.0, mYspeed = 0;
 /* ------------------------------------------------------------ */
 /*                            Main                              */
 
@@ -144,10 +144,11 @@ int main()
             c = GetChar();
             break;
         case balancing:
-            //EnableIntT4; // turn on controller interrupt      // uncomment to activate controller
+            EnableIntT4; // turn on controller interrupt      // uncomment to activate controller
             EnableIntT5;
             //MotorSet_XYZ(MAX_RAD_PER_SEC, MAX_RAD_PER_SEC, 0); // test motor controller
             printf("You chose balancing.\n");
+            //MotorSet_XYZ(mXspeed, mYspeed, 0);
             PID_GetUARTK();
             c = ' ';
             break;
@@ -206,11 +207,11 @@ int main()
                     }
                     break;
                 }
-                MotorSet_XYZ(mXspeed, mYspeed, 0);
-                MotorGetCommand(&mVcmd);
-                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m1), MOTOR_1);
-                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m2), MOTOR_2);
-                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m3), MOTOR_3);
+                MotorSet_XYZ(mXspeed, mYspeed, 0); // for testing motors
+                //                MotorGetCommand(&mVcmd);
+                //                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m1), MOTOR_1);
+                //                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m2), MOTOR_2);
+                //                MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * mVcmd.m3), MOTOR_3);
             }
             break;
         default:
@@ -236,7 +237,7 @@ void PID_GetUARTK()
         PID_PrintK(&motorCtlr1);
         printf("\nPress space at any time to quit. Press 'p' to toggle interrupt printing.\n");
         printf("\nPlease enter 'l' for linear, 't' for theta, 'w' for omega, or 'm' for motor controller.\n");
-        while (c != linear && c != theta && c != omega && c != ' ') {
+        while (c != linear && c != theta && c != omega && c != ' ' && c != 'm') {
             PrintMatlabData();
             c = GetChar();
             switch (c) {
@@ -251,13 +252,13 @@ void PID_GetUARTK()
             case theta:
                 controller2changeX = &thetaX;
                 controller2changeY = &thetaY;
-                controller2changeZ = &dummyCtrl; 
+                controller2changeZ = &dummyCtrl;
                 printf("You chose the theta controller.\n");
                 break;
             case omega:
                 controller2changeX = &omegaX;
                 controller2changeY = &omegaY;
-                controller2changeZ = &dummyCtrl; 
+                controller2changeZ = &dummyCtrl;
                 printf("You chose the omega controller.\n");
                 break;
             case 'p':
@@ -360,32 +361,42 @@ void PrintMatlabData()
     static int count;
     static BOOL forward = 1;
     static motorVelocity mV;
-    if ((count % 10000) == 0) {
-        if (forward) {
-            MotorSet_XYZ(mXspeed, mYspeed, 0);
-            forward = 0;
-        } else {
-            MotorSet_XYZ(-mXspeed, -mYspeed, 0);
-            forward = 1;
-        }
-    }
+    //    if ((count % 1000000) == 0) {
+    //        if (forward) {
+    //            MotorSet_XYZ(mXspeed, mYspeed, 0);
+    //            forward = 0;
+    //        } else {
+    //            MotorSet_XYZ(-mXspeed, -mYspeed, 0);
+    //            forward = 1;
+    //        }
+    //    }
+    //    count++;
+    //    printf("%d \n", count);
 
     if (printData.ready2print) {
-        //            printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-        //                    printData.count, printData.angleX, printData.angleY, printData.thetaOutX,
-        //                    printData.thetaOutY, printData.gyroX, printData.gyroY,
-        //                    printData.omegaOutX, printData.omegaOutY, printData.encoderX, printData.encoderY);
-        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-                printData.count,
-                printData.m1Speed,
-                printData.m2Speed,
-                printData.m3Speed,
-                printData.m1Cmd,
-                printData.m2Cmd,
-                printData.m3Cmd,
-                printData.m1Output,
-                printData.m2Output,
-                printData.m3Output);
+        printf("%d, %f, %f, %f, %f \n",
+                printData.count, 
+                printData.angleX, 
+                printData.thetaOutX, 
+                printData.gyroY, 
+                printData.omegaOutX);
+//                printData.encoderX, 
+//                printData.angleY, 
+//                printData.thetaOutY,  
+//                printData.gyroX,
+//                printData.omegaOutY, 
+//                printData.encoderY);
+        //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+        //                printData.count,
+        //                printData.m1Speed,
+        //                printData.m1Cmd,
+        //                printData.m1Output,
+        //                printData.m2Speed,
+        //                printData.m2Cmd,
+        //                printData.m2Output,
+        //                printData.m3Speed,
+        //                printData.m3Cmd,
+        //                printData.m3Output);
         printData.ready2print = FALSE;
     }
 }
