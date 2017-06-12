@@ -64,6 +64,15 @@ typedef struct PrintData {
     double omegaOutY;
     double encoderX;
     double encoderY;
+    double m1Speed;
+    double m2Speed;
+    double m3Speed;
+    double m1Cmd;
+    double m2Cmd;
+    double m3Cmd;
+    double m1Output;
+    double m2Output;
+    double m3Output;
 } PrintData;
 
 typedef enum {

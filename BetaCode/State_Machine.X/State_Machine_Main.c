@@ -74,6 +74,7 @@ volatile PIDControl thetaX;
 volatile PIDControl thetaY;
 volatile PIDControl omegaX;
 volatile PIDControl omegaY;
+volatile PIDControl dummyCtrl;
 volatile PIDControl motorCtlr1;
 volatile PIDControl motorCtlr2;
 volatile PIDControl motorCtlr3;
@@ -89,6 +90,7 @@ volatile double *k2changeZ;
 
 volatile BOOL printFlag;
 
+static double mXspeed = 8.0, mYspeed = 0;
 /* ------------------------------------------------------------ */
 /*                            Main                              */
 
@@ -143,8 +145,8 @@ int main()
             break;
         case balancing:
             //EnableIntT4; // turn on controller interrupt      // uncomment to activate controller
-            //EnableIntT5;
-            MotorSet_XYZ(MAX_RAD_PER_SEC, MAX_RAD_PER_SEC, 0); // test motor controller
+            EnableIntT5;
+            //MotorSet_XYZ(MAX_RAD_PER_SEC, MAX_RAD_PER_SEC, 0); // test motor controller
             printf("You chose balancing.\n");
             PID_GetUARTK();
             c = ' ';
@@ -158,8 +160,7 @@ int main()
             c = ' ';
             break;
         case 'm':
-            while (1) {
-                static double mXspeed = 0, mYspeed = 0;
+            while (c != ' ') {
                 static double magnitude = 1;
                 static MotorSpeedsCmd mVcmd;
                 if (printFlag) {
@@ -244,19 +245,19 @@ void PID_GetUARTK()
             case linear:
                 controller2changeX = &linearX;
                 controller2changeY = &linearY;
-                controller2changeZ = &linearY; // Change Y 'twice'
+                controller2changeZ = &dummyCtrl;
                 printf("You chose the linear controller.\n");
                 break;
             case theta:
                 controller2changeX = &thetaX;
                 controller2changeY = &thetaY;
-                controller2changeZ = &thetaY; // Change Y 'twice'
+                controller2changeZ = &dummyCtrl; 
                 printf("You chose the theta controller.\n");
                 break;
             case omega:
                 controller2changeX = &omegaX;
                 controller2changeY = &omegaY;
-                controller2changeZ = &omegaY; // Change Y 'twice'
+                controller2changeZ = &dummyCtrl; 
                 printf("You chose the omega controller.\n");
                 break;
             case 'p':
@@ -356,14 +357,35 @@ void PID_GetUARTK()
 
 void PrintMatlabData()
 {
+    static int count;
+    static BOOL forward = 1;
     static motorVelocity mV;
-    EncoderGetMotorSpeed(&mV);
-    printf("%f, %f, %f\n", mV.m1, mV.m2, mV.m3);
-    //    if (printData.ready2print) {
-    //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-    //                printData.count, printData.angleX, printData.angleY, printData.thetaOutX,
-    //                printData.thetaOutY, printData.gyroX, printData.gyroY,
-    //                printData.omegaOutX, printData.omegaOutY, printData.encoderX, printData.encoderY);
-    //        printData.ready2print = FALSE;
-    //    }
+    if ((count % 10000) == 0) {
+        if (forward) {
+            MotorSet_XYZ(mXspeed, mYspeed, 0);
+            forward = 0;
+        } else {
+            MotorSet_XYZ(-mXspeed, -mYspeed, 0);
+            forward = 1;
+        }
+    }
+
+    if (printData.ready2print) {
+        //            printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+        //                    printData.count, printData.angleX, printData.angleY, printData.thetaOutX,
+        //                    printData.thetaOutY, printData.gyroX, printData.gyroY,
+        //                    printData.omegaOutX, printData.omegaOutY, printData.encoderX, printData.encoderY);
+        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+                printData.count,
+                printData.m1Speed,
+                printData.m2Speed,
+                printData.m3Speed,
+                printData.m1Cmd,
+                printData.m2Cmd,
+                printData.m3Cmd,
+                printData.m1Output,
+                printData.m2Output,
+                printData.m3Output);
+        printData.ready2print = FALSE;
+    }
 }
