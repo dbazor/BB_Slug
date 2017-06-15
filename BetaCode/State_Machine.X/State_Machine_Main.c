@@ -374,29 +374,29 @@ void PrintMatlabData()
     //    printf("%d \n", count);
 
     if (printData.ready2print) {
-        printf("%d, %f, %f, %f, %f \n",
-                printData.count, 
-                printData.angleX, 
-                printData.thetaOutX, 
-                printData.gyroY, 
-                printData.omegaOutX);
+//        printf("%d, %f, %f, %f, %f \n",
+//                printData.count, 
+//                printData.angleX, 
+//                printData.thetaOutX, 
+//                printData.gyroY, 
+//                printData.omegaOutX);
 //                printData.encoderX, 
 //                printData.angleY, 
 //                printData.thetaOutY,  
 //                printData.gyroX,
 //                printData.omegaOutY, 
 //                printData.encoderY);
-        //        printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-        //                printData.count,
-        //                printData.m1Speed,
-        //                printData.m1Cmd,
-        //                printData.m1Output,
-        //                printData.m2Speed,
-        //                printData.m2Cmd,
-        //                printData.m2Output,
-        //                printData.m3Speed,
-        //                printData.m3Cmd,
-        //                printData.m3Output);
+                printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+                        printData.count,
+                        printData.m1Speed,
+                        printData.m1Cmd,
+                        printData.m1Output,
+                        printData.m2Speed,
+                        printData.m2Cmd,
+                        printData.m2Output,
+                        printData.m3Speed,
+                        printData.m3Cmd,
+                        printData.m3Output);
         printData.ready2print = FALSE;
     }
 }

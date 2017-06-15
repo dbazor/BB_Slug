@@ -64,7 +64,7 @@ volatile PrintData printData;
 volatile MotorSpeedsCmd mSpeedsCmd; // currently in rad/sec
 double xAngleOffset;
 double yAngleOffset;
-volatile BOOL printFlag;
+volatile BOOL printFlag = 0;
 
 
 volatile MotorSpeedsCmd mSpeedsCmd;
@@ -156,7 +156,7 @@ void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
 
     count++;
     if (count % 50 == 0 && printFlag) {
-    //if (printFlag) {
+        //if (printFlag) {
         printData.ready2print = TRUE;
         printData.count = count;
         printData.angleX = angleX;
@@ -215,20 +215,20 @@ void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr2.output), MOTOR_2);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr3.output), MOTOR_3);
 
-    //    count++;
-    //    if ((count % 100) == 0 && printFlag) {
-    //        printData.ready2print = TRUE;
-    //        printData.count = count;
-    //        printData.m1Speed = mV.m1;
-    //        printData.m2Speed = mV.m2;
-    //        printData.m3Speed = mV.m3;
-    //        printData.m1Cmd = mVcmd.m1;
-    //        printData.m2Cmd = mVcmd.m2;
-    //        printData.m3Cmd = mVcmd.m3;
-    //        printData.m1Output = motorCtlr1.output;
-    //        printData.m2Output = motorCtlr2.output;
-    //        printData.m3Output = motorCtlr3.output;
-    //    }
+    count++;
+    if ((count % 100) == 0 && printFlag) {
+        printData.ready2print = TRUE;
+        printData.count = count;
+        printData.m1Speed = mV.m1;
+        printData.m2Speed = mV.m2;
+        printData.m3Speed = mV.m3;
+        printData.m1Cmd = mVcmd.m1;
+        printData.m2Cmd = mVcmd.m2;
+        printData.m3Cmd = mVcmd.m3;
+        printData.m1Output = motorCtlr1.output;
+        printData.m2Output = motorCtlr2.output;
+        printData.m3Output = motorCtlr3.output;
+    }
 }
 /*******************************************************************************
  * Functions                                                                   *
