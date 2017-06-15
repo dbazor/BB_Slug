@@ -26,7 +26,8 @@
 #define TICK_2_RAD  (2.0*M_PI/2240.0)
 #define SINGLE_TICK_DISTANCE  TICK_2_RAD
 #define TIME_PER_COUNTER_TIC (0.0000032) // in seconds
-#define MOTOR_AVG_SIZE 5
+#define MOTOR_AVG_SIZE 10
+#define AVG_MAX_CHANGE 2
 
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *
@@ -46,7 +47,7 @@ static volatile double avgVelM3 = 0;
 /* ------------------------------------------------------------ */
 void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
 {
-    static double sum = 0, direction = 0;
+    static double sum = 0, direction = 0, prevAvg = 0;
     static double average[MOTOR_AVG_SIZE];
     static int index = 0;
     
@@ -61,6 +62,9 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
     // use time to find current instant velocity
     double instantVel = SINGLE_TICK_DISTANCE / (icCount2 * TIME_PER_COUNTER_TIC);
     icCount2 = 0; // reset just this count
+    if (instantVel > MAX_RAD_PER_SEC) {
+        instantVel = MAX_RAD_PER_SEC;
+    }
     
     int encoder1A = PORTReadBits(ENCODER_1A); // input capture for motor 1 encoder signal A
     int encoder1B = PORTReadBits(ENCODER_1B); // digital input for motor 1 encoder signal B
@@ -81,13 +85,16 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
     instantVel *= direction;
     
     // use rolling average to get average velocity
+    if (abs(prevAvg - instantVel) > AVG_MAX_CHANGE) {
+        instantVel = prevAvg;
+    }
     sum -= average[index]; // subtract out oldest value
     sum += instantVel; // add in newest value
     average[index] = instantVel; // replace oldest value with newest value
     index++;
     index %= MOTOR_AVG_SIZE;
     avgVelM1 = sum / MOTOR_AVG_SIZE;
-    
+    prevAvg = avgVelM1;
     //printf("Encoder1: %d\n", mc1);
 
     IFS0bits.IC2IF = 0; // clear interrupt flag
@@ -95,7 +102,7 @@ void __ISR(_INPUT_CAPTURE_2_VECTOR, IPL3SOFT) InputCapture2()
 
 void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
 {
-    static double sum = 0, direction = 0;
+    static double sum = 0, direction = 0, prevAvg = 0;
     static double average[MOTOR_AVG_SIZE];
     static int index = 0;
     
@@ -110,6 +117,9 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
     // use time to find current instant velocity
     double instantVel = SINGLE_TICK_DISTANCE / (icCount3 * TIME_PER_COUNTER_TIC);
     icCount3 = 0; // reset just this count
+    if (instantVel > MAX_RAD_PER_SEC) {
+        instantVel = MAX_RAD_PER_SEC;
+    }
 
     int encoder2A = PORTReadBits(ENCODER_2A); // input capture for motor 2 encoder signal A
     int encoder2B = PORTReadBits(ENCODER_2B); // digital input for motor 2 encoder signal B
@@ -130,6 +140,9 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
     //printf("Encoder2: %d\n", mc2);
 
     instantVel *= direction;
+    if (abs(prevAvg - instantVel) > AVG_MAX_CHANGE) {
+        instantVel = prevAvg;
+    }
     
     // use rolling average to get average velocity
     sum -= average[index]; // subtract out oldest value
@@ -138,6 +151,7 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
     index++;
     index %= MOTOR_AVG_SIZE;
     avgVelM2 = sum / MOTOR_AVG_SIZE;
+    prevAvg = avgVelM2;
     
     //printf("Encoder1: %d\n", mc1);
 
@@ -146,7 +160,7 @@ void __ISR(_INPUT_CAPTURE_3_VECTOR, IPL3SOFT) InputCapture3()
 
 void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
 {
-    static double sum = 0, direction = 0;
+    static double sum = 0, direction = 0, prevAvg = 0;
     static double average[MOTOR_AVG_SIZE];
     static int index = 0;
     
@@ -161,7 +175,10 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
     // use time to find current instant velocity
     double instantVel = SINGLE_TICK_DISTANCE / (icCount5 * TIME_PER_COUNTER_TIC);
     icCount5 = 0; // reset just this count
-
+    if (instantVel > MAX_RAD_PER_SEC) {
+        instantVel = MAX_RAD_PER_SEC;
+    }
+    
     int encoder3A = PORTReadBits(ENCODER_3A); // input capture for motor 3 encoder signal A
     int encoder3B = PORTReadBits(ENCODER_3B); // digital input for motor 3 encoder signal B
 
@@ -177,13 +194,16 @@ void __ISR(_INPUT_CAPTURE_5_VECTOR, IPL3SOFT) InputCapture5()
     instantVel *= direction;
     
     // use rolling average to get average velocity
+    if (abs(prevAvg - instantVel) > AVG_MAX_CHANGE) {
+        instantVel = prevAvg;
+    }
     sum -= average[index]; // subtract out oldest value
     sum += instantVel; // add in newest value
     average[index] = instantVel; // replace oldest value with newest value
     index++;
     index %= MOTOR_AVG_SIZE;
     avgVelM3 = sum / MOTOR_AVG_SIZE;
-
+    prevAvg = avgVelM3;
     //printf("Encoder3: %d\n", mc3);
 
     IFS0bits.IC5IF = 0; // clear interrupt flag

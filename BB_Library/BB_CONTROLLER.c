@@ -157,7 +157,7 @@ void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
     count++;
     if (count % 50 == 0 && printFlag) {
         //if (printFlag) {
-        printData.ready2print = TRUE;
+        //printData.ready2print = TRUE;
         printData.count = count;
         printData.angleX = angleX;
         printData.angleY = angleY;
@@ -183,7 +183,7 @@ void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
 
 void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
 {
-    static count = 0;
+    static int count = 0;
     static motorVelocity mV;
     static MotorSpeedsCmd mVcmd;
     static double prevEncoder1 = 0, prevEncoder2 = 0, prevEncoder3 = 0;
@@ -214,20 +214,31 @@ void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr1.output), MOTOR_1);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr2.output), MOTOR_2);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr3.output), MOTOR_3);
-
-    count++;
-    if ((count % 100) == 0 && printFlag) {
-        printData.ready2print = TRUE;
+    
+    if (printFlag) { // (count % 100) == 0 && 
+        // printData.ready2print = TRUE;
         printData.count = count;
-        printData.m1Speed = mV.m1;
+        printData.m1Speed[count] = mV.m1;
         printData.m2Speed = mV.m2;
         printData.m3Speed = mV.m3;
-        printData.m1Cmd = mVcmd.m1;
+        printData.m1Cmd[count] = mVcmd.m1;
         printData.m2Cmd = mVcmd.m2;
         printData.m3Cmd = mVcmd.m3;
-        printData.m1Output = motorCtlr1.output;
+        printData.m1Output[count] = motorCtlr1.output;
         printData.m2Output = motorCtlr2.output;
         printData.m3Output = motorCtlr3.output;
+        
+        printData.error[count] = motorCtlr1.error; 
+        printData.uP[count] = motorCtlr1.uP;
+        printData.uI[count] = motorCtlr1.uI;
+        printData.uD[count] = motorCtlr1.uD;
+        
+        count++;
+        if (count > PRINT_DATA_SIZE) {
+            printData.ready2print = TRUE;
+            printFlag = FALSE;
+            count = 0;
+        }
     }
 }
 /*******************************************************************************
@@ -271,8 +282,9 @@ void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     p->output = uP + uI + uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
-        p->eIntegral -= (TIP_CTL_SAMPLE_TIME * p->error); // undo integration 
-        p->output -= uI; // reset output to motor
+        p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
+        p->uI = p->ki * p->eIntegral;
+        p->output = p->uP + p->uI + p->uD; // reset output to motor
     }
     //printf("Output normalized\n");
 
@@ -319,8 +331,9 @@ void PID_OmegaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     p->output = uP + uI + uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
-        p->eIntegral -= (TIP_CTL_SAMPLE_TIME * p->error); // undo integration 
-        p->output -= uI; // reset output to motor
+        p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
+        p->uI = p->ki * p->eIntegral;
+        p->output = p->uP + p->uI + p->uD; // reset output to motor
     }
     //printf("Output normalized\n");
 
@@ -344,9 +357,9 @@ void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double referenc
     //printf("Starting update\n");
     p->reference = reference;
     // Reset integral state if reference changes sign
-    if (((p->reference > 0.0) && (p->lastRef < 0.0)) || ((p->reference < 0.0) && (p->lastRef > 0.0))) {
-        p->eIntegral = 0.0;
-    }
+    //    if (((p->reference > 0.0) && (p->lastRef < 0.0)) || ((p->reference < 0.0) && (p->lastRef > 0.0))) {
+    //        p->eIntegral = 0.0;
+    //    }
 
     // Get the current sensor reading
     p->input = sensorInput;
@@ -358,24 +371,25 @@ void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double referenc
     p->eDerivative = -(p->input - p->lastInput) / MOTOR_CTL_SAMPLE_TIME; // the minus here is important
     //printf("Error Calculated\n");
 
-    double uP = p->kp * p->error;
-    double uI = p->ki * p->eIntegral; // temp u integral
-    double uD = p->kd * p->eDerivative;
+    p->uP = p->kp * p->error;
+    p->uI = p->ki * p->eIntegral; // temp u integral
+    p->uD = p->kd * p->eDerivative;
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->output = uP + uI + uD; // sets output to motor but doesn't set motor
+    p->output = p->uP + p->uI;// + p->uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
-        p->output = uP + uD; // reset output to motor
+        p->uI = p->ki * p->eIntegral;
+        p->output = p->uP + p->uI;// + p->uD; // reset output to motor
     }
     //printf("Output normalized\n");
 
     /*Remember some variables for next time*/
     p->lastInput = p->input;
     p->lastRef = p->reference;
-
+    p->lastErr = p->error;
 }
 
 /**

@@ -28,6 +28,7 @@
 #define T5_PERIOD       (SYS_FREQ/PB_DIV/PRESCALE/TIMER5_FREQ)
 #define MOTOR_CTL_SAMPLE_TIME     (1.0/(double)TIMER5_FREQ)
 #define MAX_ANGLE       10  // max angle passed into linear (outer) controller
+#define PRINT_DATA_SIZE (3000)
 
 /*******************************************************************************
  * PUBLIC Variables                                                             *
@@ -41,6 +42,7 @@ typedef struct PIDControler {
     double ki; /**< Integral gain constant */
     double kd; /**< Derivative gain constant */
     double error;
+    double lastErr;
     double input; // encoder reading
     double output;
     double reference; // setpoint, must be written to
@@ -48,6 +50,9 @@ typedef struct PIDControler {
     double eIntegral;
     double eDerivative;
     double lastInput;
+    double uP;
+    double uI;
+    double uD;
 
 } PIDControl;
 
@@ -64,15 +69,19 @@ typedef struct PrintData {
     double omegaOutY;
     double encoderX;
     double encoderY;
-    double m1Speed;
+    double m1Speed[PRINT_DATA_SIZE];
     double m2Speed;
     double m3Speed;
-    double m1Cmd;
+    double m1Cmd[PRINT_DATA_SIZE];
     double m2Cmd;
     double m3Cmd;
-    double m1Output;
+    double m1Output[PRINT_DATA_SIZE];
     double m2Output;
     double m3Output;
+    double error[PRINT_DATA_SIZE];
+    double uP[PRINT_DATA_SIZE];
+    double uI[PRINT_DATA_SIZE];
+    double uD[PRINT_DATA_SIZE];
 } PrintData;
 
 typedef enum {

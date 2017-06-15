@@ -53,9 +53,9 @@
 #define OMEGA_Y_D OMEGA_X_D
 
 
-#define MOTOR_KP       7
-#define MOTOR_KI       40  
-#define MOTOR_KD       0
+#define MOTOR_KP       1.1
+#define MOTOR_KI       150
+#define MOTOR_KD       0.01
 
 /* ------------------------------------------------------------ */
 /*				Prototypes			*/
@@ -91,6 +91,9 @@ volatile double *k2changeZ;
 volatile BOOL printFlag;
 
 static double mXspeed = 2.0, mYspeed = 0;
+
+
+
 /* ------------------------------------------------------------ */
 /*                            Main                              */
 
@@ -358,45 +361,46 @@ void PID_GetUARTK()
 
 void PrintMatlabData()
 {
-    static int count;
-    static BOOL forward = 1;
-    static motorVelocity mV;
-    //    if ((count % 1000000) == 0) {
-    //        if (forward) {
-    //            MotorSet_XYZ(mXspeed, mYspeed, 0);
-    //            forward = 0;
-    //        } else {
-    //            MotorSet_XYZ(-mXspeed, -mYspeed, 0);
-    //            forward = 1;
-    //        }
-    //    }
-    //    count++;
-    //    printf("%d \n", count);
+    int i = 0;
 
     if (printData.ready2print) {
-//        printf("%d, %f, %f, %f, %f \n",
-//                printData.count, 
-//                printData.angleX, 
-//                printData.thetaOutX, 
-//                printData.gyroY, 
-//                printData.omegaOutX);
-//                printData.encoderX, 
-//                printData.angleY, 
-//                printData.thetaOutY,  
-//                printData.gyroX,
-//                printData.omegaOutY, 
-//                printData.encoderY);
-                printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
-                        printData.count,
-                        printData.m1Speed,
-                        printData.m1Cmd,
-                        printData.m1Output,
-                        printData.m2Speed,
-                        printData.m2Cmd,
-                        printData.m2Output,
-                        printData.m3Speed,
-                        printData.m3Cmd,
-                        printData.m3Output);
+        DisableIntT4; // turn off controller interrupt
+        DisableIntT5;
+        MotorsStop();
+        //        printf("%d, %f, %f, %f, %f \n",
+        //                printData.count, 
+        //                printData.angleX, 
+        //                printData.thetaOutX, 
+        //                printData.gyroY, 
+        //                printData.omegaOutX);
+        //                printData.encoderX, 
+        //                printData.angleY, 
+        //                printData.thetaOutY,  
+        //                printData.gyroX,
+        //                printData.omegaOutY, 
+        //                printData.encoderY);
+        //                printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
+        //                        printData.count,
+        //                        printData.m1Speed,
+        //                        printData.m1Cmd,
+        //                        printData.m1Output,
+        //                        printData.m2Speed,
+        //                        printData.m2Cmd,
+        //                        printData.m2Output,
+        //                        printData.m3Speed,
+        //                        printData.m3Cmd,
+        //                        printData.m3Output);
+
+        for (i = 0; i < PRINT_DATA_SIZE; i++) {
+            printf("%f, %f, %f, %f, %f, %f, %f\n",
+                    printData.m1Speed[i],
+                    printData.m1Cmd[i],
+                    printData.m1Output[i],
+                    printData.error[i],
+                    printData.uP[i],
+                    printData.uI[i],
+                    printData.uD[i]);
+        }
         printData.ready2print = FALSE;
     }
 }
