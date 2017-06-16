@@ -120,6 +120,7 @@ void BB_BOARD_Init()
     while (PORTReadBits(IOPORT_G, BIT_6) == 0) {
         ;
     }
+    DelayMs(100);
 
     // PID Motor Controller Interrupt
     // *NOTE:

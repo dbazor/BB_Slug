@@ -21,6 +21,7 @@
 #include "BB_IMU.h"
 #include "BB_CONTROLLER.h"
 #include "BB_QUAT.h"
+#include "BB_IMU.h"
 
 /* ------------------------------------------------------------ */
 /*				Definitions			*/
@@ -111,8 +112,8 @@ int main()
     IMU_Read_Quat();
     IMU_Get_Quat(&q);
     BB_Quat_Tip_Vector(&q, &result);
-    float xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
-    float yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
+    double xAngle = BB_Quat_Find_Tip_Angle_X(&result); // in degrees
+    double yAngle = BB_Quat_Find_Tip_Angle_Y(&result); // in degrees
 
     IMU_Read_Gyro();
 
@@ -137,9 +138,12 @@ int main()
         switch (c) {
         case 0x00:
             c = GetChar();
+            if (PORTReadBits(IOPORT_G, BIT_6) > 0) {
+                c = 'b';
+            }
             break;
         case stop:
-            printf("\n\nPress 'r' for Reset, 'b' to Balance, and space-bar to Stop. \n");
+            printf("\n\nPress 'r' for Reset, 'b' to Balance, 'c' to Calibrate, and space-bar to Stop. \n");
             DisableIntT4; // turn off controller interrupt
             DisableIntT5;
             MotorsStop();
@@ -161,6 +165,16 @@ int main()
             MotorsStop();
             printf("You chose reset.\n");
             PID_GetUARTK();
+            c = ' ';
+            break;
+        case 'c':
+            IMU_Read_Quat();
+            IMU_Get_Quat(&q);
+            BB_Quat_Tip_Vector(&q, &result);
+            xAngle = BB_Quat_Find_Tip_Angle_X(&result);
+            yAngle = BB_Quat_Find_Tip_Angle_Y(&result);
+            printf("xOffset: %f, yOffset:  %f\n", xAngle, yAngle);
+            PID_SetAngleOffset(xAngle, yAngle);
             c = ' ';
             break;
         case 'm':
@@ -220,6 +234,9 @@ int main()
         default:
             printf("Please try again.\n");
             c = GetChar();
+            if (PORTReadBits(IOPORT_G, BIT_6) > 0) {
+                c = 'b';
+            }
         }
     }
 
@@ -278,6 +295,7 @@ void PID_GetUARTK()
                 controller2changeZ = &motorCtlr3;
                 printf("You chose the motor controller.\n");
                 break;
+
             default:
                 printf("Please try again\n");
             }
@@ -367,18 +385,16 @@ void PrintMatlabData()
         DisableIntT4; // turn off controller interrupt
         DisableIntT5;
         MotorsStop();
-        //        printf("%d, %f, %f, %f, %f \n",
-        //                printData.count, 
-        //                printData.angleX, 
-        //                printData.thetaOutX, 
-        //                printData.gyroY, 
-        //                printData.omegaOutX);
-        //                printData.encoderX, 
-        //                printData.angleY, 
-        //                printData.thetaOutY,  
-        //                printData.gyroX,
-        //                printData.omegaOutY, 
-        //                printData.encoderY);
+        for (i = 0; i < PRINT_DATA_SIZE; i++) {
+            printf("%f, %f, %f, %f, %f, %f, %f \n",
+                    printData.angleX[i],
+                    printData.thetaOutX[i],
+                    printData.gyroY[i],
+                    printData.error[i],
+                    printData.uP[i],
+                    printData.uI[i],
+                    printData.uD[i]);
+        }
         //                printf("%d, %f, %f, %f, %f, %f, %f, %f, %f, %f\n",
         //                        printData.count,
         //                        printData.m1Speed,
@@ -390,17 +406,17 @@ void PrintMatlabData()
         //                        printData.m3Speed,
         //                        printData.m3Cmd,
         //                        printData.m3Output);
-
-        for (i = 0; i < PRINT_DATA_SIZE; i++) {
-            printf("%f, %f, %f, %f, %f, %f, %f\n",
-                    printData.m1Speed[i],
-                    printData.m1Cmd[i],
-                    printData.m1Output[i],
-                    printData.error[i],
-                    printData.uP[i],
-                    printData.uI[i],
-                    printData.uD[i]);
-        }
+        //
+        //        for (i = 0; i < PRINT_DATA_SIZE; i++) {
+        //            printf("%f, %f, %f, %f, %f, %f, %f\n",
+        //                    printData.m1Speed[i],
+        //                    printData.m1Cmd[i],
+        //                            printData.m1Output[i],
+        //                            printData.error[i],
+        //                            printData.uP[i],
+        //                            printData.uI[i],
+        //                            printData.uD[i]);
+        //        }
         printData.ready2print = FALSE;
     }
 }

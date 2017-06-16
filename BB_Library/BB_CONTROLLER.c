@@ -153,29 +153,28 @@ void __ISR(_TIMER_4_VECTOR, IPL6SOFT) Timer4Handler(void)
 
     //MotorSet_XYZ(thetaX.output, thetaY.output, 0);   // for testing only middle controller
 
-
-    count++;
-    if (count % 50 == 0 && printFlag) {
-        //if (printFlag) {
-        //printData.ready2print = TRUE;
+    if (printFlag) { // (count % 100) == 0 && 
+        // printData.ready2print = TRUE;
         printData.count = count;
-        printData.angleX = angleX;
-        printData.angleY = angleY;
-        printData.thetaOutX = thetaX.output;
-        printData.thetaOutY = thetaY.output;
-        printData.gyroX = gyroX;
-        printData.gyroY = gyroY;
-        printData.omegaOutX = omegaX.output;
-        printData.omegaOutY = omegaY.output;
-        printData.encoderX = encoder.x;
-        printData.encoderY = encoder.y;
+        printData.angleX[count] = angleX;
+        printData.thetaOutX[count] = thetaX.output;
+        printData.gyroY[count] = gyroAverageY;
+        printData.error[count] = thetaX.error;
+        printData.uP[count] = thetaX.uP;
+        printData.uI[count] = thetaX.uI;
+        printData.uD[count] = thetaX.uD;
+
+        count++;
+        if (count > PRINT_DATA_SIZE) {
+            printData.ready2print = TRUE;
+            printFlag = FALSE;
+            count = 0;
+        }
     }
 
     // Set pin low
-    PORTClearBits(JC03);
+    //PORTClearBits(JC03);
 
-    // Now to test the controller
-    //eCountRadians = GetEncoderRadians(MOTOR_1);
 }
 
 // controller to maintain correct rate on each motor
@@ -214,32 +213,32 @@ void __ISR(_TIMER_5_VECTOR, IPL5SOFT) Timer5Handler(void)
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr1.output), MOTOR_1);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr2.output), MOTOR_2);
     MotorSetSpeed((int) (RAD_PER_SEC_2_PWM * motorCtlr3.output), MOTOR_3);
-    
-    if (printFlag) { // (count % 100) == 0 && 
-        // printData.ready2print = TRUE;
-        printData.count = count;
-        printData.m1Speed[count] = mV.m1;
-        printData.m2Speed = mV.m2;
-        printData.m3Speed = mV.m3;
-        printData.m1Cmd[count] = mVcmd.m1;
-        printData.m2Cmd = mVcmd.m2;
-        printData.m3Cmd = mVcmd.m3;
-        printData.m1Output[count] = motorCtlr1.output;
-        printData.m2Output = motorCtlr2.output;
-        printData.m3Output = motorCtlr3.output;
-        
-        printData.error[count] = motorCtlr1.error; 
-        printData.uP[count] = motorCtlr1.uP;
-        printData.uI[count] = motorCtlr1.uI;
-        printData.uD[count] = motorCtlr1.uD;
-        
-        count++;
-        if (count > PRINT_DATA_SIZE) {
-            printData.ready2print = TRUE;
-            printFlag = FALSE;
-            count = 0;
-        }
-    }
+
+    //    if (printFlag && 0) { // (count % 100) == 0 && 
+    //        // printData.ready2print = TRUE;
+    //        printData.count = count;
+    //        printData.m1Speed[count] = mV.m1;
+    //        printData.m2Speed = mV.m2;
+    //        printData.m3Speed = mV.m3;
+    //        printData.m1Cmd[count] = mVcmd.m1;
+    //        printData.m2Cmd = mVcmd.m2;
+    //        printData.m3Cmd = mVcmd.m3;
+    //        printData.m1Output[count] = motorCtlr1.output;
+    //        printData.m2Output = motorCtlr2.output;
+    //        printData.m3Output = motorCtlr3.output;
+    //
+    //        printData.error[count] = motorCtlr1.error;
+    //        printData.uP[count] = motorCtlr1.uP;
+    //        printData.uI[count] = motorCtlr1.uI;
+    //        printData.uD[count] = motorCtlr1.uD;
+    //
+    //        count++;
+    //        if (count > PRINT_DATA_SIZE) {
+    //            printData.ready2print = TRUE;
+    //            printFlag = FALSE;
+    //            count = 0;
+    //        }
+    //    }
 }
 /*******************************************************************************
  * Functions                                                                   *
@@ -259,10 +258,12 @@ void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     //printf("Starting update\n");
     p->reference = reference;
     // Reset integral state if reference changes sign
-    if (((p->reference > 0) && (p->lastRef < 0)) || ((p->reference < 0) && (p->lastRef > 0))) {
-        p->eIntegral = 0;
+    //    if (((p->reference > 0) && (p->lastRef < 0)) || ((p->reference < 0) && (p->lastRef > 0))) {
+    //        p->eIntegral = 0;
+    //    }
+    if (((p->error > 0.0) && (p->lastErr < 0.0)) || ((p->error < 0.0) && (p->lastErr > 0.0))) {
+        p->eIntegral = 0.0;
     }
-
     // Get the current sensor reading
     p->input = sensorInput;
     //printf("input found\n");
@@ -273,13 +274,13 @@ void PID_ThetaUpdate(volatile PIDControl *p, double sensorInput, double referenc
     p->eDerivative = -eDerivative; // was / SAMPLE_TIME; because gyro is already rate
     //printf("Error Calculated\n");
 
-    double uP = p->kp * p->error;
-    double uI = p->ki * p->eIntegral; // temp u integral
-    double uD = p->kd * p->eDerivative; //
+    p->uP = p->kp * p->error;
+    p->uI = p->ki * p->eIntegral; // temp u integral
+    p->uD = p->kd * p->eDerivative; //
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->output = uP + uI + uD; // sets output to motor but doesn't set motor
+    p->output = p->uP + p->uI + p->uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
@@ -380,7 +381,7 @@ void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double referenc
     //printf("U Calculated\n");
 
     /*Compute PID Output*/
-    p->output = p->uP + p->uI;// + p->uD; // sets output to motor but doesn't set motor
+    p->output = p->uP + p->uI; // + p->uD; // sets output to motor but doesn't set motor
 
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
