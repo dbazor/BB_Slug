@@ -27,7 +27,7 @@
 #define SINGLE_TICK_DISTANCE  TICK_2_RAD
 #define TIME_PER_COUNTER_TIC (0.0000032) // in seconds
 #define MOTOR_AVG_SIZE 10
-#define AVG_MAX_CHANGE 2
+#define AVG_MAX_CHANGE 5.0
 
 /*******************************************************************************
  * PRIVATE Encoder Variables                                                   *

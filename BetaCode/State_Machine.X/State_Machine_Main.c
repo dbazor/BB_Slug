@@ -36,8 +36,8 @@
 #define LINEAR_Y_I LINEAR_X_I
 #define LINEAR_Y_D LINEAR_X_D
 
-#define THETA_X_P 100
-#define THETA_X_I 0
+#define THETA_X_P 60
+#define THETA_X_I 300
 #define THETA_X_D 0
 
 #define THETA_Y_P THETA_X_P
@@ -54,8 +54,8 @@
 
 
 #define MOTOR_KP       1.1
-#define MOTOR_KI       150
-#define MOTOR_KD       0.01
+#define MOTOR_KI       80
+#define MOTOR_KD       0
 
 /* ------------------------------------------------------------ */
 /*				Prototypes			*/

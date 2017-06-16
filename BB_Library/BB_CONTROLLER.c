@@ -360,6 +360,9 @@ void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double referenc
     //    if (((p->reference > 0.0) && (p->lastRef < 0.0)) || ((p->reference < 0.0) && (p->lastRef > 0.0))) {
     //        p->eIntegral = 0.0;
     //    }
+    if (((p->error > 0.0) && (p->lastErr < 0.0)) || ((p->error < 0.0) && (p->lastErr > 0.0))) {
+        p->eIntegral = 0.0;
+    }
 
     // Get the current sensor reading
     p->input = sensorInput;
@@ -382,10 +385,11 @@ void PID_MotorUpdate(volatile PIDControl *p, double sensorInput, double referenc
     if ((p->output > maxOut) || (p->output < -maxOut)) {
         p->eIntegral -= (MOTOR_CTL_SAMPLE_TIME * p->error); // undo integration 
         p->uI = p->ki * p->eIntegral;
-        p->output = p->uP + p->uI;// + p->uD; // reset output to motor
+        p->output = p->uP + p->uI + p->uD; // reset output to motor
     }
     //printf("Output normalized\n");
 
+    p->output = p->output + p->reference; // feed forward
     /*Remember some variables for next time*/
     p->lastInput = p->input;
     p->lastRef = p->reference;
